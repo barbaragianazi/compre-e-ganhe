@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="zoetis">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campanha Compre e Ganhe Zoetis — Adquira produtos participantes e concorra a brindes exclusivos." />
+  <title>Compre &amp; Ganhe — Zoetis</title>
+
+  <!-- Preconnect Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Themes first, then styles -->
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="header__inner">
+
+        <!-- Brand / Logo + Switcher -->
+        <div class="header__brand">
+          <button class="header__logo-btn" aria-haspopup="true" aria-expanded="false" aria-label="Selecionar marca">
+            <img src="" data-logo="light" alt="Zoetis" height="32" />
+            <svg class="header__logo-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="brand-dropdown" role="menu" aria-label="Selecionar marca">
+            <div class="brand-dropdown__label">Marcas</div>
+            <!-- Items populated by theme-switcher.js -->
+          </div>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="header__nav" aria-label="Menu principal">
+          <a href="#promocao" class="header__nav-link active">Promoção</a>
+          <a href="#como-funciona" class="header__nav-link">Como funciona</a>
+          <a href="#brindes" class="header__nav-link">Brindes</a>
+          <a href="#ranking" class="header__nav-link">Ranking</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="header__actions">
+          <a href="#promocao" class="btn btn--primary btn--sm">Participar agora</a>
+          <div class="header__avatar" aria-label="Perfil do usuário" title="Dr. Paulo Mendes">PM</div>
+        </div>
+
+        <!-- Mobile Toggle -->
+        <button class="header__menu-toggle" aria-label="Abrir menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile nav drawer -->
+  <nav class="mobile-nav" aria-label="Menu mobile">
+    <a href="#promocao">Promoção</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#brindes">Brindes</a>
+    <a href="#ranking">Ranking</a>
+    <a href="#promocao" class="btn btn--primary" style="margin-top:8px; display:flex; justify-content:center;">Participar agora</a>
+  </nav>
+
+  <main>
+
+    <!-- ==========================================
+         HERO
+    =========================================== -->
+    <section class="hero" id="promocao" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero__inner">
+
+          <!-- Left: copy -->
+          <div class="hero__content">
+            <div class="hero__eyebrow">
+              <span class="hero__eyebrow-dot" aria-hidden="true"></span>
+              Campanha ativa &bull; 2º semestre 2026
+            </div>
+
+            <h1 class="hero__title" id="hero-title">
+              <span class="blur-fade blur-fade--d0">Compre mais,</span>
+              <span class="blur-fade blur-fade--d1"><em>ganhe muito</em></span>
+              <span class="blur-fade blur-fade--d2">mais.</span>
+            </h1>
+
+            <p class="hero__subtitle">
+              Adquira produtos participantes, cadastre seus cupons
+              e concorra a brindes exclusivos que fazem diferença na sua
+              rotina profissional.
+            </p>
+
+            <div class="hero__ctas">
+              <a href="#como-funciona" class="btn btn--primary btn--lg">
+                Participar da campanha
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+              <a href="#regulamento" class="btn btn--outline btn--lg">Ver regulamento</a>
+            </div>
+
+            <div class="hero__meta">
+              <div class="hero__meta-item">
+                <span class="hero__meta-value">+1.200</span>
+                <span class="hero__meta-label">Participantes</span>
+              </div>
+              <div class="hero__meta-divider" aria-hidden="true"></div>
+              <div class="hero__meta-item">
+                <span class="hero__meta-value">48</span>
+                <span class="hero__meta-label">Brindes entregues</span>
+              </div>
+              <div class="hero__meta-divider" aria-hidden="true"></div>
+              <div class="hero__meta-item">
+                <div class="hero__avatars" aria-label="Últimos participantes">
+                  <div class="hero__avatar-item" aria-hidden="true">JM</div>
+                  <div class="hero__avatar-item" aria-hidden="true">CR</div>
+                  <div class="hero__avatar-item" aria-hidden="true">LS</div>
+                  <div class="hero__avatar-more" aria-hidden="true">+9</div>
+                </div>
+                <span class="hero__meta-label" style="margin-top:6px;">Esta semana</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: visual composition -->
+          <div class="hero__visual" aria-hidden="true">
+            <div class="hero__image-wrap">
+              <div class="hero__image-placeholder">
+                <!-- SVG illustration: vet professional -->
+               <!-- IMAGEM AQUI  -->
+                <img src="assets/images/woman-hero-section.png" alt="Hero Image" class="hero__image">
+                <!-- <svg class="hero__vet-illustration" viewBox="0 0 480 420" fill="none" xmlns="http://www.w3.org/2000/svg"> -->
+                               <!-- IMAGEM AQUI  -->
+
+                  <!-- Body/coat -->
+                  <rect x="140" y="200" width="200" height="220" rx="24" fill="#F4F4F4"/>
+                  <!-- Collar -->
+                  <rect x="210" y="200" width="60" height="30" rx="8" fill="#E0E0E0"/>
+                  <!-- Face -->
+                  <circle cx="240" cy="160" r="70" fill="#FDDCB4"/>
+                  <!-- Hair -->
+                  <path d="M170 130 Q185 80 240 75 Q295 80 310 130 Q300 100 240 95 Q180 100 170 130Z" fill="#4A3728"/>
+                  <!-- Eyes -->
+                  <circle cx="218" cy="155" r="7" fill="#333"/>
+                  <circle cx="262" cy="155" r="7" fill="#333"/>
+                  <circle cx="221" cy="153" r="2.5" fill="#fff"/>
+                  <circle cx="265" cy="153" r="2.5" fill="#fff"/>
+                  <!-- Smile -->
+                  <path d="M225 175 Q240 188 255 175" stroke="#C4845A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                  <!-- Stethoscope -->
+                  <path d="M190 240 Q175 280 180 310 Q185 335 210 340" stroke="#888" stroke-width="4" stroke-linecap="round" fill="none"/>
+                  <circle cx="210" cy="340" r="12" fill="none" stroke="#888" stroke-width="4"/>
+                  <!-- Coat pocket -->
+                  <rect x="260" y="280" width="50" height="36" rx="8" fill="#E8E8E8"/>
+                  <!-- Pen in pocket -->
+                  <rect x="272" y="270" width="5" height="28" rx="2.5" fill="var(--color-primary)"/>
+                  <!-- Name badge -->
+                  <rect x="155" y="250" width="70" height="36" rx="8" fill="#fff" stroke="#E0E0E0" stroke-width="1.5"/>
+                  <rect x="163" y="258" width="40" height="4" rx="2" fill="#DDD"/>
+                  <rect x="163" y="267" width="28" height="4" rx="2" fill="#EEE"/>
+                  <!-- Dog silhouette in arms -->
+                  <ellipse cx="310" cy="290" rx="52" ry="38" fill="#D4A96A"/>
+                  <circle cx="350" cy="268" r="24" fill="#D4A96A"/>
+                  <ellipse cx="362" cy="258" rx="10" ry="7" fill="#C49052" transform="rotate(-20 362 258)"/>
+                  <ellipse cx="340" cy="258" rx="10" ry="7" fill="#C49052" transform="rotate(20 340 258)"/>
+                  <circle cx="355" cy="272" r="4" fill="#8B5E3C"/>
+                  <path d="M343 282 Q355 290 367 282" stroke="#8B5E3C" stroke-width="2" stroke-linecap="round" fill="none"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Floating card: gift highlight -->
+            <div class="hero__card hero__card--gift" aria-hidden="true">
+              <div class="hero__card-inner">
+                <div>
+                  <div class="hero__card-label">Brinde destaque</div>
+                  <div class="hero__card-value">iPhone 17</div>
+                  <div class="hero__card-sub">sorteio em dezembro</div>
+                </div>
+                <div style="font-size:28px;">🎁</div>
+              </div>
+            </div>
+
+            <!-- Floating card: ranking -->
+            <div class="hero__card hero__card--rank" aria-hidden="true">
+              <div class="hero__card-label">Sua posição</div>
+              <div class="hero__card-value">#12</div>
+              <div class="hero__card-sub">de 1.200 participantes</div>
+            </div>
+
+            <!-- Floating seal -->
+            <!-- <div class="hero__card hero__card--seal" aria-hidden="true">
+              <div class="hero__card-seal-label">Campanha</div>
+              <div style="font-size:22px; margin: 4px 0;">⭐</div>
+              <div class="hero__card-gift-text">2026</div>
+            </div> -->
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         BENEFITS
+    =========================================== -->
+    <section class="section" id="beneficios" aria-labelledby="benefits-title">
+      <div class="container">
+
+        <header class="section__header reveal">
+          <div class="section__eyebrow">
+            <span class="section__eyebrow-line" aria-hidden="true"></span>
+            Por que participar
+          </div>
+          <h2 class="section__title" id="benefits-title">Vantagens que<br />valem cada compra.</h2>
+        </header>
+
+        <div class="benefits__grid">
+
+          <!-- Featured card -->
+          <div class="benefit-card benefit-card--featured reveal reveal-delay-1" aria-label="Brindes exclusivos">
+            <div class="benefit-card__icon" aria-hidden="true">🏆</div>
+            <div class="benefit-card__tag">Destaque</div>
+            <h3 class="benefit-card__title">Brindes exclusivos para quem mais compra</h3>
+            <p class="benefit-card__desc">Produtos selecionados para profissionais exigentes. Cada ponto acumulado aproxima você de recompensas reais.</p>
+            <span class="benefit-card__number" aria-hidden="true">01</span>
+          </div>
+
+          <!-- Medium card -->
+          <div class="benefit-card benefit-card--md reveal reveal-delay-2">
+            <div class="benefit-card__icon" aria-hidden="true">⚡</div>
+            <h3 class="benefit-card__title">Participação simples e rápida</h3>
+            <p class="benefit-card__desc">Cadastre o cupom em menos de 2 minutos. Sem burocracia, sem complicação.</p>
+            <span class="benefit-card__number" aria-hidden="true">02</span>
+          </div>
+
+          <!-- Small card -->
+          <div class="benefit-card benefit-card--sm reveal reveal-delay-3">
+            <div class="benefit-card__icon" aria-hidden="true">🔄</div>
+            <h3 class="benefit-card__title">Sorteios recorrentes</h3>
+            <p class="benefit-card__desc">Novas oportunidades a cada mês ao longo de toda a campanha.</p>
+            <span class="benefit-card__number" aria-hidden="true">03</span>
+          </div>
+
+          <!-- Wide card with 2 columns inside -->
+          <div class="benefit-card benefit-card--wide reveal reveal-delay-1">
+            <div>
+              <div class="benefit-card__icon" aria-hidden="true">📊</div>
+              <h3 class="benefit-card__title">Acompanhe seu progresso</h3>
+              <p class="benefit-card__desc">Painel em tempo real com sua pontuação, posição no ranking e histórico de cupons.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="background:var(--color-surface); border-radius:var(--radius-sm); padding:14px 16px;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--neutral-400); margin-bottom:4px;">Seus pontos</div>
+                <div style="font-size:28px; font-weight:900; color:var(--color-primary); line-height:1;">3.480</div>
+              </div>
+              <div style="background:var(--color-surface); border-radius:var(--radius-sm); padding:14px 16px;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--neutral-400); margin-bottom:4px;">Ranking</div>
+                <div style="font-size:28px; font-weight:900; color:var(--color-text); line-height:1;">#12</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accent card -->
+          <div class="benefit-card benefit-card--accent reveal reveal-delay-2">
+            <div class="benefit-card__icon" aria-hidden="true">🛡️</div>
+            <h3 class="benefit-card__title">Transparência total</h3>
+            <p class="benefit-card__desc">Regulamento claro, ganhadores publicados e resultados verificáveis a qualquer momento.</p>
+            <span class="benefit-card__number" aria-hidden="true">04</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         HOW IT WORKS
+    =========================================== -->
+    <section class="section how-it-works" id="como-funciona" aria-labelledby="steps-title">
+      <div class="container">
+
+        <header class="section__header section__header--center reveal">
+          <div class="section__eyebrow">
+            <span class="section__eyebrow-line" aria-hidden="true"></span>
+            Passo a passo
+            <span class="section__eyebrow-line" aria-hidden="true"></span>
+          </div>
+          <h2 class="section__title" id="steps-title">Simples assim.</h2>
+          <p class="section__desc">Da compra ao brinde, tudo acontece de forma direta e transparente.</p>
+        </header>
+
+        <div class="steps-timeline" role="list">
+
+          <div class="step reveal reveal-delay-1" role="listitem">
+            <div class="step__badge" aria-hidden="true">1</div>
+            <div class="step__body">
+              <div class="step__icon" aria-hidden="true">🛒</div>
+              <div class="step__title">Compre os produtos participantes</div>
+              <p class="step__desc">Adquira qualquer produto Zoetis da lista de participantes junto ao seu distribuidor habitual.</p>
+            </div>
+          </div>
+
+          <div class="step reveal reveal-delay-2" role="listitem">
+            <div class="step__badge" aria-hidden="true">2</div>
+            <div class="step__body">
+              <div class="step__icon" aria-hidden="true">🎟️</div>
+              <div class="step__title">Cadastre o cupom fiscal</div>
+              <p class="step__desc">Acesse a plataforma, informe os dados da nota fiscal e confirme a compra com poucos cliques.</p>
+            </div>
+          </div>
+
+          <div class="step reveal reveal-delay-3" role="listitem">
+            <div class="step__badge" aria-hidden="true">3</div>
+            <div class="step__body">
+              <div class="step__icon" aria-hidden="true">⭐</div>
+              <div class="step__title">Acumule pontos automaticamente</div>
+              <p class="step__desc">Cada produto gera pontuação proporcional ao valor. Quanto mais você compra, mais pontos acumula.</p>
+            </div>
+          </div>
+
+          <div class="step reveal reveal-delay-4" role="listitem">
+            <div class="step__badge" aria-hidden="true">4</div>
+            <div class="step__body">
+              <div class="step__icon" aria-hidden="true">📈</div>
+              <div class="step__title">Acompanhe o ranking</div>
+              <p class="step__desc">Monitore sua posição em tempo real e veja quem está à sua frente para superar na próxima compra.</p>
+            </div>
+          </div>
+
+          <div class="step reveal reveal-delay-5" role="listitem">
+            <div class="step__badge" aria-hidden="true">5</div>
+            <div class="step__body">
+              <div class="step__icon" aria-hidden="true">🎁</div>
+              <div class="step__title">Resgate seus brindes</div>
+              <p class="step__desc">Ao final de cada ciclo, os melhores colocados são premiados. Simples, justo e transparente.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PRODUCTS
+    =========================================== -->
+    <section class="section products" id="produtos" aria-labelledby="products-title">
+      <div class="container">
+
+        <header class="section__header reveal" style="display:flex; align-items:flex-end; justify-content:space-between; max-width:100%; margin-bottom:var(--sp-8);">
+          <div>
+            <div class="section__eyebrow">
+              <span class="section__eyebrow-line" aria-hidden="true"></span>
+              Catálogo
+            </div>
+            <h2 class="section__title" id="products-title" style="margin-bottom:0;">Produtos participantes</h2>
+          </div>
+          <a href="#regulamento" class="btn btn--outline" style="flex-shrink:0;">Ver todos</a>
+        </header>
+
+        <div class="products__grid">
+
+          <article class="product-card reveal reveal-delay-1">
+            <div class="product-card__img">
+              <img src="assets/images/simparic.png" alt="Product Image" class="product-card__img-inner">
+              <span class="product-card__badge">Destaque</span>
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__category">Antiparasitários</div>
+              <h3 class="product-card__name">Simparic</h3>
+              <p class="product-card__desc">Proteção completa contra pulgas, carrapatos e vermes em dose única mensal.</p>
+              
+            </div>
+          </article>
+
+          <article class="product-card reveal reveal-delay-2">
+            <div class="product-card__img">
+              <img src="assets/images/apoquel.png" alt="Product Image" class="product-card__img-inner">
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__category">Dermatologia</div>
+              <h3 class="product-card__name">Apoquel 16mg</h3>
+              <p class="product-card__desc">Controle rápido do prurido em cães com dermatite alérgica.</p>
+              
+            </div>
+          </article>
+
+          <article class="product-card reveal reveal-delay-3">
+            <div class="product-card__img">
+              <img src="assets/images/vanguard.jpg" alt="Product Image" class="product-card__img-inner">
+            </div>
+            <div class="product-card__body">
+              <div class="product-card__category">Vacinas</div>
+              <h3 class="product-card__name">Vanguard Plus</h3>
+              <p class="product-card__desc">Vacina polivalente para cães com alta eficácia comprovada.</p>
+              
+            </div>
+          </article>
+
+          
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         GIFTS
+    =========================================== -->
+    <section class="section gifts" id="brindes" aria-labelledby="gifts-title">
+      <div class="container">
+
+        <header class="section__header section__header--center reveal">
+          <div class="section__eyebrow">
+            <span class="section__eyebrow-line" aria-hidden="true"></span>
+            Brindes exclusivos
+            <span class="section__eyebrow-line" aria-hidden="true"></span>
+          </div>
+          <h2 class="section__title" id="gifts-title">Recompensas que<br />você vai querer.</h2>
+          <p class="section__desc">Os melhores colocados no ranking ao final de cada período garantem prêmios selecionados para profissionais.</p>
+        </header>
+
+        <div class="gifts__grid">
+
+          <!-- Featured gift -->
+          <article class="gift-card gift-card--featured reveal reveal-delay-1">
+            <div class="gift-card__img" aria-hidden="true">
+              <img src="assets/images/iphone.webp" alt="Gift Image" class="gift-card__img-inner">
+              <span class="gift-card__img-label">1º lugar</span>
+            </div>
+            <div class="gift-card__body">
+              <div class="gift-card__rank">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+                Grande Prêmio · Dezembro 2026
+              </div>
+              <h3 class="gift-card__name">iPhone 17 Pro Max</h3>
+              <p class="gift-card__desc">O smartphone mais avançado da Apple. Para quem chegou ao topo e merece o melhor.</p>
+              <!-- <div class="gift-card__value">
+                <span class="gift-card__value-currency">R$</span>
+                <span class="gift-card__value-amount">7.999</span>
+                <span class="gift-card__value-label">valor de mercado</span>
+              </div> -->
+            </div>
+          </article>
+
+          <!-- Gift 2 -->
+          <article class="gift-card reveal reveal-delay-2">
+            <div class="gift-card__img" aria-hidden="true">
+              <img src="assets/images/airpads.jpg" alt="Gift Image" class="gift-card__img-inner">
+              <span class="gift-card__img-label">2º lugar</span>
+            </div>
+            <div class="gift-card__body">
+              <div class="gift-card__rank">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+                2º Lugar · Dezembro 2026
+              </div>
+              <h3 class="gift-card__name">AirPods Pro 4</h3>
+              <p class="gift-card__desc">Áudio premium com cancelamento ativo de ruído para o dia a dia.</p>
+              <!-- <div class="gift-card__value">
+                <span class="gift-card__value-currency">R$</span>
+                <span class="gift-card__value-amount">2.199</span>
+                <span class="gift-card__value-label">valor de mercado</span>
+              </div> -->
+            </div>
+          </article>
+
+          <!-- Gift 3 -->
+          <article class="gift-card reveal reveal-delay-3">
+            <div class="gift-card__img" aria-hidden="true">
+              <img src="assets/images/watch.webp" alt="Gift Image" class="gift-card__img-inner">
+              
+              <span class="gift-card__img-label">3º lugar</span>
+            </div>
+            <div class="gift-card__body">
+              <div class="gift-card__rank">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5"/></svg>
+                3º Lugar · Dezembro 2026
+              </div>
+              <h3 class="gift-card__name">Apple Watch Ultra 3</h3>
+              <p class="gift-card__desc">Smartwatch com monitoramento de saúde e conectividade completa.</p>
+              <!-- <div class="gift-card__value">
+                <span class="gift-card__value-currency">R$</span>
+                <span class="gift-card__value-amount">2.799</span>
+                <span class="gift-card__value-label">valor de mercado</span>
+              </div> -->
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Bottom note -->
+        <p style="text-align:center; margin-top:var(--sp-6); font-size:var(--text-sm); color:var(--neutral-400);" class="reveal">
+          Premiações adicionais para 4º ao 10º lugar. <a href="#regulamento" style="color:var(--color-primary); font-weight:700;">Ver regulamento completo →</a>
+        </p>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         CTA FINAL
+    =========================================== -->
+    <section class="cta-final" id="ranking" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-final__inner">
+
+          <div class="cta-final__content reveal">
+            <div class="cta-final__eyebrow">Não perca tempo</div>
+            <h2 class="cta-final__title" id="cta-title">O ranking está<br />se formando agora</h2>
+            <p class="cta-final__desc">Cada compra conta. Cadastre seus cupons, suba no ranking e garanta os melhores brindes antes que a campanha encerre.</p>
+            <p class="cta-final__note">Encerramento: 31 de dezembro de 2026</p>
+          </div>
+
+          <div class="cta-final__actions reveal reveal-delay-2">
+            <a href="#como-funciona" class="btn btn--primary btn--lg">Participar da campanha
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg></a>
+            <a href="#regulamento" class="btn btn--ghost btn--lg">Ver regulamento</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       FOOTER
+  =========================================== -->
+  <footer class="footer" id="regulamento" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <img src="" data-logo="light" alt="Zoetis" height="24" />
+          </div>
+          <span class="footer__copy">&copy; 2026 Zoetis. Todos os direitos reservados.</span>
+        </div>
+
+        <nav class="footer__links" aria-label="Links do rodapé">
+          <a href="#" class="footer__link">Regulamento</a>
+          <a href="#" class="footer__link">Política de Privacidade</a>
+          <a href="#" class="footer__link">Termos de Uso</a>
+          <a href="#" class="footer__link">Contato</a>
+        </nav>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

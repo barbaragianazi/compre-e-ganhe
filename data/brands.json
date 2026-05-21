@@ -1,0 +1,38 @@
+{
+  "zoetis": {
+    "name": "Zoetis",
+    "primary": "#F65C00",
+    "secondary": "#CE5208",
+    "surface": "#FFF7F2",
+    "surfaceAlt": "#FFF1E8",
+    "text": "#1F1F1F",
+    "textLight": "#FFFFFF",
+    "border": "#F2E2D8",
+    "logoLight": "assets/logos/zoetis-light.svg",
+    "logoDark": "assets/logos/zoetis-dark.svg"
+  },
+  "basf": {
+    "name": "BASF",
+    "primary": "#65AC1E",
+    "secondary": "#00793A",
+    "surface": "#F2F6FC",
+    "surfaceAlt": "#E8F0F9",
+    "text": "#1F1F1F",
+    "textLight": "#FFFFFF",
+    "border": "#D0DFF0",
+    "logoLight": "assets/logos/basf-light.svg",
+    "logoDark": "assets/logos/basf-dark.svg"
+  },
+  "boehringer": {
+    "name": "Boehringer",
+    "primary": "#09312A",
+    "secondary": "#00E47C",
+    "surface": "#F2FBFC",
+    "surfaceAlt": "#E5F7F9",
+    "text": "#1F1F1F",
+    "textLight": "#FFFFFF",
+    "border": "#C8ECF0",
+    "logoLight": "assets/logos/boehringer-light.svg",
+    "logoDark": "assets/logos/boehringer-dark.svg"
+  }
+}

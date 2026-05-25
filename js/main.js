@@ -3,7 +3,6 @@
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-<<<<<<< HEAD
   initAuthGuard();
   ThemeSwitcher.init();
   initHeader();
@@ -11,12 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initHeroBlurFade();
   initItemDetailsModal();
-=======
-  ThemeSwitcher.init();
-  initHeader();
-  initMobileNav();
-  initHeroBlurFade();
->>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448
   initScrollReveal();
   initSteps();
   initActiveNav();
@@ -30,32 +23,24 @@ function initHeroBlurFade() {
   const title = document.querySelector('.hero__title');
   if (!title) return;
 
-<<<<<<< HEAD
   const underline = title.querySelector('.hero__title-underline');
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     underline?.classList.add('is-drawing');
     return;
   }
-=======
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
->>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       title.classList.add('hero__title--play');
-<<<<<<< HEAD
       if (underline) {
         window.setTimeout(() => underline.classList.add('is-drawing'), 650);
       }
-=======
->>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448
     });
   });
 }
 
 /* ============================================
-<<<<<<< HEAD
    AUTH GUARD — área logada
    ============================================ */
 
@@ -67,8 +52,6 @@ function initAuthGuard() {
 }
 
 /* ============================================
-=======
->>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448
    HEADER — scroll state
    ============================================ */
 
@@ -109,7 +92,6 @@ function initMobileNav() {
 }
 
 /* ============================================
-<<<<<<< HEAD
    ITEM DETAILS MODAL
    ============================================ */
 
@@ -182,8 +164,6 @@ function initItemDetailsModal() {
 }
 
 /* ============================================
-=======
->>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448
    SCROLL REVEAL — IntersectionObserver
    ============================================ */
 

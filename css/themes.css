@@ -40,6 +40,7 @@
   --logo-light:         url('../assets/logos/boehringer-light.svg');
   --logo-dark:          url('../assets/logos/boehringer-dark.svg');
 }
+<<<<<<< HEAD
 
 [data-theme="geneca"] {
   --color-primary:      #009D00;
@@ -92,3 +93,5 @@
   --logo-light:         url('../assets/logos/default-light.svg');
   --logo-dark:          url('../assets/logos/default-dark.svg');
 }
+=======
+>>>>>>> 3773146bd72f5ff921b4f8048dbde727f5d16448

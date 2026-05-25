@@ -162,4 +162,3 @@ const ThemeSwitcher = (() => {
 
   return { init, switchTo };
 })();
-

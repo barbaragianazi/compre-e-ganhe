@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="zoetis">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Promoções e campanhas ativas — selecione uma campanha e participe para concorrer a prêmios exclusivos." />
+  <title>Promoções — Campanha Compre &amp; Ganhe</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Shared design system (tokens, buttons, header, reveals) -->
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Page-specific styles -->
+  <link rel="stylesheet" href="css/promotions.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body class="promo-page">
+
+  <!-- ==========================================
+       HEADER — lean: logo + login only
+  =========================================== -->
+  <header class="promo-header header" role="banner">
+    
+    <div class="container">
+      <div class="promo-header__inner">
+
+        <!-- Logo + brand switcher (reuses theme-switcher.js) -->
+        <div class="header__brand">
+          <button class="header__logo-btn" aria-haspopup="true" aria-expanded="false" aria-label="Selecionar marca">
+            <img src="" data-logo="light" alt="Logo" height="30" />
+            <svg class="header__logo-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <div class="brand-dropdown" role="menu" aria-label="Selecionar marca">
+            <div class="brand-dropdown__label">Marcas</div>
+            <!-- Populated by theme-switcher.js -->
+          </div>
+        </div>
+
+        <!-- Login CTA -->
+        <button class="btn btn--primary btn--sm" data-open-login aria-label="Entrar na plataforma">
+          Entrar
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ==========================================
+       HERO — title + filters
+  =========================================== -->
+  <section class="promo-hero" aria-labelledby="promo-page-title">
+    <div class="container">
+      <div class="promo-hero__top">
+        <div class="promo-hero__content">
+          <div class="promo-hero__eyebrow reveal">
+            Campanhas ativas · 2º semestre 2026
+          </div>
+
+          <h1 class="promo-hero__title reveal reveal-delay-1" id="promo-page-title">
+            Escolha a próxima campanha
+          </h1>
+
+          <p class="promo-hero__sub reveal reveal-delay-2">
+Participe, acumule pontos e desbloqueie recompensas exclusivas.          </p>
+        </div>
+
+        <div class="promo-hero__visual reveal reveal-delay-2" aria-hidden="true">
+          <img src="assets/images/cards-hero-section.png" alt="" class="promo-hero__image">
+        </div>
+      </div>
+
+      <!-- Filter pills -->
+      <div class="promo-hero__filters">
+        <nav class="promo-filter reveal reveal-delay-3" aria-label="Filtrar campanhas">
+          <button class="promo-filter__pill active" data-filter="all">
+            <i class="fa-solid fa-list-check"></i>
+            Todas
+            <span class="promo-filter__count">6</span>
+          </button>
+          <button class="promo-filter__pill" data-filter="bonificacao">
+            <i class="fa-solid fa-sack-dollar"></i>
+            Bonificação
+            <span class="promo-filter__count">2</span>
+          </button>
+          <button class="promo-filter__pill" data-filter="brindes">
+            <i class="fa-solid fa-gift"></i>
+            Brindes
+            <span class="promo-filter__count">2</span>
+          </button>
+          <button class="promo-filter__pill" data-filter="compre-ganhe">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            Compre e ganhe
+            <span class="promo-filter__count">2</span>
+          </button>
+          <button class="promo-filter__pill" data-filter="ending">
+            <i class="fa-solid fa-calendar"></i>
+            Termina em breve
+            <span class="promo-filter__count">2</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==========================================
+       CAMPAIGNS GRID
+  =========================================== -->
+  <section class="promo-grid-section" aria-labelledby="campaigns-label">
+    <div class="container">
+
+      <div class="promo-grid" role="list">
+
+        <!-- CARD 1 — Simparic Trio · Brindes -->
+        <article class="promo-card promo-card--c1 reveal reveal-delay-1" data-category="brindes" role="listitem"
+          aria-label="Campanha Simparic Trio — Brindes">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/simparic-trio.png" alt="Simparic Trio">
+              <!-- <span class="promo-card__banner-icon" aria-hidden="true">💊</span> -->
+            </div>
+            <span class="promo-card__badge promo-card__badge--brindes">Brindes</span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Simparic Trio — Compre &amp; Ganhe</h3>
+            <p class="promo-card__desc">Adquira Simparic Trio e acumule pontos para resgatar brindes exclusivos ao longo
+              da campanha.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 31/12/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis" aria-label="Indicadores da campanha">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">1.204</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 284k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Simparic Trio">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+
+        <!-- CARD 2 — Apoquel · Bonificação -->
+        <article class="promo-card promo-card--c2 reveal reveal-delay-2" data-category="bonificacao" role="listitem"
+          aria-label="Campanha Apoquel — Bonificação">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/apoquel.png" alt="Apoquel" class="src">
+            </div>
+            <span class="promo-card__badge promo-card__badge--bonificacao">Bonificação</span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Apoquel — Bonificação Progressiva</h3>
+            <p class="promo-card__desc">Quanto mais você compra, maior o percentual de bonificação. Atinja as metas e
+              maximize seus resultados.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 30/11/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">876</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 198k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Apoquel">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+
+        <!-- CARD 3 — Vanguard Plus · Compre e ganhe · Ending soon -->
+        <article class="promo-card promo-card--c3 reveal reveal-delay-3" data-category="compre-ganhe ending"
+          role="listitem" aria-label="Campanha Vanguard Plus — Compre e ganhe">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/vanguard.jpg" alt="Vanguard" class="src">
+            </div>
+            <span class="promo-card__badge promo-card__badge--compre-ganhe">Compre e ganhe</span>
+            <span class="promo-card__ribbon" aria-label="Campanha encerrando em breve">
+              <span class="promo-card__ribbon-dot" aria-hidden="true"></span>
+              Termina em breve
+            </span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Vanguard Plus — Dose Extra</h3>
+            <p class="promo-card__desc">Compre caixas de Vanguard Plus e ganhe doses adicionais para ampliar sua
+              cobertura vacinal.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 15/10/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">532</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 96k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Vanguard Plus">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+
+        <!-- CARD 4 — Revolution Plus · Brindes -->
+        <article class="promo-card promo-card--c4 reveal reveal-delay-1" data-category="brindes" role="listitem"
+          aria-label="Campanha Revolution Plus — Brindes">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/revolution-plus.webp" alt="Revolution Plus" class="src">
+            </div>
+            <span class="promo-card__badge promo-card__badge--brindes">Brindes</span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Revolution Plus — Prêmios para Felinos</h3>
+            <p class="promo-card__desc">Cadastre suas vendas de Revolution Plus e troque seus pontos por prêmios
+              selecionados.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 31/12/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">445</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 112k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Revolution Plus">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+
+        <!-- CARD 5 — Cerenia · Bonificação · Ending soon -->
+        <article class="promo-card promo-card--c5 reveal reveal-delay-2" data-category="bonificacao ending"
+          role="listitem" aria-label="Campanha Cerenia — Bonificação">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/cerenia.webp" alt="Cerenia" class="src">
+            </div>
+            <span class="promo-card__badge promo-card__badge--bonificacao">Bonificação</span>
+            <span class="promo-card__ribbon" aria-label="Campanha encerrando em breve">
+              <span class="promo-card__ribbon-dot" aria-hidden="true"></span>
+              Termina em breve
+            </span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Cerenia — Bônus por Volume</h3>
+            <p class="promo-card__desc">Atingindo as metas de compra do Cerenia, você garante bonificações em créditos
+              para as próximas compras.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 20/10/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">318</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 74k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Cerenia">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+
+        <!-- CARD 6 — Convenia · Compre e ganhe -->
+        <article class="promo-card promo-card--c6 reveal reveal-delay-3" data-category="compre-ganhe" role="listitem"
+          aria-label="Campanha Convenia — Compre e ganhe">
+          <div class="promo-card__banner">
+            <div class="promo-card__banner-inner">
+              <img src="assets/images/convenia.png" alt="Convenia" class="src">
+            </div>
+            <span class="promo-card__badge promo-card__badge--compre-ganhe">Compre e ganhe</span>
+          </div>
+
+          <div class="promo-card__body">
+            <h3 class="promo-card__title">Convenia — Kit Clínica</h3>
+            <p class="promo-card__desc">Na compra de Convenia, ganhe materiais e equipamentos de apoio clínico para
+              aprimorar seu atendimento.</p>
+            <div class="promo-card__validity">
+              <span class="promo-card__validity-icon" aria-hidden="true">📅</span>
+              Válida até 31/12/2026
+            </div>
+          </div>
+
+          <div class="promo-card__kpis">
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Participantes</span>
+              <span class="promo-card__kpi-value">621</span>
+            </div>
+            <div class="promo-card__kpi">
+              <span class="promo-card__kpi-label">Valor captado</span>
+              <span class="promo-card__kpi-value">R$ 143k</span>
+            </div>
+          </div>
+
+          <div class="promo-card__footer">
+            <button class="promo-card__cta" data-open-login aria-label="Participar da campanha Convenia">
+              Participar
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </article>
+
+      </div><!-- /.promo-grid -->
+    </div>
+  </section>
+
+
+  <!-- ==========================================
+       NEWSLETTER
+  =========================================== -->
+  <section class="newsletter-section" aria-labelledby="newsletter-title">
+    <div class="container">
+      <div class="newsletter-section__inner">
+        <div class="newsletter-section__content">
+          <span class="newsletter-section__eyebrow">Assine nossa Newsletter</span>
+          <h2 class="newsletter-section__title" id="newsletter-title">Não perca nenhuma promoção</h2>
+          <p class="newsletter-section__text">
+            Receba notificações por email sobre novas promoções, brindes e ofertas exclusivas. Cadastre-se agora!
+          </p>
+        </div>
+
+        <form class="newsletter-section__form" action="#" method="post">
+          <label class="visually-hidden" for="newsletter-email">Seu melhor e-mail</label>
+          <input
+            class="newsletter-section__input"
+            type="email"
+            id="newsletter-email"
+            name="email"
+            placeholder="Seu melhor e-mail"
+            autocomplete="email"
+            required
+          />
+          <button class="newsletter-section__submit" type="submit">Cadastrar</button>
+        </form>
+
+        <p class="newsletter-section__note">Sem spam · Cancele a qualquer momento · Privacidade garantida</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==========================================
+       LOGIN MODAL
+  =========================================== -->
+  <div id="login-modal" class="login-modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+
+    <!-- Backdrop -->
+    <div class="login-modal__overlay" aria-hidden="true"></div>
+
+    <!-- Card -->
+    <div class="login-modal__card">
+      <div class="login-modal__strip" aria-hidden="true"></div>
+
+      <button class="login-modal__close" aria-label="Fechar modal">&#x2715;</button>
+
+      <div class="login-modal__inner">
+        <h2 class="login-modal__heading" id="modal-heading">Entrar na campanha</h2>
+        <p class="login-modal__sub">Acesse sua conta para ver seu progresso e participar das promoções ativas.</p>
+
+        <!-- Role tabs -->
+        <div class="login-modal__tabs" role="tablist" aria-label="Tipo de acesso">
+          <button class="login-modal__tab active" role="tab" aria-selected="true" data-role="user"
+            id="tab-user">Usuário</button>
+          <button class="login-modal__tab" role="tab" aria-selected="false" data-role="admin"
+            id="tab-admin">Administrador</button>
+        </div>
+
+        <!-- Form -->
+        <form id="login-form" novalidate autocomplete="off">
+          <div class="login-modal__fields">
+            <div class="login-modal__field">
+              <label class="login-modal__label" for="login-email">E-mail</label>
+              <input class="login-modal__input" type="email" id="login-email" name="email"
+                placeholder="user@user.com.br" autocomplete="username" required />
+            </div>
+            <div class="login-modal__field">
+              <label class="login-modal__label" for="login-password">Senha</label>
+              <input class="login-modal__input" type="password" id="login-password" name="password"
+                placeholder="••••••••" autocomplete="current-password" required />
+            </div>
+          </div>
+
+          <!-- Inline error -->
+          <div id="login-error" class="login-modal__error" role="alert" aria-live="polite"></div>
+
+          <button class="login-modal__submit" type="submit">Entrar</button>
+        </form>
+
+        <p class="login-modal__hint">Usuários padrões para demonstração: <br><strong>user@user.com -
+            admin@admin.com</strong></p>
+        <p class="login-modal__hint">Senha padrão para demonstração: <strong>1234</strong></p>
+      </div>
+    </div>
+
+  </div><!-- /#login-modal -->
+
+  <!-- ==========================================
+       FOOTER
+  =========================================== -->
+  <footer class="footer" id="regulamento" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <img src="" data-logo="light" alt="Logo" height="24" />
+          </div>
+          <span class="footer__copy">&copy; 2026 - UPPER. Todos os direitos reservados.</span>
+        </div>
+
+        <nav class="footer__links" aria-label="Links do rodapé">
+          <a href="#" class="footer__link">Regulamento</a>
+          <a href="#" class="footer__link">Política de Privacidade</a>
+          <a href="#" class="footer__link">Termos de Uso</a>
+          <a href="#" class="footer__link">Contato</a>
+        </nav>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts — order matters -->
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/promotions.js"></script>
+
+</body>
+
+</html>

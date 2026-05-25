@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="zoetis">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ranking Geral da Campanha — Acompanhe sua performance e posição no ranking." />
+  <title>Ranking — Campanha </title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Shared design system -->
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Page-specific styles -->
+  <link rel="stylesheet" href="css/ranking.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body class="ranking-page">
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="header__inner">
+
+        <!-- Brand / Logo + Switcher -->
+        <div class="header__brand">
+          <button class="header__logo-btn" aria-haspopup="true" aria-expanded="false" aria-label="Selecionar marca">
+            <img src="" data-logo="light" alt="Logo" height="32" />
+            <svg class="header__logo-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <div class="brand-dropdown" role="menu" aria-label="Selecionar marca">
+            <div class="brand-dropdown__label">Marcas</div>
+            <!-- Items populated by theme-switcher.js -->
+          </div>
+        </div>
+
+        <!-- Desktop nav -->
+        <nav class="header__nav" aria-label="Menu principal">
+          <a href="area-logada.html#promocao" class="header__nav-link">Promoção</a>
+          <a href="ranking.html" class="header__nav-link active" aria-current="page">Ranking</a>
+          <a href="winners.html" class="header__nav-link">Ganhadores</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="header__actions">
+          <a href="ranking.html#notas-fiscais" class="btn btn--primary btn--sm">Participar agora</a>
+          <div class="user-menu" id="userMenu">
+            <button class="user-menu__trigger" id="userMenuTrigger" type="button" aria-haspopup="true"
+              aria-expanded="false">
+              <img class="user-menu__avatar" id="userAvatar" src="" alt="Avatar do usuário">
+              <span class="user-menu__name" id="userName"></span>
+              <span class="user-menu__arrow" aria-hidden="true">▾</span>
+            </button>
+
+            <div class="user-menu__dropdown" id="userDropdown" role="menu" aria-label="Menu do usuário">
+              <button class="user-menu__item" id="logoutButton" type="button" role="menuitem">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile toggle -->
+        <button class="header__menu-toggle" aria-label="Abrir menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile nav drawer -->
+  <nav class="mobile-nav" aria-label="Menu mobile">
+    <a href="area-logada.html#promocao">Promoção</a>
+    <a href="ranking.html" class="active" aria-current="page">Ranking</a>
+    <a href="winners.html">Ganhadores</a>
+    <a href="ranking.html#notas-fiscais" class="btn btn--primary"
+      style="margin-top:8px; display:flex; justify-content:center;">Participar agora</a>
+  </nav>
+
+
+  <main>
+
+    <!-- ==========================================
+         PAGE INTRO
+    =========================================== -->
+    <section class="ranking-intro" aria-labelledby="ranking-page-title">
+      <div class="container">
+        
+        <div class="ranking-text-svg">
+          <h1 class="ranking-intro__title reveal reveal-delay-1" id="ranking-page-title">
+            <div class="ranking-intro__eyebrow reveal">
+              <span class="ranking-intro__line" aria-hidden="true"></span>
+              Classificação
+              <span class="ranking-intro__line" aria-hidden="true"></span>
+            </div>
+            Ranking geral e minha performance
+          </h1>
+          <div class="ranking-intro__image" aria-hidden="true">
+            <svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#rankingIntroClip)">
+                <path d="M197.204 598.77H134.564C132.447 598.768 130.418 597.926 128.921 596.429C127.424 594.932 126.582 592.903 126.58 590.786V460.593C126.582 458.476 127.424 456.447 128.921 454.95C130.418 453.453 132.447 452.611 134.564 452.609H197.205C199.322 452.611 201.351 453.453 202.848 454.95C204.345 456.447 205.187 458.476 205.189 460.593V590.787C205.186 592.904 204.344 594.933 202.847 596.43C201.35 597.926 199.321 598.768 197.204 598.77Z" fill="currentColor" />
+                <path d="M345.824 599.999H283.183C280.74 599.996 278.399 599.025 276.672 597.298C274.945 595.571 273.973 593.229 273.971 590.787V337.768C273.973 335.326 274.945 332.984 276.672 331.257C278.399 329.53 280.74 328.559 283.183 328.556H345.824C348.266 328.559 350.608 329.53 352.335 331.257C354.062 332.984 355.033 335.326 355.036 337.768V590.787C355.033 593.229 354.062 595.571 352.335 597.298C350.608 599.025 348.266 599.996 345.824 599.999ZM283.183 331.012C281.392 331.014 279.675 331.726 278.409 332.993C277.142 334.259 276.43 335.976 276.428 337.767V590.787C276.43 592.578 277.142 594.295 278.409 595.561C279.675 596.827 281.392 597.54 283.183 597.542H345.824C347.615 597.54 349.332 596.827 350.598 595.561C351.864 594.295 352.577 592.578 352.579 590.787V337.768C352.577 335.977 351.864 334.26 350.598 332.994C349.332 331.727 347.615 331.015 345.824 331.013L283.183 331.012Z" fill="#3F3D56" />
+                <path d="M494.443 599.999H431.802C429.359 599.996 427.018 599.025 425.291 597.298C423.564 595.571 422.592 593.229 422.59 590.787V176.868C422.592 174.426 423.564 172.084 425.291 170.357C427.018 168.63 429.359 167.659 431.802 167.656H494.443C496.885 167.659 499.227 168.63 500.954 170.357C502.681 172.084 503.652 174.426 503.655 176.868V590.788C503.652 593.23 502.68 595.572 500.953 597.298C499.226 599.025 496.885 599.996 494.443 599.999ZM431.802 170.112C430.011 170.114 428.294 170.826 427.028 172.093C425.761 173.359 425.049 175.076 425.047 176.867V590.787C425.049 592.578 425.762 594.294 427.028 595.56C428.295 596.826 430.011 597.538 431.802 597.54H494.443C496.234 597.538 497.951 596.826 499.217 595.559C500.483 594.293 501.196 592.576 501.198 590.785V176.868C501.196 175.077 500.483 173.36 499.217 172.094C497.951 170.827 496.234 170.115 494.443 170.113L431.802 170.112Z" fill="#3F3D56" />
+                <path d="M644.447 599.384H581.806C579.689 599.382 577.66 598.54 576.163 597.043C574.667 595.546 573.825 593.517 573.822 591.4V7.98401C573.825 5.86725 574.667 3.83787 576.163 2.34109C577.66 0.844321 579.689 0.0023821 581.806 0H644.447C646.564 0.0023821 648.593 0.844321 650.09 2.34109C651.587 3.83787 652.429 5.86725 652.431 7.98401V591.402C652.428 593.518 651.586 595.547 650.089 597.044C648.593 598.54 646.564 599.382 644.447 599.384Z" fill="currentColor" />
+                <path d="M798.538 599.477H1.466C1.0772 599.477 0.704311 599.322 0.429382 599.048C0.154454 598.773 0 598.4 0 598.011C0 597.622 0.154454 597.249 0.429382 596.974C0.704311 596.699 1.0772 596.545 1.466 596.545H798.538C798.927 596.545 799.3 596.699 799.575 596.974C799.85 597.249 800.004 597.622 800.004 598.011C800.004 598.4 799.85 598.773 799.575 599.048C799.3 599.322 798.927 599.477 798.538 599.477Z" fill="#3F3D56" />
+                <path d="M152.236 44.7401H174.552V80.14L149.945 72.06L152.236 44.7401Z" fill="#ED9DA0" />
+                <path d="M171.621 55.5713C184.785 53.955 194.147 41.9729 192.53 28.8087C190.914 15.6444 178.932 6.28299 165.768 7.89936C152.603 9.51573 143.242 21.4978 144.858 34.662C146.475 47.8263 158.457 57.1877 171.621 55.5713Z" fill="#ED9DA0" />
+                <path d="M250.693 192.607C248.665 190.621 246.181 189.164 243.459 188.361L223.516 166.621L213 176.701L234.374 197.675C235.283 200.35 236.843 202.757 238.913 204.68C244.029 209.571 250.813 210.827 254.059 207.488C257.305 204.149 255.818 197.488 250.712 192.613H250.693V192.607Z" fill="#ED9DA0" />
+                <path d="M242.381 182.82L231.791 196.135L177.048 154.697L177.001 154.602L145.011 94.902C143.691 92.4359 142.89 89.7255 142.658 86.938C142.426 84.1505 142.768 81.345 143.662 78.6947C144.557 76.0443 145.984 73.6053 147.858 71.5281C149.731 69.4509 152.01 67.7795 154.554 66.6171C157.098 65.4547 159.854 64.8259 162.65 64.7695C165.447 64.7132 168.225 65.2304 170.814 66.2893C173.403 67.3482 175.748 68.9263 177.703 70.9264C179.659 72.9264 181.183 75.3059 182.184 77.918L202.94 132.244L242.382 182.805V182.824L242.381 182.82Z" fill="#E6E6E6" />
+                <path d="M157.001 53.8662L155.182 58.6636L142.26 40.0406C133.582 21.499 154.247 7.69965 154.247 7.69965C160.399 -1.64872 176.058 6.48444 176.058 6.48444C196.325 -0.706053 188.421 18.0903 188.421 18.0903C188.421 18.0903 181.336 19.1195 182.041 24.8663C182.747 30.6132 174.956 31.1677 174.956 31.1677L170.191 42.5281L166.341 38.8701C153.238 35.1251 156.999 53.8694 156.999 53.8694L157.001 53.8662Z" fill="#090814" />
+                <path d="M162.995 407.511H143.193V435.606H162.995V407.511Z" fill="#ED9DA0" />
+                <path d="M182.277 452.609C173.587 452.609 160.898 451.701 160.801 451.692C157.409 451.992 140.46 453.328 139.618 449.451C139.174 446.846 139.355 444.172 140.148 441.651C141.784 425.451 142.389 425.263 142.748 425.159C143.328 424.989 145.008 425.79 147.741 427.55L147.911 427.664L147.949 427.864C147.996 428.11 149.207 434.058 154.949 433.149C158.883 432.525 160.155 431.655 160.566 431.23C160.144 431.045 159.783 430.744 159.526 430.361C159.309 429.979 159.177 429.555 159.14 429.117C159.102 428.679 159.16 428.238 159.309 427.825C160.108 425.456 161.127 423.167 162.352 420.988L162.608 420.534L185.108 435.718L199.008 439.69C199.524 439.835 200.001 440.095 200.402 440.45C200.804 440.805 201.12 441.247 201.326 441.741C201.613 442.426 201.68 443.184 201.517 443.909C201.355 444.634 200.971 445.291 200.418 445.788C197.894 448.057 192.871 451.941 187.618 452.426C186.218 452.559 184.365 452.606 182.285 452.606L182.277 452.609Z" fill="#090814" />
+                <path d="M83.3555 387.053L98.6211 399.666L116.516 378.007L101.25 365.395L83.3555 387.053Z" fill="#ED9DA0" />
+                <path d="M102.614 425.026C95.9142 419.485 86.7142 410.7 86.6522 410.634C83.8442 408.715 69.9332 398.934 71.7582 395.409C73.0713 393.114 74.9168 391.168 77.1392 389.735C88.7232 378.284 89.3002 378.535 89.6502 378.681C90.2082 378.918 90.9912 380.6 91.9762 383.702L92.0332 383.891L91.9332 384.071C91.8002 384.298 88.9452 389.659 93.9472 392.61C97.3792 394.634 98.9122 394.776 99.4982 394.71C99.2891 394.296 99.2036 393.83 99.2522 393.369C99.329 392.937 99.4983 392.526 99.7484 392.166C99.9985 391.805 100.323 391.503 100.701 391.279C102.829 389.964 105.074 388.849 107.408 387.951L107.89 387.762L115.549 413.805L123.729 425.729C124.032 426.172 124.232 426.677 124.314 427.207C124.396 427.738 124.357 428.279 124.202 428.793C123.985 429.504 123.553 430.13 122.965 430.585C122.378 431.04 121.664 431.303 120.921 431.336C117.536 431.481 111.19 431.27 106.831 428.293C105.677 427.493 104.223 426.355 102.613 425.033L102.614 425.026Z" fill="#090814" />
+                <path d="M194.136 196.135L164.66 415.379H142.551L127.816 196.135H194.142H194.136Z" fill="#090814" />
+                <path d="M135.244 316.819L92.1777 372.696L110.608 387.92L184.517 317.62L191.117 199.649L177.9 211.465L135.244 316.819Z" fill="#090814" />
+                <path d="M174.848 65.306L195.741 209.359H127.819L122.552 160.727C119.263 130.941 124.607 100.837 137.947 74.002L151.002 60.619L174.85 65.307L174.848 65.306Z" fill="#E6E6E6" />
+                <path d="M187.998 228.39C186.978 225.741 185.322 223.384 183.175 221.526L174.046 193.458L160.287 198.27L171.019 226.214C170.729 229.028 171.148 231.869 172.238 234.479C174.857 241.042 180.513 245.004 184.853 243.318C189.193 241.632 190.593 234.949 187.974 228.386H187.993L187.998 228.39Z" fill="#ED9DA0" />
+                <path d="M184.469 215.974L169.311 223.69L136.692 163.272V163.172L132.357 95.5841C132.18 92.7916 132.578 89.9926 133.525 87.3596C134.471 84.7267 135.948 82.3157 137.863 80.2756C139.778 78.2355 142.09 76.6095 144.658 75.4979C147.226 74.3864 149.994 73.8129 152.792 73.8129C155.59 73.8129 158.359 74.3864 160.927 75.4979C163.494 76.6095 165.807 78.2355 167.722 80.2756C169.637 82.3157 171.113 84.7267 172.06 87.3596C173.007 89.9926 173.404 92.7916 173.227 95.5841L169.567 153.619L184.467 215.983L184.469 215.974Z" fill="#E6E6E6" />
+              </g>
+              <defs>
+                <clipPath id="rankingIntroClip">
+                  <rect width="800" height="600" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         MAIN — Top 10 + Performance
+    =========================================== -->
+    <section class="ranking-main" aria-label="Ranking e performance">
+      <div class="container">
+        <div class="ranking-layout">
+
+          <!-- LEFT: Top 10 -->
+          <div class="ranking-list-col">
+            <div class="ranking-list-col__head reveal">
+              <h2 class="ranking-list-col__title">
+                Top 10 compradores
+                <span class="ranking-list-col__badge">Atualizado hoje</span>
+              </h2>
+            </div>
+
+            <ol class="ranking-list" id="ranking-list" aria-label="Lista dos 10 primeiros colocados">
+              <!-- Rendered by ranking.js -->
+            </ol>
+          </div>
+
+          <!-- RIGHT: My Performance -->
+          <aside class="performance-col" aria-label="Minha performance">
+            <div class="performance-card reveal">
+
+              <!-- User top -->
+              <div class="performance-card__top">
+                <div class="performance-card__avatar" aria-hidden="true" data-user-initials>??</div>
+                <div class="performance-card__meta">
+
+                  <div class="performance-card__name" data-user-name>Carregando…</div>
+                  <div class="performance-card__email" data-user-email></div>
+                </div>
+              </div>
+
+              <!-- Body -->
+              <div class="performance-card__body">
+
+                <!-- Rank badge -->
+                <div class="performance-card__position-row" aria-label="Posição atual no ranking">
+                  <span class="performance-card__position-label">Sua posição</span>
+                  <span class="performance-card__position-value">#42</span>
+                </div>
+
+                <!-- KPI selector -->
+                <div class="performance-card__kpi-label">Visualizar KPI</div>
+                <select class="performance-card__kpi-select" id="kpi-select"
+                  aria-label="Selecionar indicador de desempenho">
+                  <!-- Options injected by ranking.js -->
+                </select>
+
+                <!-- Progress bar -->
+                <div class="performance-card__bar-header">
+                  <span class="performance-card__kpi-name" id="kpi-name">—</span>
+                  <span class="performance-card__bar-pct" id="kpi-pct">0%</span>
+                </div>
+
+                <div class="performance-card__bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                  aria-valuenow="0" aria-label="Progresso do KPI">
+                  <div class="performance-card__bar-fill" id="kpi-bar-fill"></div>
+                </div>
+
+                <div class="performance-card__bar-text" id="kpi-text"></div>
+
+              </div><!-- /.performance-card__body -->
+            </div><!-- /.performance-card -->
+          </aside>
+
+        </div><!-- /.ranking-layout -->
+      </div>
+    </section>
+
+
+    <!-- ==========================================
+         INVOICE SECTION
+    =========================================== -->
+    <section class="invoice-section" id="notas-fiscais" aria-labelledby="invoice-title">
+      <div class="container">
+
+        <header class="invoice-section__header reveal">
+          <div class="invoice-section__eyebrow">
+            <span class="ranking-intro__line" aria-hidden="true"></span>
+            Cupons fiscais
+            <span class="ranking-intro__line" aria-hidden="true"></span>
+          </div>
+          <h2 class="invoice-section__title" id="invoice-title">Minhas notas fiscais</h2>
+        </header>
+
+        <div class="invoice-layout">
+
+          <!-- LEFT: Form -->
+          <div class="invoice-form-card reveal reveal-delay-1">
+            <h3 class="invoice-form__title">Cadastrar nota</h3>
+
+            <form id="invoice-form" novalidate autocomplete="off">
+              <div class="invoice-form__fields">
+
+                <div class="invoice-form__field">
+                  <label class="invoice-form__label" for="invoice-value">
+                    Valor da nota fiscal (R$)
+                  </label>
+                  <input class="invoice-form__input" type="text" id="invoice-value" name="value"
+                    placeholder="Ex: 250,00" inputmode="decimal" required />
+                </div>
+
+                <div class="invoice-form__field">
+                  <label class="invoice-form__label" for="invoice-file">
+                    Arquivo da nota fiscal
+                  </label>
+                  <input class="invoice-form__input" type="file" id="invoice-file" name="file"
+                    accept=".jpg,.jpeg,.png,.pdf" />
+                </div>
+
+              </div>
+
+              <!-- Error message -->
+              <div id="invoice-error" class="invoice-form__error" role="alert" aria-live="polite"></div>
+
+              <!-- Actions -->
+              <div class="invoice-form__actions">
+                <button class="invoice-form__submit" type="submit" id="invoice-submit">
+                  Cadastrar
+                </button>
+                <button class="invoice-form__cancel" type="button" id="invoice-cancel">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div><!-- /.invoice-form-card -->
+
+          <!-- RIGHT: List -->
+          <div class="invoice-list-col reveal reveal-delay-2">
+            <div class="invoice-list-col__head">
+              <h3 class="invoice-list-col__title">Notas cadastradas</h3>
+              <span class="invoice-list-col__count" id="invoice-count" aria-live="polite">0</span>
+            </div>
+
+            <div id="invoice-list" class="invoice-list" aria-label="Lista de notas fiscais">
+              <!-- Rendered by ranking.js -->
+            </div>
+          </div>
+
+        </div><!-- /.invoice-layout -->
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ==========================================
+       FOOTER
+  =========================================== -->
+  <footer class="footer" id="regulamento" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <img src="" data-logo="light" alt="Logo" height="24" />
+          </div>
+          <span class="footer__copy">&copy; 2026 - UPPER. Todos os direitos reservados.</span>
+        </div>
+
+        <nav class="footer__links" aria-label="Links do rodapé">
+          <a href="#" class="footer__link">Regulamento</a>
+          <a href="#" class="footer__link">Política de Privacidade</a>
+          <a href="#" class="footer__link">Termos de Uso</a>
+          <a href="#" class="footer__link">Contato</a>
+        </nav>
+
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Scripts — order matters: theme switcher → auth → page logic -->
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ranking.js"></script>
+
+</body>
+
+</html>

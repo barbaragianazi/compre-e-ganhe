@@ -1,0 +1,438 @@
+/* ============================================
+   WINNERS PAGE — Specific Styles
+   Inherits design tokens from styles.css + themes.css
+   Prefixes: winners-*, winner-*
+   ============================================ */
+
+/* ============================================
+   PAGE BASE
+   ============================================ */
+
+.winners-page {
+  background: var(--neutral-50);
+  min-height: 100svh;
+  padding-top: var(--header-h);
+}
+
+/* ============================================
+   PAGE INTRO
+   ============================================ */
+
+.winners-intro {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--neutral-100);
+  padding: var(--sp-6) 0 var(--sp-5);
+}
+
+.winners-intro__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: var(--sp-1);
+}
+
+.winners-intro__line {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
+.winners-intro__title {
+  font-size: clamp(var(--text-2xl), 3vw, var(--text-4xl));
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: var(--sp-1);
+}
+
+.winners-intro__subtitle {
+  font-size: var(--text-base);
+  color: var(--neutral-500);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-top: 6px;
+}
+
+.winners-intro__image {
+  width: min(100%, 220px);
+  margin-top: var(--sp-4);
+  color: var(--color-primary);
+}
+
+.winners-intro__image svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   SECTION BACKGROUNDS
+   ============================================ */
+
+.monthly-winners {
+  background: #FFFFFF;
+  padding-block: var(--sp-12);
+}
+
+.past-winners {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--sp-12);
+}
+
+/* ============================================
+   WINNERS GRID
+   ============================================ */
+
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+}
+
+/* ============================================
+   WINNER CARD — base
+   ============================================ */
+
+.winner-card {
+  background: #FFFFFF;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+.winner-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* ============================================
+   WINNER CARD — medal variants
+   ============================================ */
+
+.winner-card--gold {
+  border-color: rgba(237, 216, 74, 0.45);
+  background: linear-gradient(180deg, #FFFEF5 0%, #FFFFFF 36%);
+}
+
+.winner-card--gold:hover {
+  border-color: #D4B800;
+  box-shadow: 0 12px 40px rgba(237, 216, 74, 0.18), var(--shadow-lg);
+}
+
+.winner-card--silver {
+  border-color: rgba(192, 192, 192, 0.45);
+  background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 36%);
+}
+
+.winner-card--silver:hover {
+  border-color: #A8A8A8;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.07), var(--shadow-lg);
+}
+
+.winner-card--bronze {
+  border-color: rgba(205, 138, 90, 0.40);
+  background: linear-gradient(180deg, #FFF9F5 0%, #FFFFFF 36%);
+}
+
+.winner-card--bronze:hover {
+  border-color: #B8763A;
+  box-shadow: 0 12px 40px rgba(205, 138, 90, 0.14), var(--shadow-lg);
+}
+
+.winner-card--past:hover {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ============================================
+   WINNER CARD — top (medal area)
+   ============================================ */
+
+.winner-card__top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-5) var(--sp-4) var(--sp-3);
+}
+
+.winner-card__medal {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin-bottom: var(--sp-2);
+  transition: transform var(--duration-slow) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.winner-card--gold .winner-card__medal {
+  background: #FFFEF0;
+  border-color: rgba(237, 216, 74, 0.55);
+  box-shadow: 0 4px 14px rgba(237, 216, 74, 0.18);
+}
+
+.winner-card--silver .winner-card__medal {
+  background: #F6F6F6;
+  border-color: rgba(192, 192, 192, 0.55);
+}
+
+.winner-card--bronze .winner-card__medal {
+  background: #FFF5EF;
+  border-color: rgba(205, 138, 90, 0.40);
+}
+
+.winner-card__medal--past {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
+  box-shadow: none;
+}
+
+.winner-card:hover .winner-card__medal {
+  transform: scale(1.10) rotate(-4deg);
+}
+
+.winner-card__badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.winner-card--gold .winner-card__badge {
+  background: #FFFEF0;
+  color: #9A7800;
+  border-color: rgba(237, 216, 74, 0.50);
+}
+
+.winner-card--silver .winner-card__badge {
+  background: #F4F4F4;
+  color: var(--neutral-600);
+  border-color: #D0D0D0;
+}
+
+.winner-card--bronze .winner-card__badge {
+  background: #FFF5EF;
+  color: #7A4020;
+  border-color: rgba(205, 138, 90, 0.40);
+}
+
+.winner-card__badge--past {
+  background: var(--neutral-100);
+  color: var(--neutral-600);
+  border-color: var(--neutral-200);
+}
+
+/* ============================================
+   WINNER CARD — body
+   ============================================ */
+
+.winner-card__body {
+  padding: 0 var(--sp-4) var(--sp-5);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.winner-card__prize {
+  font-size: var(--text-lg);
+  font-weight: 900;
+  color: var(--color-text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.winner-card__voucher {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--neutral-400);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.winner-card__amount {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  color: var(--color-primary);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--sp-3);
+}
+
+.winner-card__amount--past {
+  font-size: var(--text-xl);
+  color: var(--neutral-700);
+}
+
+.winner-card__divider {
+  width: 36px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--neutral-200);
+  margin-bottom: var(--sp-3);
+}
+
+.winner-card--gold   .winner-card__divider { background: rgba(237, 216, 74, 0.55); }
+.winner-card--silver .winner-card__divider { background: rgba(192, 192, 192, 0.55); }
+.winner-card--bronze .winner-card__divider { background: rgba(205, 138, 90, 0.40); }
+
+.winner-card__winner-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: var(--sp-2);
+}
+
+.winner-card__winner-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--neutral-400);
+}
+
+.winner-card__winner-name {
+  font-size: var(--text-base);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.winner-card__date {
+  font-size: var(--text-xs);
+  color: var(--neutral-400);
+  font-weight: 600;
+}
+
+/* ============================================
+   INFO BLOCK
+   ============================================ */
+
+.winners-info-section {
+  background: var(--neutral-50);
+  padding-block: var(--sp-8) var(--sp-12);
+}
+
+.winners-info {
+  background: var(--neutral-900);
+  border-left: 4px solid var(--neutral-500);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--sp-5) var(--sp-6);
+  /* max-width: var(--); */
+}
+
+.winners-info__title {
+  font-size: var(--text-xl);
+  font-weight: 900;
+  color: var(--color-surfaceolor-text);
+  line-height: 1.2;
+  margin-bottom: var(--sp-2);
+}
+
+.winners-info__text {
+  font-size: var(--text-base);
+  color: var(--neutral-600);
+  line-height: 1.65;
+  margin-bottom: var(--sp-3);
+  max-width: 540px;
+}
+
+.winners-info__congrats {
+  font-size: var(--text-base);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+/* ============================================
+   SCROLL REVEAL
+   ============================================ */
+
+.winners-page .reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.winners-page .reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE — TABLET (≤ 1024px)
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .winners-grid {
+    gap: var(--sp-3);
+  }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   ============================================ */
+
+@media (max-width: 768px) {
+  .winners-grid {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+    margin-inline: auto;
+  }
+
+  .winners-info {
+    padding: var(--sp-4) var(--sp-4);
+    border-left-width: 3px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE — MOBILE (≤ 640px)
+   ============================================ */
+
+@media (max-width: 640px) {
+  .winners-intro {
+    padding: var(--sp-4) 0 var(--sp-3);
+  }
+
+  .monthly-winners,
+  .past-winners {
+    padding-block: var(--sp-8);
+  }
+
+  .winners-info-section {
+    padding-block: var(--sp-6) var(--sp-8);
+  }
+
+  .winners-grid {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,94 @@
+/* ============================================
+   THEMES — White Label CSS Variables
+   ============================================ */
+
+[data-theme="zoetis"] {
+  --color-primary:      #F65C00;
+  --color-primary-dark: #CE5208;
+  --color-primary-rgb:  246, 92, 0;
+  --color-surface:      #FFF7F2;
+  --color-surface-alt:  #FFF1E8;
+  --color-border:       #F2E2D8;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/zoetis-light.svg');
+  --logo-dark:          url('../assets/logos/zoetis-dark.svg');
+}
+
+[data-theme="basf"] {
+  --color-primary:      #65AC1E;
+  --color-primary-dark: #65AC1E;
+  --color-primary-rgb:  0, 74, 150;
+  --color-surface:      #F2F6FC;
+  --color-surface-alt:  #E8F0F9;
+  --color-border:       #D0DFF0;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/basf-light.svg');
+  --logo-dark:          url('../assets/logos/basf-dark.svg');
+}
+
+[data-theme="boehringer"] {
+  --color-primary:      #09312A;
+  --color-primary-dark: #09312A;
+  --color-primary-rgb:  0, 160, 175;
+  --color-surface:      #F2FBFC;
+  --color-surface-alt:  #E5F7F9;
+  --color-border:       #C8ECF0;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/boehringer-light.svg');
+  --logo-dark:          url('../assets/logos/boehringer-dark.svg');
+}
+
+[data-theme="geneca"] {
+  --color-primary:      #009D00;
+  --color-primary-dark: #0B660B;
+  --color-primary-rgb:  0, 157, 0;
+  --color-surface:      #F1FFF1;
+  --color-surface-alt:  #E3F8E3;
+  --color-border:       #CFE8CF;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/geneca-light.svg');
+  --logo-dark:          url('../assets/logos/geneca-dark.svg');
+}
+
+[data-theme="elanco"] {
+  --color-primary:      #0072CE;
+  --color-primary-dark: #15598F;
+  --color-primary-rgb:  0, 114, 206;
+  --color-surface:      #F1F8FF;
+  --color-surface-alt:  #E5F2FC;
+  --color-border:       #CFE3F5;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/elanco-light.svg');
+  --logo-dark:          url('../assets/logos/elanco-dark.svg');
+}
+
+[data-theme="upper"] {
+  --color-primary:      #DD0000;
+  --color-primary-dark: #B10909;
+  --color-primary-rgb:  221, 0, 0;
+  --color-surface:      #FFF1F1;
+  --color-surface-alt:  #FFE6E6;
+  --color-border:       #F5CCCC;
+  --color-text:         #1F1F1F;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/upper-light.svg');
+  --logo-dark:          url('../assets/logos/upper-dark.svg');
+}
+
+[data-theme="default"] {
+  --color-primary:      #181818;
+  --color-primary-dark: #34383C;
+  --color-primary-rgb:  24, 24, 24;
+  --color-surface:      #F7F7F7;
+  --color-surface-alt:  #EFEFEF;
+  --color-border:       #DADDE0;
+  --color-text:         #181818;
+  --color-text-light:   #FFFFFF;
+  --logo-light:         url('../assets/logos/default-light.svg');
+  --logo-dark:          url('../assets/logos/default-dark.svg');
+}

@@ -441,41 +441,43 @@ Participe, acumule pontos e desbloqueie recompensas exclusivas.          </p>
       <button class="login-modal__close" aria-label="Fechar modal">&#x2715;</button>
 
       <div class="login-modal__inner">
-        <h2 class="login-modal__heading" id="modal-heading">Entrar na campanha</h2>
-        <p class="login-modal__sub">Acesse sua conta para ver seu progresso e participar das promoções ativas.</p>
-
-        <!-- Role tabs -->
-        <div class="login-modal__tabs" role="tablist" aria-label="Tipo de acesso">
-          <button class="login-modal__tab active" role="tab" aria-selected="true" data-role="user"
-            id="tab-user">Usuário</button>
-          <button class="login-modal__tab" role="tab" aria-selected="false" data-role="admin"
-            id="tab-admin">Administrador</button>
-        </div>
+        <button class="login-modal__back" type="button" data-login-back> <i class="fa-solid fa-left-long"></i>     Voltar</button>
+        <h2 class="login-modal__heading" id="modal-heading">Login na plataforma</h2>
+        <p class="login-modal__sub" id="login-modal-sub">Acesse sua conta para ver seu progresso e participar das promoções ativas.</p>
 
         <!-- Form -->
         <form id="login-form" novalidate autocomplete="off">
-          <div class="login-modal__fields">
-            <div class="login-modal__field">
-              <label class="login-modal__label" for="login-email">E-mail</label>
-              <input class="login-modal__input" type="email" id="login-email" name="email"
-                placeholder="user@user.com.br" autocomplete="username" required />
+          <div class="login-modal__step active" data-login-step="email">
+            <div class="login-modal__fields">
+              <div class="login-modal__field">
+                <label class="login-modal__label" for="login-email">E-mail</label>
+                <input class="login-modal__input" type="email" id="login-email" name="email"
+                  placeholder="Insira o e-mail cadastrado" autocomplete="username" required />
+              </div>
             </div>
-            <div class="login-modal__field">
-              <label class="login-modal__label" for="login-password">Senha</label>
-              <input class="login-modal__input" type="password" id="login-password" name="password"
-                placeholder="••••••••" autocomplete="current-password" required />
+
+            <p class="login-modal__hint">Usuários padrões para demonstração: <br><strong>user@user.com | código OTP - 123456</strong><br><strong>admin@admin.com | código OTP - 654321</strong></p>
+          </div>
+
+          <div class="login-modal__step" data-login-step="otp">
+            <div class="login-modal__otp-group" aria-label="Código de verificação de 6 dígitos">
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 1 do código" data-otp-input />
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 2 do código" data-otp-input />
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 3 do código" data-otp-input />
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 4 do código" data-otp-input />
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 5 do código" data-otp-input />
+              <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 6 do código" data-otp-input />
             </div>
+
+            <button class="login-modal__resend" type="button" data-resend-otp disabled>Reenviar código em 60s</button>
+            <div id="login-message" class="login-modal__message" role="status" aria-live="polite"></div>
           </div>
 
           <!-- Inline error -->
           <div id="login-error" class="login-modal__error" role="alert" aria-live="polite"></div>
 
-          <button class="login-modal__submit" type="submit">Entrar</button>
+          <button class="login-modal__submit" type="submit">Enviar código por e-mail</button>
         </form>
-
-        <p class="login-modal__hint">Usuários padrões para demonstração: <br><strong>user@user.com -
-            admin@admin.com</strong></p>
-        <p class="login-modal__hint">Senha padrão para demonstração: <strong>1234</strong></p>
       </div>
     </div>
 

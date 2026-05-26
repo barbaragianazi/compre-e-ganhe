@@ -51,6 +51,19 @@ const Auth = (() => {
     return { ok: true, role: record.role };
   }
 
+  function registerMockUser(code) {
+    const record = USERS['user@user.com'];
+
+    if (record.otp !== code) return { ok: false, message: 'Código incorreto. Tente novamente.' };
+
+    localStorage.setItem(STORAGE_KEY_USER, 'user@user.com');
+    localStorage.setItem(STORAGE_KEY_ROLE, record.role);
+    localStorage.setItem(STORAGE_KEY_ROLE_COMPAT, record.role);
+    localStorage.setItem(STORAGE_KEY_LOGIN, 'true');
+
+    return { ok: true, role: record.role };
+  }
+
   function logout() {
     localStorage.removeItem(STORAGE_KEY_USER);
     localStorage.removeItem(STORAGE_KEY_ROLE);
@@ -132,5 +145,5 @@ const Auth = (() => {
     });
   }
 
-  return { login, hasUser, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu };
+  return { login, registerMockUser, hasUser, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu };
 })();

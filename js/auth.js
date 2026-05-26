@@ -9,10 +9,10 @@ const Auth = (() => {
   const STORAGE_KEY_LOGIN = 'lp_is_logged_in';
   const STORAGE_KEY_ROLE_COMPAT = 'userRole';
 
-  /* Accepted credentials — password: 1234 for all */
+  /* Accepted credentials — mocked OTP codes */
   const USERS = {
-    'user@user.com': { role: 'user',  password: '1234', name: 'Bárbara Gianazi',  initials: 'BG', avatar: 'assets/images/avatar-user.svg', redirectAfterLogout: 'index.html' },
-    'admin@admin.com':  { role: 'admin', password: '1234', name: 'Beto Delazane',   initials: 'BD', avatar: 'assets/images/avatar-admin.svg', redirectAfterLogout: 'index.html' },
+    'user@user.com': { role: 'user',  otp: '123456', name: 'Bárbara Gianazi',  initials: 'BG', avatar: 'assets/images/avatar-user.svg', redirectAfterLogout: 'index.html' },
+    'admin@admin.com':  { role: 'admin', otp: '654321', name: 'Beto Delazane',   initials: 'BD', avatar: 'assets/images/avatar-admin.svg', redirectAfterLogout: 'index.html' },
   };
 
   const users = {
@@ -28,12 +28,20 @@ const Auth = (() => {
     },
   };
 
-  function login(email, password) {
-    const normalised = email.trim().toLowerCase();
+  function normaliseEmail(email) {
+    return String(email || '').trim().toLowerCase();
+  }
+
+  function hasUser(email) {
+    return Boolean(USERS[normaliseEmail(email)]);
+  }
+
+  function login(email, code) {
+    const normalised = normaliseEmail(email);
     const record = USERS[normalised];
 
     if (!record) return { ok: false, message: 'E-mail não encontrado.' };
-    if (record.password !== password) return { ok: false, message: 'Senha incorreta. Tente novamente.' };
+    if (record.otp !== code) return { ok: false, message: 'Código incorreto. Tente novamente.' };
 
     localStorage.setItem(STORAGE_KEY_USER,  normalised);
     localStorage.setItem(STORAGE_KEY_ROLE,  record.role);
@@ -124,5 +132,5 @@ const Auth = (() => {
     });
   }
 
-  return { login, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu };
+  return { login, hasUser, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu };
 })();

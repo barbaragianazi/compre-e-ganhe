@@ -54,7 +54,7 @@ var adminState = {
   userNotesModal: {
     activeTab: 'aguardando',
     pages: { aguardando: 1, validada: 1, excluida: 1 },
-    PER_PAGE: 5
+    PER_PAGE: 3
   }
 };
 
@@ -109,6 +109,11 @@ function statusLabel(s) {
 
 function canDeleteNote(nota) {
   return nota && nota.status === 'aguardando';
+}
+
+function getExclusionJustification(nota) {
+  if (nota && nota.justificativa) return nota.justificativa;
+  return 'Nota excluída por inconsistência nos dados enviados para validação.';
 }
 
 function ensureMockAttachments() {
@@ -446,7 +451,7 @@ function buildNotesTabsUI(user) {
   } else {
     var canValidate = activeTab === 'aguardando';
     var canDelete   = activeTab === 'aguardando';
-    var canPreview  = activeTab !== 'excluida';
+    var canPreview  = activeTab === 'excluida';
     notesList = '<div class="notes-list">' + pageNotes.map(function(n) {
       return buildNoteItem(n, canValidate, canDelete, canPreview);
     }).join('') + '</div>';
@@ -494,8 +499,8 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
     '<div class="note-detail"><span class="note-detail__label">Arquivo</span><span class="note-detail__value note-detail__value--file"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span></div>' +
     '</div>';
 
-  var justif = (nota.status === 'excluida' && nota.justificativa)
-    ? '<div class="note-item__justificativa"><span class="note-item__just-label">Justificativa da exclusão:</span> <span class="note-item__just-text">' + escapeHtml(nota.justificativa) + '</span></div>'
+  var justif = nota.status === 'excluida'
+    ? '<div class="note-item__justificativa"><span class="note-item__just-label">Justificativa da exclusão:</span> <span class="note-item__just-text">' + escapeHtml(getExclusionJustification(nota)) + '</span></div>'
     : '';
 
   return '<div class="note-item note-item--' + nota.status + '">' +
@@ -705,8 +710,8 @@ function buildKPINoteItem(nota, user, canValidate) {
   var validateAction = canValidate
     ? '<button class="btn-note btn-note--validate" type="button" data-note-action="validate" data-note-id="' + nota.id + '">Validar</button>'
     : '';
-  var justif = (nota.status === 'excluida' && nota.justificativa)
-    ? '<div class="kpi-note__justificativa"><span class="kpi-note__just-label">Justificativa:</span> <span class="kpi-note__just-text">' + escapeHtml(nota.justificativa) + '</span></div>'
+  var justif = nota.status === 'excluida'
+    ? '<div class="kpi-note__justificativa"><span class="kpi-note__just-label">Justificativa:</span> <span class="kpi-note__just-text">' + escapeHtml(getExclusionJustification(nota)) + '</span></div>'
     : '';
   var arquivo = '<span class="kpi-note__file"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span>';
   var actions = '<div class="kpi-note__actions">' +
@@ -724,11 +729,15 @@ function buildKPINoteItem(nota, user, canValidate) {
       '</div>' +
     '</div>' +
     '<div class="kpi-note__meta">' +
-      '<span class="kpi-note__number">' + nota.numeroNota + '</span>' +
-      '<span class="kpi-note__value">' + fmtValor(nota.valor) + '</span>' +
-      '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
+      '<div class="kpi-note__meta-main">' +
+        '<span class="kpi-note__number">' + nota.numeroNota + '</span>' +
+        '<span class="kpi-note__value">' + fmtValor(nota.valor) + '</span>' +
+      '</div>' +
+      '<div class="kpi-note__meta-sub">' +
+        '<span class="kpi-note__resp">Resp.: ' + nota.responsavelLancamento + '</span>' +
+        '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
+      '</div>' +
       arquivo +
-      '<span class="kpi-note__resp">Resp.: ' + nota.responsavelLancamento + '</span>' +
     '</div>' +
     actions + justif +
   '</div>';
@@ -896,7 +905,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
 
   document.getElementById(id).addEventListener('click', function(e) {
     var previewBtn = e.target.closest('[data-note-action="preview"]');
-    if (previewBtn && id !== 'modal-kpi-aguardando-body') {
+    if (previewBtn) {
       openAttachmentPreview(parseInt(previewBtn.getAttribute('data-note-id'), 10));
       return;
     }

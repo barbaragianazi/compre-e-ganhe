@@ -353,11 +353,9 @@
 }
 
 .winners-info {
-  background: var(--neutral-900);
-  border-left: 4px solid var(--neutral-500);
+  border-left: 4px solid var(--color-primary);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   padding: var(--sp-5) var(--sp-6);
-  /* max-width: var(--); */
 }
 
 .winners-info__title {

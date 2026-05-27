@@ -7,8 +7,6 @@
   padding-top: calc(var(--header-h) + var(--sp-8));
   padding-bottom: var(--sp-6);
   background-color: #FFFFFF;
-  /* background: var(--color-surface-alt); */
-  border-bottom: 1px solid var(--color-border);
 }
 
 .admin-intro__content {
@@ -419,6 +417,7 @@
   justify-content: space-between;
   flex: 1;
   min-width: 30%;
+  gap: var(--sp-1);
 }
 
 .admin-search__label {
@@ -589,9 +588,6 @@
   flex-direction: column;
   align-items: center;
   padding: 5px 10px;
-  /* border-radius: var(--radius-xs); */
-  /* background: var(--neutral-50); */
-  /* border: 1px solid var(--neutral-200); */
   min-width: 60px;
   text-align: center;
 }
@@ -821,6 +817,16 @@ body.modal-open {
   padding-bottom: 0;
 }
 
+#modal-user-notes .modal__dialog {
+  height: 780px;
+  max-height: calc(100vh - 32px);
+}
+
+#modal-user-notes .modal__body {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .modal__confirm-text {
   font-size: var(--text-base);
   color: var(--neutral-700);
@@ -981,6 +987,7 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  min-height: 0;
 }
 
 .notes-empty {
@@ -1120,7 +1127,7 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
-  max-width: 90%;
+  width: 100%;
 }
 
 .kpi-modal-tools {
@@ -1168,14 +1175,16 @@ body.modal-open {
 }
 
 .kpi-note {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sp-3);
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(360px, 1.35fr) auto;
+  align-items: center;
+  column-gap: var(--sp-5);
+  row-gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
-  /* border: 1px solid var(--neutral-200); */
-  /* border-radius: var(--radius-sm); */
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
   background: #FFFFFF;
-  flex-wrap: wrap;
+  width: 100%;
   transition: box-shadow var(--duration-fast);
 }
 
@@ -1188,8 +1197,7 @@ body.modal-open {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  min-width: 190px;
-  flex: 1 1 190px;
+  min-width: 0;
 }
 
 .kpi-note__avatar {
@@ -1227,11 +1235,18 @@ body.modal-open {
 
 .kpi-note__meta {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  flex: 1 2 530px;
-  /* flex: 2 1 260px; */
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.kpi-note__meta-main,
+.kpi-note__meta-sub {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--sp-3);
+  min-width: 0;
 }
 
 .kpi-note__number {
@@ -1251,27 +1266,35 @@ body.modal-open {
 .kpi-note__resp {
   font-size: var(--text-xs);
   color: var(--neutral-500);
+  min-width: 0;
+}
+
+.kpi-note__file,
+.kpi-note__resp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .kpi-note__actions {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
+  justify-content: flex-end;
   gap: var(--sp-1);
   flex-shrink: 0;
-  width: 132px;
+  min-width: 262px;
 }
 
 .kpi-note__actions .btn-note {
-  width: 100%;
+  width: auto;
   justify-content: center;
 }
 
 .kpi-note__justificativa {
-  width: 100%;
+  grid-column: 1 / -1;
   font-size: var(--text-xs);
   color: #7F1D1D;
-  background: #FEF2F2;
   border-radius: var(--radius-xs);
   padding: 6px 10px;
   line-height: 1.5;
@@ -1315,7 +1338,6 @@ body.modal-open {
 }
 
 .btn-note--attachment {
-  /* background: rgba(var(--color-primary-rgb), 0.08); */
   color: var(--color-primary);
   border: 1px solid rgba(var(--color-primary-rgb));
 }
@@ -1452,12 +1474,22 @@ body.modal-open {
     margin-right: calc(var(--sp-3) * -1);
   }
 
-  .kpi-note__user {
-    flex: 1 1 100%;
+  .kpi-note {
+    grid-template-columns: 1fr;
+    align-items: stretch;
   }
 
-  .kpi-note__meta {
-    flex: 1 1 100%;
+  .kpi-note__actions {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .kpi-note__meta-main,
+  .kpi-note__meta-sub {
+    grid-template-columns: 1fr;
+    gap: 2px;
   }
 
   .note-item__details {
@@ -1520,6 +1552,7 @@ body.modal-open {
   flex-direction: column;
   gap: 0;
   min-height: 0;
+  height: 100%;
 }
 
 .notes-tabs__nav {
@@ -1579,6 +1612,8 @@ body.modal-open {
 
 .notes-tabs__content {
   flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 480px) {

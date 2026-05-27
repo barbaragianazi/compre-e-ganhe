@@ -50,11 +50,11 @@ const KPIS = [
   },
 ];
 
-const INVOICE_KEY     = 'lp_invoices';
+const INVOICE_KEY = 'lp_invoices';
 const ADMIN_NOTES_KEY = 'lp_admin_notes';
 
-let editingId    = null;  /* tracks invoice being edited (usuário comum) */
-let isAdminMode  = false; /* definido no DOMContentLoaded */
+let editingId = null;  /* tracks invoice being edited (usuário comum) */
+let isAdminMode = false; /* definido no DOMContentLoaded */
 
 /* ============================================
    INIT
@@ -167,6 +167,9 @@ function applyAdminRankingMode() {
 
   const rankingLayout = document.querySelector('.ranking-layout');
   if (rankingLayout) rankingLayout.classList.add('ranking-layout--admin');
+
+  const rankingContainer = document.querySelector('.ranking-main .container');
+  if (rankingContainer) rankingContainer.classList.add('container--wide');
 }
 
 /* ============================================
@@ -334,6 +337,22 @@ function saveAdminStorageNotes(notes) {
   localStorage.setItem(ADMIN_NOTES_KEY, JSON.stringify(notes));
 }
 
+function removeAdminStorageNote(noteId) {
+  const numericId = Number(noteId);
+  const stored = getAdminStorageNotes();
+  const noteItem = stored.find(item => Number(item.nota.id) === numericId);
+  const nextStored = stored.filter(item => Number(item.nota.id) !== numericId);
+
+  saveAdminStorageNotes(nextStored);
+
+  if (noteItem) {
+    const user = ADMIN_MOCK.find(u => u.id === noteItem.userId);
+    if (user) {
+      user.notas = user.notas.filter(nota => Number(nota.id) !== numericId);
+    }
+  }
+}
+
 /* --- Formatação --- */
 function generateLucky() {
   return String(Math.floor(10000 + Math.random() * 90000));
@@ -345,6 +364,65 @@ function fmtCurrency(value) {
 
 function statusLabelPt(s) {
   return { aguardando: 'Aguardando', validada: 'Validada', excluida: 'Excluída' }[s] || s;
+}
+
+function ensureLuckyNumbers(items, saveFn) {
+  let changed = false;
+
+  const normalized = items.map(item => {
+    if (item.luckyNumber) return item;
+    changed = true;
+    return { ...item, luckyNumber: generateLucky() };
+  });
+
+  if (changed && saveFn) saveFn(normalized);
+  return normalized;
+}
+
+function ensureInvoiceLuckyNumbers(invoices) {
+  return ensureLuckyNumbers(invoices, saveInvoices);
+}
+
+function ensureInvoiceDefaults(invoices) {
+  let changed = false;
+
+  const normalized = invoices.map(inv => {
+    const next = { ...inv };
+
+    if (!next.luckyNumber) {
+      next.luckyNumber = generateLucky();
+      changed = true;
+    }
+
+    if (!next.status) {
+      next.status = 'aguardando';
+      changed = true;
+    }
+
+    return next;
+  });
+
+  if (changed) saveInvoices(normalized);
+  return normalized;
+}
+
+function ensureAdminStorageLuckyNumbers(storedNotes) {
+  let changed = false;
+
+  const normalized = storedNotes.map(item => {
+    if (item.nota?.luckyNumber) return item;
+    changed = true;
+    return {
+      ...item,
+      nota: {
+        ...item.nota,
+        luckyNumber: generateLucky(),
+      },
+    };
+  });
+
+  if (changed) saveAdminStorageNotes(normalized);
+  return normalized;
 }
 
 /* ============================================
@@ -376,13 +454,13 @@ function initAdminInvoices() {
 
   renderAdminInvoiceList();
 
-  const form       = document.getElementById('invoice-form');
-  const userField  = document.getElementById('invoice-user-field');
+  const form = document.getElementById('invoice-form');
+  const userField = document.getElementById('invoice-user-field');
   const userSelect = document.getElementById('invoice-user');
   const valueInput = document.getElementById('invoice-value');
-  const fileInput  = document.getElementById('invoice-file');
-  const cancelBtn  = document.getElementById('invoice-cancel');
-  const errorEl    = document.getElementById('invoice-error');
+  const fileInput = document.getElementById('invoice-file');
+  const cancelBtn = document.getElementById('invoice-cancel');
+  const errorEl = document.getElementById('invoice-error');
 
   if (!form) return;
 
@@ -416,10 +494,10 @@ function initAdminInvoices() {
     e.preventDefault();
     clearError();
 
-    const userId  = userSelect ? parseInt(userSelect.value, 10) : 0;
+    const userId = userSelect ? parseInt(userSelect.value, 10) : 0;
     const rawValue = (valueInput?.value || '').trim();
-    const value   = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
-    const file    = fileInput?.files?.[0];
+    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const file = fileInput?.files?.[0];
 
     if (!userId || isNaN(userId)) {
       showError('Selecione um usuário para associar a nota.');
@@ -448,6 +526,7 @@ function initAdminInvoices() {
       status: 'aguardando',
       responsavelLancamento: Auth.getName(),
       arquivoNome: file.name,
+      luckyNumber: generateLucky(),
       justificativa: null,
     };
 
@@ -475,9 +554,9 @@ function initAdminInvoices() {
 }
 
 function renderAdminInvoiceList() {
-  const listEl  = document.getElementById('invoice-list');
+  const listEl = document.getElementById('invoice-list');
   const countEl = document.getElementById('invoice-count');
-  const stored  = getAdminStorageNotes();
+  const stored = ensureAdminStorageLuckyNumbers(getAdminStorageNotes());
 
   if (countEl) countEl.textContent = stored.length;
   if (!listEl) return;
@@ -496,16 +575,26 @@ function renderAdminInvoiceList() {
   }
 
   listEl.innerHTML = stored.map(({ userId, nota }) => {
-    const user     = ADMIN_MOCK.find(u => u.id === userId);
+    const user = ADMIN_MOCK.find(u => u.id === userId);
     const userName = user ? user.nome : 'Usuário desconhecido';
-    const dataBr   = nota.data ? nota.data.split('-').reverse().join('/') : '—';
+    const dataBr = nota.data ? nota.data.split('-').reverse().join('/') : '—';
 
     return `
       <div class="invoice-item invoice-item--admin" data-id="${nota.id}">
-        <div class="invoice-item__header">
-          <span class="invoice-item__number">Nota #${nota.numeroNota}</span>
-          <span class="invoice-item__status invoice-item__status--${nota.status}">${statusLabelPt(nota.status)}</span>
+      <div class="invoice-item__header">
+      <span class="invoice-item__number">Nota #${nota.numeroNota}</span>
+
+        <div class="invoice-item__header-buttons">
+            <span class="invoice-item__lucky" title="Número da sorte">🍀 Número da sorte: ${nota.luckyNumber}</span>
+
+            <span class="invoice-item__status invoice-item__status--${nota.status}">${statusLabelPt(nota.status)}</span>
+
+            <button class="invoice-btn invoice-btn--remove" type="button" data-admin-remove="${nota.id}" aria-label="Excluir nota ${nota.numeroNota}">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
+
         <div class="invoice-item__body">
           <div class="invoice-item__field">
             <div class="invoice-item__field-label">Usuário</div>
@@ -531,6 +620,15 @@ function renderAdminInvoiceList() {
       </div>
     `;
   }).join('');
+
+  listEl.querySelectorAll('[data-admin-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      removeAdminStorageNote(btn.dataset.adminRemove);
+      renderAdminInvoiceList();
+      renderRankingList();
+      syncInvoiceCardHeight();
+    });
+  });
 }
 
 /* ============================================
@@ -538,9 +636,9 @@ function renderAdminInvoiceList() {
    ============================================ */
 
 function renderInvoices() {
-  const listEl  = document.getElementById('invoice-list');
+  const listEl = document.getElementById('invoice-list');
   const countEl = document.getElementById('invoice-count');
-  const invoices = getInvoices();
+  const invoices = ensureInvoiceDefaults(getInvoices());
 
   if (countEl) countEl.textContent = invoices.length;
   if (!listEl) return;
@@ -562,30 +660,36 @@ function renderInvoices() {
     <div class="invoice-item" data-id="${inv.id}">
       <div class="invoice-item__header">
         <span class="invoice-item__number">Nota #${inv.luckyNumber}</span>
-        <span class="invoice-item__lucky" title="Número da sorte">🍀Número da sorte: ${inv.luckyNumber}</span>
+
+        <div class="invoice-item__header-buttons">
+          <span class="invoice-item__lucky" title="Número da sorte">🍀 Número da sorte: ${inv.luckyNumber}</span>
+          <span class="invoice-item__status invoice-item__status--${inv.status}">${statusLabelPt(inv.status)}</span>
+          <div class="invoice-item__actions">
+            <button class="invoice-btn invoice-btn--remove" type="button" data-remove="${inv.id}" aria-label="Remover nota ${inv.luckyNumber}">
+              <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
       </div>
+
       <div class="invoice-item__body">
+
         <div class="invoice-item__field">
           <div class="invoice-item__field-label">Valor</div>
           <div class="invoice-item__field-value">${fmtCurrency(inv.value)}</div>
         </div>
+
         <div class="invoice-item__field">
           <div class="invoice-item__field-label">Data</div>
           <div class="invoice-item__field-value">${inv.date}</div>
         </div>
+
         <div class="invoice-item__field">
           <div class="invoice-item__field-label">Arquivo</div>
           <div class="invoice-item__field-value" title="${inv.filename}">${inv.filename}</div>
         </div>
 
-        <div>
-        <div class="invoice-item__actions">
-                <button class="invoice-btn invoice-btn--remove" data-remove="${inv.id}" aria-label="Remover nota ${inv.luckyNumber}">
-            <i class="fa fa-trash" aria-hidden="true"></i>
-          </button>
-</div>
 
-      </div>
       </div>
     </div>
   `).join('');
@@ -600,14 +704,20 @@ function renderInvoices() {
 }
 
 function initUserInvoices() {
+  const userField = document.getElementById('invoice-user-field');
+  const userSelect = document.getElementById('invoice-user');
+
+  if (userField) userField.hidden = true;
+  if (userSelect) userSelect.value = '';
+
   renderInvoices();
 
-  const form       = document.getElementById('invoice-form');
+  const form = document.getElementById('invoice-form');
   const valueInput = document.getElementById('invoice-value');
-  const fileInput  = document.getElementById('invoice-file');
-  const submitBtn  = document.getElementById('invoice-submit');
-  const cancelBtn  = document.getElementById('invoice-cancel');
-  const errorEl    = document.getElementById('invoice-error');
+  const fileInput = document.getElementById('invoice-file');
+  const submitBtn = document.getElementById('invoice-submit');
+  const cancelBtn = document.getElementById('invoice-cancel');
+  const errorEl = document.getElementById('invoice-error');
 
   if (!form) return;
 
@@ -617,8 +727,8 @@ function initUserInvoices() {
     clearError();
 
     const rawValue = (valueInput?.value || '').trim();
-    const value    = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
-    const file     = fileInput?.files?.[0];
+    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const file = fileInput?.files?.[0];
 
     if (!rawValue || isNaN(value) || value <= 0) {
       showError('Informe um valor válido maior que zero.');
@@ -647,6 +757,7 @@ function initUserInvoices() {
         date: new Date().toLocaleDateString('pt-BR'),
         filename: file.name,
         luckyNumber: generateLucky(),
+        status: 'aguardando',
       };
       const invoices = getInvoices();
       invoices.unshift(newInvoice);  /* newest first */
@@ -708,7 +819,7 @@ function removeInvoice(id) {
    ============================================ */
 
 function syncInvoiceCardHeight() {
-  const layout   = document.querySelector('.invoice-layout');
+  const layout = document.querySelector('.invoice-layout');
   const formCard = document.querySelector('.invoice-form-card');
   const listCard = document.querySelector('.invoice-list-col');
 

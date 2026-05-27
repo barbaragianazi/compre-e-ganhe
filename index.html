@@ -442,12 +442,30 @@ Participe, acumule pontos e desbloqueie recompensas exclusivas.          </p>
 
       <div class="login-modal__inner">
         <button class="login-modal__back" type="button" data-login-back> <i class="fa-solid fa-left-long"></i>     Voltar</button>
-        <h2 class="login-modal__heading" id="modal-heading">Login na plataforma</h2>
-        <p class="login-modal__sub" id="login-modal-sub">Acesse sua conta para ver seu progresso e participar das promoções ativas.</p>
+        <h2 class="login-modal__heading" id="modal-heading">Acesse sua conta</h2>
+        <p class="login-modal__sub" id="login-modal-sub">Escolha como deseja fazer o login na plataforma</p>
 
         <!-- Form -->
         <form id="login-form" novalidate autocomplete="off">
-          <div class="login-modal__step active" data-login-step="email">
+          <div class="login-modal__step active" data-login-step="access">
+            <div class="login-modal__access-actions">
+              <button class="login-modal__choice login-modal__choice--primary" type="button" data-auth-email>
+                Entrar com e-mail
+              </button>
+              <button class="login-modal__choice login-modal__choice--outline" type="button" data-auth-whatsapp>
+                Entrar pelo WhatsApp
+              </button>
+            </div>
+
+            <div class="login-modal__divider"><span>ou</span></div>
+
+            <p class="login-modal__register-copy">
+              Não tem conta?
+              <button class="login-modal__link" type="button" data-auth-register>Registre-se</button>
+            </p>
+          </div>
+
+          <div class="login-modal__step" data-login-step="email">
             <div class="login-modal__fields">
               <div class="login-modal__field">
                 <label class="login-modal__label" for="login-email">E-mail</label>
@@ -457,6 +475,31 @@ Participe, acumule pontos e desbloqueie recompensas exclusivas.          </p>
             </div>
 
             <p class="login-modal__hint">Usuários padrões para demonstração: <br><strong>user@user.com | código OTP - 123456</strong><br><strong>admin@admin.com | código OTP - 654321</strong></p>
+          </div>
+
+          <div class="login-modal__step" data-login-step="register">
+            <div class="login-modal__fields">
+              <div class="login-modal__field">
+                <label class="login-modal__label" for="register-name">Nome completo</label>
+                <input class="login-modal__input" type="text" id="register-name" name="name"
+                  placeholder="Seu nome completo" autocomplete="name" required />
+              </div>
+              <div class="login-modal__field">
+                <label class="login-modal__label" for="register-email">E-mail</label>
+                <input class="login-modal__input" type="email" id="register-email" name="register-email"
+                  placeholder="seuemail@exemplo.com" autocomplete="email" required />
+              </div>
+              <div class="login-modal__field">
+                <label class="login-modal__label" for="register-phone">Telefone com DDD</label>
+                <input class="login-modal__input" type="tel" id="register-phone" name="phone"
+                  placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel" required />
+              </div>
+              <div class="login-modal__field">
+                <label class="login-modal__label" for="register-cpf">CPF</label>
+                <input class="login-modal__input" type="text" id="register-cpf" name="cpf"
+                  placeholder="000.000.000-00" inputmode="numeric" autocomplete="off" required />
+              </div>
+            </div>
           </div>
 
           <div class="login-modal__step" data-login-step="otp">
@@ -469,14 +512,14 @@ Participe, acumule pontos e desbloqueie recompensas exclusivas.          </p>
               <input class="login-modal__otp-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Dígito 6 do código" data-otp-input />
             </div>
 
-            <button class="login-modal__resend" type="button" data-resend-otp disabled>Reenviar código em 60s</button>
+            <button class="login-modal__resend" type="button" data-resend-otp disabled>Reenviar o código em 60s</button>
             <div id="login-message" class="login-modal__message" role="status" aria-live="polite"></div>
           </div>
 
           <!-- Inline error -->
           <div id="login-error" class="login-modal__error" role="alert" aria-live="polite"></div>
 
-          <button class="login-modal__submit" type="submit">Enviar código por e-mail</button>
+          <button class="login-modal__submit" type="submit" hidden>Enviar código por e-mail</button>
         </form>
       </div>
     </div>

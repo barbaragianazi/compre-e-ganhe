@@ -99,6 +99,8 @@ const Auth = (() => {
     const userAvatar = document.getElementById('userAvatar');
     const logoutButton = document.getElementById('logoutButton');
 
+    initAdminNav();
+
     if (!userMenu || !userMenuTrigger || !userName || !userAvatar || !logoutButton) return;
 
     const currentUser = getMenuUser();
@@ -132,5 +134,13 @@ const Auth = (() => {
     });
   }
 
-  return { login, hasUser, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu };
+  function initAdminNav() {
+    const isAdmin = getRole() === 'admin';
+
+    document.querySelectorAll('[data-admin-nav]').forEach(link => {
+      link.hidden = !isAdmin;
+    });
+  }
+
+  return { login, hasUser, logout, isLoggedIn, getRole, getEmail, getName, getInitials, getMenuUser, initUserMenu, initAdminNav };
 })();

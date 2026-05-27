@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="zoetis">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Painel Administrativo — Gerencie usuários e notas fiscais da campanha." />
+  <title>Painel administrativo — Campanha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body class="admin-page">
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+  <header class="header" role="banner">
+    <div class="container">
+      <div class="header__inner">
+
+        <!-- Brand / Logo + Switcher -->
+        <div class="header__brand">
+          <button class="header__logo-btn" aria-haspopup="true" aria-expanded="false" aria-label="Selecionar marca">
+            <img src="" data-logo="light" alt="Logo" height="32" />
+            <svg class="header__logo-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="brand-dropdown" role="menu" aria-label="Selecionar marca">
+            <div class="brand-dropdown__label">Marcas</div>
+            <!-- Items populated by theme-switcher.js -->
+          </div>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="header__nav" aria-label="Menu principal">
+          <a href="area-logada.html#promocao" class="header__nav-link">Promoção</a>
+          <a href="ranking.html" class="header__nav-link">Ranking</a>
+          <a href="winners.html" class="header__nav-link">Ganhadores</a>
+          <a href="admin.html" class="header__nav-link active" aria-current="page">Admin</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="header__actions">
+          <div class="user-menu" id="userMenu">
+            <button class="user-menu__trigger" id="userMenuTrigger" type="button" aria-haspopup="true"
+              aria-expanded="false">
+              <img class="user-menu__avatar" id="userAvatar" src="" alt="Avatar do usuário">
+              <span class="user-menu__name" id="userName"></span>
+              <span class="user-menu__arrow" aria-hidden="true">▾</span>
+            </button>
+            <div class="user-menu__dropdown" id="userDropdown" role="menu" aria-label="Menu do usuário">
+              <button class="user-menu__item" id="logoutButton" type="button" role="menuitem">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Toggle -->
+        <button class="header__menu-toggle" aria-label="Abrir menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile nav drawer -->
+  <nav class="mobile-nav" aria-label="Menu mobile">
+    <a href="area-logada.html#promocao">Promoção</a>
+    <a href="ranking.html">Ranking</a>
+    <a href="winners.html">Ganhadores</a>
+    <a href="admin.html" class="active" aria-current="page">Admin</a>
+  </nav>
+
+  <main>
+
+    <!-- ==========================================
+         PAGE INTRO
+    =========================================== -->
+    <section class="admin-intro" aria-labelledby="admin-page-title">
+      <div class="container">
+        <div class="admin-intro__content">
+          <div class="admin-intro__copy">
+            <div class="admin-intro__eyebrow">
+              <span class="admin-intro__line" aria-hidden="true"></span>
+              Administração
+              <span class="admin-intro__line" aria-hidden="true"></span>
+            </div>
+            <h1 class="admin-intro__title" id="admin-page-title">Painel administrativo</h1>
+            <p class="admin-intro__desc">Gerencie usuários participantes e acompanhe o desempenho das notas fiscais da
+              campanha.</p>
+          </div>
+          <div class="admin-intro__image" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="702.544" height="800" viewBox="0 0 702.544 800"
+              xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false"
+              artist="Katerina Limpitsouni" source="https://undraw.co/">
+              <g transform="translate(-670.451 -140)">
+                <path
+                  d="M1070.192,209.052H510.738A71.626,71.626,0,0,0,439.193,280.6V937.512a71.626,71.626,0,0,0,71.545,71.54h559.455a71.626,71.626,0,0,0,71.545-71.545V280.6a71.626,71.626,0,0,0-71.545-71.545Z"
+                  transform="translate(231.258 -69.052)" fill="#090814" />
+                <path
+                  d="M1063.451,222.906H504a51,51,0,0,0-50.949,50.948V930.771A51,51,0,0,0,504,981.719h559.456a51,51,0,0,0,50.949-50.948V273.854a51,51,0,0,0-50.949-50.949Z"
+                  transform="translate(237.953 -61.906)" fill="#fff" />
+                <g transform="translate(739.074 475.956)">
+                  <path d="M276.192,239.652h-30v-40.6l25.941,14.211Z" transform="translate(-190.656 -154.148)"
+                    fill="#2f2e41" />
+                  <path d="M4.455,50.411,8.3,41.842l-.681-6.91a19.478,19.478,0,1,1,20.39,2.062l7.36,17.92L17.317,75.67Z"
+                    transform="translate(41.602 39.381)" fill="#ed9da0" />
+                  <path
+                    d="M176.605,375.973c-.219.228-.443.454-.665.677q-1.063,1.063-2.167,2.073A60.018,60.018,0,0,1,95.9,380.984l-.019-.015c-.322-.26-.641-.524-.959-.792.057-.162.117-.322.179-.481a27.6,27.6,0,0,1,14.262-15.165,21.184,21.184,0,0,1,3.408-1.291l4.81-8.67,3.393,6.316,2.5,4.655,10.236,19.1,8.83-21.988,2.737-6.817.7-1.745,3.336,2.6,3.159,2.45,6.359,1.4,5.159,1.131,7.006,1.547c2.827,2.307,4.557,6.7,5.521,12.151C176.539,375.579,176.573,375.775,176.605,375.973Z"
+                    transform="translate(-73.508 -274.213)" fill="currentColor" />
+                  <path
+                    d="M224.455,138.168a14.7,14.7,0,0,1,23.764-2.073c1.8,2.094,2.986,4.659,4.744,6.785,3.783,4.589,10.234,7.273,11.887,12.986a18.515,18.515,0,0,1,0,7.728l-.942,6.608a10.036,10.036,0,0,0,.166,5.129c.754,1.885,2.558,3.121,3.724,4.784a8.248,8.248,0,0,1-.337,9.654c-.942,1.163-2.2,2.041-3.187,3.166a4.578,4.578,0,0,0-1.319,4.1c.8,2.759,5.121,3.421,5.6,6.252a3.57,3.57,0,0,1-2.073,3.555,7.539,7.539,0,0,1-4.311.5,17.7,17.7,0,0,1-13.876-25.132c1.956-4.147,5.59-7.807,5.551-12.389a16.505,16.505,0,0,0-2.286-7.059l-6.876-13.7c-1.227-2.45-2.652-5.089-5.179-6.133a11.6,11.6,0,0,0-6.258-.166,11.75,11.75,0,0,1-6.261-.143,4.032,4.032,0,0,1-2.5-5.068"
+                    transform="translate(-173.623 -101.442)" fill="#2f2e41" />
+                  <path
+                    d="M163,162.178c-3.77-1.238-7.984.754-10.532,3.785a30.091,30.091,0,0,0-4.961,10.709l-2.022,6.5-1.9,6.114a13.859,13.859,0,0,0-.886,7.379,23.615,23.615,0,0,1,1.606,5.174,9.676,9.676,0,0,1-2.2,5.146,6.846,6.846,0,0,0-1.521,5.3c.754,2.784,4.625,4.314,4.412,7.191-.072.959-.626,1.847-.616,2.81a3.272,3.272,0,0,0,2.1,2.771,8.637,8.637,0,0,0,3.611.494,55.934,55.934,0,0,0,11.173-1.329,10.8,10.8,0,0,0,4.02-1.542,4.2,4.2,0,0,0,1.9-3.675c-.238-2.239-2.639-3.509-3.862-5.406a19.978,19.978,0,0,1-1.681-6.374,43.33,43.33,0,0,0-3.77-8.282,30.455,30.455,0,0,1,4.222-32.147,7.05,7.05,0,0,0,1.647-2.514,2.1,2.1,0,0,0-1.031-2.552"
+                    transform="translate(-108.756 -125.243)" fill="#2f2e41" />
+                </g>
+                <g transform="translate(739.074 240.601)">
+                  <g transform="translate(40.13 26.529)">
+                    <g transform="translate(1.467 12.853)">
+                      <path d="M199.288,320.147l4.06-10.375,20.977-3.159,2.262,22.969-21.2.45Z"
+                        transform="translate(-195.931 -276.833)" fill="#ed9da0" />
+                      <circle cx="19.476" cy="19.476" r="19.476" transform="translate(0 0)" fill="#ed9da0" />
+                    </g>
+                    <path
+                      d="M218.523,153.534c-.253,1.012-.763,3.424-1.562,3.436-.652.009-1.276-10.451-.624-12.181.754-1.988-1.217-4.5-2.7-5.794-2.663-2.32-8.573,2.663-14.582.405-.16-.06-.128-.053-2.026-.81a42.9,42.9,0,0,0-6.481-2.431,8.788,8.788,0,0,0-7.7,4.861c-1.466,2.936-.241,5.454-1.621,12.558-.16.827-.413,2.007-.81,2.026-.726.032-1.434-3.845-1.621-4.861-.778-4.254-1.528-8.357,0-12.963.166-.5,1.193-2.367,3.24-6.076,2.95-5.343,4.433-8.025,4.861-8.507,3.074-3.457,8.67-6.611,13.368-5.266,2.375.68,1.949,1.772,4.861,2.827,5.19,1.894,9.7-.422,10.532,1.216.441.867-.792,1.583-.81,3.24-.03,2.844,3.568,3.668,5.671,6.481,1.131,1.508,3.066,1.528-2,21.83Z"
+                      transform="translate(-177.912 -117.613)" fill="#2f2e41" />
+                  </g>
+                  <path
+                    d="M167.623,372q-1.178,1.319-2.45,2.59a60.012,60.012,0,0,1-80.037,4.335l-.019-.015q-2.115-1.7-4.092-3.622.038-.3.081-.588c.188-1.308.39-2.556.62-3.7,1.885-9.41,26.666-19.29,27.311-19.548h.013a16.774,16.774,0,0,0,16.857,11.606c9.308-.1,7.5-11.606,7.5-11.606l.324.068c2.689.565,21.355,4.672,28.721,10.268,2.245,1.7,3.854,5.337,5.011,9.667C167.527,371.623,167.574,371.811,167.623,372Z"
+                    transform="translate(-62.756 -272.161)" fill="#090814" />
+                </g>
+                <path d="M1101.366,204.515H846.93a8.3,8.3,0,0,1,0-16.6h254.436a8.3,8.3,0,1,1,0,16.6Z"
+                  transform="translate(68.523 98.957)" fill="currentColor" />
+                <path d="M957.224,223.887H846.93a8.3,8.3,0,1,1,0-16.6H957.224a8.3,8.3,0,1,1,0,16.6Z"
+                  transform="translate(68.523 112.367)" fill="currentColor" />
+                <g transform="translate(-5.172 24.384)">
+                  <path d="M1101.366,204.515H846.93a8.3,8.3,0,0,1,0-16.6h254.436a8.3,8.3,0,1,1,0,16.6Z"
+                    transform="translate(73.697 302.706)" fill="currentColor" />
+                  <path d="M957.224,223.887H846.93a8.3,8.3,0,1,1,0-16.6H957.224a8.3,8.3,0,1,1,0,16.6Z"
+                    transform="translate(73.697 316.113)" fill="currentColor" />
+                </g>
+                <g transform="translate(739.074 711.325)">
+                  <path
+                    d="M4.455,50.411,8.3,41.832l-.681-6.9a19.476,19.476,0,1,1,20.389,2.064l7.36,17.921L17.316,75.669Z"
+                    transform="translate(41.602 39.383)" fill="#9f616a" />
+                  <path
+                    d="M183.078,192.316l3.841.869s-3.016-9.577-1.994-10.491,3.538.526,3.538.526l2.639,2.959,3.215-3.274s3.491-4.335,4.857-5.56-.829-5.745-.829-5.745,20.276-5.466,12.732-15.3c0,0-4.424-7.711-5.864-5.2s-3.159-1.478-3.159-1.478l-5.245,1s-10.353-6.1-20.178,6.955,6.446,34.742,6.446,34.742Z"
+                    transform="translate(-134.347 -115.539)" fill="#2f2e41" />
+                  <path
+                    d="M183.964,395.849a60.051,60.051,0,0,1-72.584,2.158c.019-.188.036-.377.053-.565.268-2.933.507-5.784.665-8.148.611-9.179,22.025-15.3,22.025-15.3s.1.1.29.266a27.2,27.2,0,0,0,14.394,5.843c7.5.942,9.972-3.511,10.719-5.643a6.911,6.911,0,0,0,.294-1.086l22.025,10.4c1.436,2.052,2,6.474,2.109,11.442C183.957,395.433,183.963,395.634,183.964,395.849Z"
+                    transform="translate(-86.256 -289.157)" fill="currentColor" />
+                </g>
+                <path d="M1101.366,204.515H846.93a8.3,8.3,0,0,1,0-16.6h254.436a8.3,8.3,0,1,1,0,16.6Z"
+                  transform="translate(68.523 558.729)" fill="currentColor" />
+                <path d="M957.224,223.887H846.93a8.3,8.3,0,1,1,0-16.6H957.224a8.3,8.3,0,1,1,0,16.6Z"
+                  transform="translate(68.523 572.136)" fill="currentColor" />
+                <g transform="translate(-216.848 26.42)">
+                  <path
+                    d="M23.164,3a9.1,9.1,0,0,1,9.083,8.565l.015.533V24.23h6.066a9.1,9.1,0,0,1,9.038,8.039l.045.526.015.534-.061.594L44.316,49.184c-1.156,4.931-4.555,8.48-8.522,8.431l-.5-.024H11.033a3.033,3.033,0,0,1-3.012-2.678L8,54.559,8,25.637a3.033,3.033,0,0,1,1.516-2.623,9.093,9.093,0,0,0,4.525-7.27l.021-.613V12.1a9.1,9.1,0,0,1,9.1-9.1Z"
+                    transform="translate(1474.197 252.217)" fill="currentColor" />
+                  <path
+                    d="M13.644,10c1.967,0,3.624,1.151,3.854,2.678l.027.355v27.3c0,1.537-1.472,2.831-3.427,3.012l-.455.021H9.763c-4.062,0-7.438-2.445-7.743-5.611L2,37.3V16.066c0-3.174,3.13-5.812,7.18-6.051L9.763,10Z"
+                    transform="translate(1462 266.447)" fill="currentColor" />
+                </g>
+                <g transform="translate(-216.848 257.475)">
+                  <path
+                    d="M23.164,3a9.1,9.1,0,0,1,9.083,8.565l.015.533V24.23h6.066a9.1,9.1,0,0,1,9.038,8.039l.045.526.015.534-.061.594L44.316,49.184c-1.156,4.931-4.555,8.48-8.522,8.431l-.5-.024H11.033a3.033,3.033,0,0,1-3.012-2.678L8,54.559,8,25.637a3.033,3.033,0,0,1,1.516-2.623,9.093,9.093,0,0,0,4.525-7.27l.021-.613V12.1a9.1,9.1,0,0,1,9.1-9.1Z"
+                    transform="translate(1474.197 252.217)" fill="currentColor" />
+                  <path
+                    d="M13.644,10c1.967,0,3.624,1.151,3.854,2.678l.027.355v27.3c0,1.537-1.472,2.831-3.427,3.012l-.455.021H9.763c-4.062,0-7.438-2.445-7.743-5.611L2,37.3V16.066c0-3.174,3.13-5.812,7.18-6.051L9.763,10Z"
+                    transform="translate(1462 266.447)" fill="currentColor" />
+                </g>
+                <g transform="translate(-216.848 467.664)">
+                  <path
+                    d="M23.165,57.616a9.1,9.1,0,0,0,9.084-8.565l.015-.533V36.386h6.066a9.1,9.1,0,0,0,9.038-8.039l.045-.526.015-.534-.061-.594L44.316,11.432C43.16,6.5,39.761,2.952,35.794,3l-.5.024H11.033A3.033,3.033,0,0,0,8.021,5.7L8,6.058,8,34.979A3.033,3.033,0,0,0,9.519,37.6a9.092,9.092,0,0,1,4.525,7.27l.021.613v3.033a9.1,9.1,0,0,0,9.1,9.1Z"
+                    transform="translate(1474.197 273.447)" fill="#090814" />
+                  <path
+                    d="M13.644,10c1.967,0,3.624,1.151,3.854,2.678l.027.355v27.3c0,1.537-1.472,2.831-3.427,3.012l-.455.021H9.763c-4.062,0-7.438-2.445-7.743-5.611L2,37.3V16.066c0-3.174,3.13-5.812,7.18-6.051L9.763,10Z"
+                    transform="translate(1462 266.447)" fill="#090814" />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         KPIs
+    =========================================== -->
+    <section class="admin-kpis-section" aria-label="Indicadores principais">
+      <div class="container">
+        <div class="admin-kpis" id="admin-kpis" role="list" aria-label="KPIs da campanha">
+          <!-- Renderizado por admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         USERS
+    =========================================== -->
+    <section class="admin-users-section" aria-labelledby="admin-users-title">
+      <div class="container">
+
+        <h2 class="admin-users-title" id="admin-users-title">Usuários participantes</h2>
+        <div class="admin-users-header">
+          <!-- ========= -->
+          <div class="admin-search">
+            <div class="admin-search__wrap">
+              <svg class="admin-search__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              <input type="search" id="admin-search" class="admin-search__input"
+                placeholder="Digite o nome do participante" autocomplete="off"
+                aria-label="Buscar participante por nome" />
+            </div>
+
+
+
+            <div class="admin-controls">
+              <label class="admin-sort-label" for="admin-sort">Ordenar por</label>
+              <select class="admin-sort-select" id="admin-sort" aria-label="Ordenar usuários">
+                <option value="name-asc">Nome A–Z</option>
+                <option value="name-desc">Nome Z–A</option>
+                <option value="valor-desc">Maior valor</option>
+                <option value="valor-asc">Menor valor</option>
+                <option value="date-desc">Mais recente</option>
+                <option value="date-asc">Mais antigo</option>
+              </select>
+              <!-- Search + Filter -->
+    
+              <label class="admin-filter-check">
+                <input type="checkbox" id="admin-filter-pending" class="admin-filter-check__input" />
+                <span class="admin-filter-check__text">Filtrar notas pendentes</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="admin-users-grid" id="admin-users-grid" aria-label="Lista de usuários participantes">
+          <!-- Renderizado por admin.js -->
+        </div>
+
+        <!-- Pagination -->
+        <nav class="admin-pagination" id="admin-pagination" aria-label="Paginação">
+          <button class="admin-pagination__btn" id="admin-prev" type="button" aria-label="Página anterior" disabled>
+            ← Anterior
+          </button>
+          <span class="admin-pagination__info" id="admin-page-info" aria-live="polite">Página 1 de 2</span>
+          <button class="admin-pagination__btn" id="admin-next" type="button" aria-label="Próxima página">
+            Próxima →
+          </button>
+        </nav>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       FOOTER
+  =========================================== -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <img src="" data-logo="light" alt="Logo" height="24" />
+          </div>
+          <span class="footer__copy">&copy; 2026 - UPPER. Todos os direitos reservados.</span>
+        </div>
+
+        <nav class="footer__links" aria-label="Links do rodapé">
+          <a href="#" class="footer__link">Regulamento</a>
+          <a href="#" class="footer__link">Política de Privacidade</a>
+          <a href="#" class="footer__link">Termos de Uso</a>
+          <a href="#" class="footer__link">Contato</a>
+        </nav>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Overlay -->
+  <div class="modal-overlay" id="modal-overlay" aria-hidden="true"></div>
+
+  <!-- Modal: Ver Notas do Usuário -->
+  <div class="modal" id="modal-user-notes" role="dialog" aria-modal="true" aria-labelledby="modal-user-notes-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--lg">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-user-notes-title">Notas do usuário</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" id="modal-user-notes-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Confirmar Validação -->
+  <div class="modal modal--action" id="modal-confirm-validate" role="dialog" aria-modal="true"
+    aria-labelledby="modal-validate-title" aria-hidden="true">
+    <div class="modal__dialog modal__dialog--sm">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-validate-title">Validar nota</h2>
+        <button class="modal__close" type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p class="modal__confirm-text">Tem certeza que deseja validar esta nota?</p>
+        <div class="modal__foot">
+          <button class="modal-btn modal-btn--cancel" id="btn-cancel-validate" type="button">Cancelar</button>
+          <button class="modal-btn modal-btn--validate" id="btn-confirm-validate" type="button">Confirmar
+            validação</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Excluir Nota -->
+  <div class="modal modal--action" id="modal-delete-note" role="dialog" aria-modal="true"
+    aria-labelledby="modal-delete-title" aria-hidden="true">
+    <div class="modal__dialog modal__dialog--sm">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-delete-title">Excluir nota</h2>
+        <button class="modal__close" type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="form-field">
+          <label class="form-label" for="delete-justificativa">
+            Justificativa da exclusão <span class="form-required" aria-hidden="true">*</span>
+          </label>
+          <textarea class="form-textarea" id="delete-justificativa" placeholder="Descreva o motivo da exclusão..."
+            rows="4"></textarea>
+          <p class="form-error" id="delete-justificativa-error" hidden role="alert">A justificativa é obrigatória.</p>
+        </div>
+        <div class="modal__foot">
+          <button class="modal-btn modal-btn--cancel" id="btn-cancel-delete" type="button">Cancelar</button>
+          <button class="modal-btn modal-btn--delete" id="btn-confirm-delete" type="button">Confirmar exclusão</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: KPI — Aguardando Validação -->
+  <div class="modal" id="modal-kpi-aguardando" role="dialog" aria-modal="true" aria-labelledby="modal-aguardando-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--lg">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-aguardando-title">Notas aguardando validação</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body modal__body--kpi" id="modal-kpi-aguardando-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: KPI — Notas Validadas -->
+  <div class="modal" id="modal-kpi-validada" role="dialog" aria-modal="true" aria-labelledby="modal-validada-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--lg">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-validada-title">Notas validadas</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body modal__body--kpi" id="modal-kpi-validada-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: KPI — Notas Excluídas -->
+  <div class="modal" id="modal-kpi-excluida" role="dialog" aria-modal="true" aria-labelledby="modal-excluida-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--lg">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-excluida-title">Notas excluídas</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body modal__body--kpi" id="modal-kpi-excluida-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Prévia do Anexo -->
+  <div class="modal" id="modal-note-preview" role="dialog" aria-modal="true" aria-labelledby="modal-note-preview-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--lg modal__dialog--preview">
+      <div class="modal__head">
+        <div class="modal__head-main">
+          <button class="modal-back" id="btn-note-preview-back" type="button">
+            ← Voltar
+          </button>
+          <h2 class="modal__title" id="modal-note-preview-title">Visualizar anexo</h2>
+        </div>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body modal__body--preview">
+        <div class="attachment-preview">
+          <div class="attachment-preview__meta" id="note-preview-meta"></div>
+          <div class="attachment-preview__frame">
+            <img class="attachment-preview__image" id="note-preview-image" src="" alt="Prévia do anexo da nota">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts — auth → mock-data → admin -->
+  <script src="js/auth.js"></script>
+  <script src="js/theme-switcher.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/admin.js"></script>
+
+</body>
+
+</html>

@@ -41,7 +41,7 @@
   --logo-dark:          url('../assets/logos/boehringer-dark.svg');
 }
 
-[data-theme="geneca"] {
+[data-theme="genica"] {
   --color-primary:      #009D00;
   --color-primary-dark: #0B660B;
   --color-primary-rgb:  0, 157, 0;

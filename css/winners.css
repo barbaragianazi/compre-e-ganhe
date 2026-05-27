@@ -24,6 +24,18 @@
   padding: var(--sp-6) 0 var(--sp-5);
 }
 
+.winners-intro__content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+
+.winners-intro__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .winners-intro__eyebrow {
   display: flex;
   align-items: center;
@@ -62,8 +74,8 @@
 }
 
 .winners-intro__image {
-  width: min(100%, 220px);
-  margin-top: var(--sp-4);
+  flex: 0 0 min(32vw, 240px);
+  width: min(32vw, 240px);
   color: var(--color-primary);
 }
 
@@ -402,6 +414,17 @@
    ============================================ */
 
 @media (max-width: 768px) {
+  .winners-intro__content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+
+  .winners-intro__image {
+    flex-basis: auto;
+    width: min(100%, 220px);
+  }
+
   .winners-grid {
     grid-template-columns: 1fr;
     max-width: 380px;

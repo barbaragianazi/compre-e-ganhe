@@ -44,8 +44,8 @@
     "logoLight": "assets/logos/boehringer-light.svg",
     "logoDark": "assets/logos/boehringer-dark.svg"
   },
-  "geneca": {
-    "name": "Geneca",
+  "genica": {
+    "name": "Gênica",
     "primary": "#009D00",
     "secondary": "#0B660B",
     "surface": "#F1FFF1",

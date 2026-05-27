@@ -253,6 +253,12 @@
   align-items: start;
 }
 
+/* Modo admin: oculta painel de performance, lista ocupa toda a largura */
+.ranking-layout--admin {
+  grid-template-columns: 1fr;
+  max-width: 680px;
+}
+
 /* ============================================
    TOP 10 LIST
    ============================================ */
@@ -870,6 +876,55 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Select do dropdown de usuário (modo admin) */
+.invoice-form__select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* Badge de status nos itens admin */
+.invoice-item__status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+
+.invoice-item__status--aguardando {
+  background: #FFF8E1;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.invoice-item__status--validada {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+.invoice-item__status--excluida {
+  background: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+/* Item de nota no modo admin (mais campos, wrapping) */
+.invoice-item--admin .invoice-item__body {
+  flex-wrap: wrap;
+  grid-template-columns: unset;
+}
+
+.invoice-item--admin .invoice-item__field {
+  min-width: 120px;
 }
 
 .invoice-item__actions { display: flex; gap: 6px; }

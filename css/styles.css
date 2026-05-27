@@ -144,7 +144,7 @@ button {
 }
 
 .container--wide {
-  max-width: var(--container-wide);
+  max-width: var(--container-max);
 }
 
 .visually-hidden {

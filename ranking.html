@@ -49,6 +49,7 @@
           <a href="area-logada.html#promocao" class="header__nav-link">Promoção</a>
           <a href="ranking.html" class="header__nav-link active" aria-current="page">Ranking</a>
           <a href="winners.html" class="header__nav-link">Ganhadores</a>
+          <a href="admin.html" class="header__nav-link" data-admin-nav hidden>Admin</a>
         </nav>
 
         <!-- Actions -->
@@ -85,6 +86,7 @@
     <a href="area-logada.html#promocao">Promoção</a>
     <a href="ranking.html" class="active" aria-current="page">Ranking</a>
     <a href="winners.html">Ganhadores</a>
+    <a href="admin.html" data-admin-nav hidden>Admin</a>
     <a href="ranking.html#notas-fiscais" class="btn btn--primary"
       style="margin-top:8px; display:flex; justify-content:center;">Participar agora</a>
   </nav>
@@ -239,6 +241,16 @@
             <form id="invoice-form" novalidate autocomplete="off">
               <div class="invoice-form__fields">
 
+                <!-- Campo exibido apenas para admin — preenchido por ranking.js -->
+                <div class="invoice-form__field" id="invoice-user-field" hidden>
+                  <label class="invoice-form__label" for="invoice-user">
+                    Selecionar usuário
+                  </label>
+                  <select class="invoice-form__input invoice-form__select" id="invoice-user" name="user">
+                    <option value="">— Selecione um usuário —</option>
+                  </select>
+                </div>
+
                 <div class="invoice-form__field">
                   <label class="invoice-form__label" for="invoice-value">
                     Valor da nota fiscal (R$)
@@ -317,9 +329,10 @@
   </footer>
 
 
-  <!-- Scripts — order matters: theme switcher → auth → page logic -->
+  <!-- Scripts — order matters: theme switcher → auth → mock-data → page logic -->
   <script src="js/theme-switcher.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/mock-data.js"></script>
   <script src="js/ranking.js"></script>
 
 </body>

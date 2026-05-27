@@ -17,8 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function checkAutoRedirect() {
   if (Auth.isLoggedIn()) {
-    window.location.href = 'area-logada.html#promocao';
+    window.location.href = getPostLoginRedirect();
   }
+}
+
+function getPostLoginRedirect(role = Auth.getRole()) {
+  return role === 'admin' ? 'admin.html' : 'area-logada.html#promocao';
 }
 
 /* ============================================
@@ -250,7 +254,7 @@ function initLoginModal() {
     if (result.ok) {
       showSuccess();
       setTimeout(() => {
-        window.location.href = 'area-logada.html#promocao';
+        window.location.href = getPostLoginRedirect(result.role);
       }, 800);
     } else {
       showError(result.message);

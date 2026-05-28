@@ -299,6 +299,10 @@ const state = {
   activeTab: 'performance',
 };
 
+const WINNERS_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
+  ? JSON.parse(JSON.stringify(ADMIN_MOCK))
+  : [];
+
 /* ============================================
    HELPERS
    ============================================ */
@@ -308,8 +312,69 @@ const PLACE_LABELS = ['1º lugar', '2º lugar', '3º lugar'];
 const PLACE_CLASSES = ['first', 'second', 'third'];
 
 function getPeriodData() {
-  return (mockAwards[state.year]?.[state.month]) || { performanceWinners: [], luckyNumberWinners: [] };
+  const baseData = (mockAwards[state.year]?.[state.month]) || { performanceWinners: [], luckyNumberWinners: [] };
+  if (!window.CampaignSelector || !WINNERS_BASE_ADMIN_MOCK.length || !baseData.performanceWinners.length) return baseData;
+
+  const campaign = CampaignSelector.getActiveCampaign();
+  const campaignMock = CampaignSelector.buildCampaignMock(WINNERS_BASE_ADMIN_MOCK, campaign);
+  const rankedUsers = campaignMock.map(user => {
+    const total = user.notas
+      .filter(nota => nota.status === 'validada' || nota.status === 'aguardando')
+      .reduce((sum, nota) => sum + nota.valor, 0);
+
+    return { user, total };
+  }).sort((a, b) => b.total - a.total);
+
+  const performanceWinners = baseData.performanceWinners.map((winner, index) => {
+    const ranked = rankedUsers[index];
+    if (!ranked) return winner;
+
+    return {
+      ...winner,
+      name: ranked.user.nome,
+      kpi: campaign.label,
+      result: Math.round(ranked.total).toLocaleString('pt-BR') + ' pontos',
+      prizeDesc: 'Resultado apurado para a campanha ' + campaign.title + '.'
+    };
+  });
+
+  const allLuckyNotes = campaignMock.flatMap(user => user.notas.map(nota => ({ user, nota })));
+  const luckyNumberWinners = baseData.luckyNumberWinners.map((winner, index) => {
+    const item = allLuckyNotes[(index * 7 + campaign.id.length) % allLuckyNotes.length];
+    if (!item) return winner;
+
+    return {
+      ...winner,
+      ticket: String((item.nota.id + 90000) % 100000).padStart(5, '0'),
+      name: item.user.nome,
+      prize: campaign.label + ' - ' + winner.prize
+    };
+  });
+
+  return { performanceWinners, luckyNumberWinners };
 }
+
+function initCampaignSelectorAccess() {
+  if (window.CampaignSelector) {
+    CampaignSelector.init();
+    CampaignSelector.updateLabels();
+  }
+
+  window.addEventListener('campaign:changed', renderAll);
+
+  window.addEventListener('storage', event => {
+    if (!window.CampaignSelector || event.key !== CampaignSelector.key) return;
+    CampaignSelector.updateLabels();
+    renderAll();
+  });
+
+  window.addEventListener('focus', () => {
+    if (window.CampaignSelector) CampaignSelector.updateLabels();
+    renderAll();
+  });
+}
+
+window.refreshCampaignWinners = renderAll;
 
 /* ============================================
    RENDER — PÓDIO
@@ -588,7 +653,7 @@ function initMobileNav() {
 
 function guardRoute() {
   if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
-    window.location.href = 'index.html';
+    window.location.href = 'area-logada.html';
   }
 }
 
@@ -602,6 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
   Auth.initUserMenu();
   initHeader();
   initMobileNav();
+  initCampaignSelectorAccess();
   initScrollReveal();
   initTabs();
   initFilters();

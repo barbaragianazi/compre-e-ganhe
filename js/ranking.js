@@ -52,6 +52,10 @@ const KPIS = [
 
 const INVOICE_KEY = 'lp_invoices';
 const ADMIN_NOTES_KEY = 'lp_admin_notes';
+const DEFAULT_CAMPAIGN_ID = 'simparic-trio';
+const RANKING_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
+  ? JSON.parse(JSON.stringify(ADMIN_MOCK))
+  : [];
 
 let editingId = null;  /* tracks invoice being edited (usuário comum) */
 let isAdminMode = false; /* definido no DOMContentLoaded */
@@ -63,11 +67,14 @@ let isAdminMode = false; /* definido no DOMContentLoaded */
 document.addEventListener('DOMContentLoaded', () => {
   guardRoute();
   isAdminMode = Auth.getRole() === 'admin';
+  applySelectedCampaignData();
+  updateInvoiceUserFieldVisibility();
 
   ThemeSwitcher.init();
   initHeader();
   Auth.initUserMenu();
   populateUserInfo();
+  initCampaignSelectorAccess();
 
   if (isAdminMode) applyAdminRankingMode();
 
@@ -84,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function guardRoute() {
   if (!Auth.isLoggedIn()) {
-    window.location.href = 'index.html';
+    window.location.href = 'area-logada.html';
   }
 }
 
@@ -125,7 +132,7 @@ function initHeader() {
   document.querySelectorAll('[data-logout]').forEach(btn => {
     btn.addEventListener('click', () => {
       Auth.logout();
-      window.location.href = 'index.html';
+      window.location.href = 'area-logada.html';
     });
   });
 }
@@ -144,6 +151,88 @@ function populateUserInfo() {
   document.querySelectorAll('[data-user-first]').forEach(el => { el.textContent = firstName; });
   document.querySelectorAll('[data-user-email]').forEach(el => { el.textContent = email; });
   document.querySelectorAll('[data-user-initials]').forEach(el => { el.textContent = initials; });
+}
+
+function initCampaignSelectorAccess() {
+  if (window.CampaignSelector) {
+    CampaignSelector.init();
+    CampaignSelector.updateLabels();
+  }
+
+  window.addEventListener('campaign:changed', () => {
+    refreshCampaignRanking();
+  });
+
+  window.addEventListener('storage', event => {
+    if (!window.CampaignSelector || event.key !== CampaignSelector.key) return;
+    CampaignSelector.updateLabels();
+    refreshCampaignRanking();
+  });
+
+  window.addEventListener('focus', () => {
+    if (window.CampaignSelector) CampaignSelector.updateLabels();
+    refreshCampaignRanking();
+  });
+}
+
+function applySelectedCampaignData() {
+  if (!window.CampaignSelector || typeof ADMIN_MOCK === 'undefined') return;
+  ADMIN_MOCK = CampaignSelector.buildCampaignMock(RANKING_BASE_ADMIN_MOCK, CampaignSelector.getActiveCampaign());
+  mergeAdminStorageNotes();
+}
+
+function refreshCampaignRanking() {
+  applySelectedCampaignData();
+  syncAdminInvoiceUserSelect();
+  renderRankingList();
+  if (isAdminMode) renderAdminInvoiceList();
+}
+
+window.refreshCampaignRanking = refreshCampaignRanking;
+
+function getCampaignRankingData() {
+  if (typeof ADMIN_MOCK === 'undefined' || !ADMIN_MOCK.length) return RANKING_DATA;
+
+  return ADMIN_MOCK.map(user => {
+    const total = user.notas
+      .filter(nota => nota.status === 'validada' || nota.status === 'aguardando')
+      .reduce((sum, nota) => sum + nota.valor, 0);
+
+    return {
+      name: user.nome,
+      location: `${user.cidade}, ${user.estado}`,
+      points: Math.round(total)
+    };
+  })
+    .sort((a, b) => b.points - a.points)
+    .slice(0, 10)
+    .map((item, index) => ({ ...item, position: index + 1 }));
+}
+
+function getActiveCampaignId() {
+  if (!window.CampaignSelector) return DEFAULT_CAMPAIGN_ID;
+  const campaign = CampaignSelector.getActiveCampaign();
+  return campaign?.id || DEFAULT_CAMPAIGN_ID;
+}
+
+function noteBelongsToActiveCampaign(item) {
+  return (item?.campaignId || DEFAULT_CAMPAIGN_ID) === getActiveCampaignId();
+}
+
+function getActiveCampaignAdminNotes() {
+  return getAdminStorageNotes().filter(noteBelongsToActiveCampaign);
+}
+
+function mergeAdminStorageNotes() {
+  if (typeof ADMIN_MOCK === 'undefined') return;
+
+  getActiveCampaignAdminNotes().forEach(({ userId, nota }) => {
+    const user = ADMIN_MOCK.find(u => Number(u.id) === Number(userId));
+    if (!user || !nota) return;
+
+    const exists = user.notas.some(existing => Number(existing.id) === Number(nota.id));
+    if (!exists) user.notas.unshift(nota);
+  });
 }
 
 /* ============================================
@@ -194,14 +283,9 @@ function renderRankingList() {
   const listEl = document.getElementById('ranking-list');
   if (!listEl) return;
 
-  if (isAdminMode) {
-    renderAdminRanking(listEl);
-    return;
-  }
-
   /* Stagger delay capped at 5 */
-  listEl.innerHTML = RANKING_DATA.map(item => `
-    <li class="ranking-item ${positionClass(item.position)} reveal reveal-delay-${Math.min(item.position, 5)}"
+  listEl.innerHTML = getCampaignRankingData().map(item => `
+    <li class="ranking-item ${positionClass(item.position)} reveal revealed reveal-delay-${Math.min(item.position, 5)}"
         aria-label="${item.position}º lugar: ${item.name}">
       <div class="ranking-item__medal" aria-hidden="true">
         ${positionMedal(item.position)}
@@ -216,46 +300,6 @@ function renderRankingList() {
       </div>
     </li>
   `).join('');
-}
-
-/* Ranking admin: top 10 por valor de notas validadas */
-function renderAdminRanking(listEl) {
-  const storedAdminNotes = getAdminStorageNotes();
-
-  const userTotals = ADMIN_MOCK.map(user => {
-    /* notas adicionadas via ranking.html para este usuário */
-    const extraNotes = storedAdminNotes
-      .filter(item => item.userId === user.id)
-      .map(item => item.nota);
-
-    const allNotes = [...user.notas, ...extraNotes];
-    const total = allNotes
-      .filter(n => n.status === 'validada')
-      .reduce((sum, n) => sum + n.valor, 0);
-
-    return { user, total };
-  });
-
-  userTotals.sort((a, b) => b.total - a.total);
-  const top10 = userTotals.slice(0, 10);
-
-  listEl.innerHTML = top10.map((item, idx) => {
-    const pos = idx + 1;
-    return `
-      <li class="ranking-item ${positionClass(pos)} reveal reveal-delay-${Math.min(pos, 5)}"
-          aria-label="${pos}º lugar: ${item.user.nome}">
-        <div class="ranking-item__medal" aria-hidden="true">${positionMedal(pos)}</div>
-        <div class="ranking-item__info">
-          <div class="ranking-item__name">${item.user.nome}</div>
-          <div class="ranking-item__location">${item.user.cidade}, ${item.user.estado}</div>
-        </div>
-        <div class="ranking-item__score">
-          <div class="ranking-item__points">${fmtCurrency(item.total)}</div>
-          <div class="ranking-item__points-label">em notas validadas</div>
-        </div>
-      </li>
-    `;
-  }).join('');
 }
 
 /* ============================================
@@ -340,8 +384,8 @@ function saveAdminStorageNotes(notes) {
 function removeAdminStorageNote(noteId) {
   const numericId = Number(noteId);
   const stored = getAdminStorageNotes();
-  const noteItem = stored.find(item => Number(item.nota.id) === numericId);
-  const nextStored = stored.filter(item => Number(item.nota.id) !== numericId);
+  const noteItem = stored.find(item => noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId);
+  const nextStored = stored.filter(item => !(noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId));
 
   saveAdminStorageNotes(nextStored);
 
@@ -421,7 +465,14 @@ function ensureAdminStorageLuckyNumbers(storedNotes) {
     };
   });
 
-  if (changed) saveAdminStorageNotes(normalized);
+  if (changed) {
+    const normalizedById = new Map(normalized.map(item => [String(item.nota?.id), item]));
+    const allNotes = getAdminStorageNotes().map(item => {
+      const normalizedItem = normalizedById.get(String(item.nota?.id));
+      return normalizedItem && noteBelongsToActiveCampaign(item) ? normalizedItem : item;
+    });
+    saveAdminStorageNotes(allNotes);
+  }
   return normalized;
 }
 
@@ -430,11 +481,44 @@ function ensureAdminStorageLuckyNumbers(storedNotes) {
    ============================================ */
 
 function initInvoices() {
+  updateInvoiceUserFieldVisibility();
+
   if (isAdminMode) {
     initAdminInvoices();
   } else {
     initUserInvoices();
   }
+}
+
+function updateInvoiceUserFieldVisibility() {
+  const userField = document.getElementById('invoice-user-field');
+  const userSelect = document.getElementById('invoice-user');
+  const canSelectUser = Auth.getRole() === 'admin';
+
+  if (userField) {
+    userField.hidden = !canSelectUser;
+    userField.setAttribute('aria-hidden', String(!canSelectUser));
+  }
+
+  if (userSelect) {
+    userSelect.disabled = !canSelectUser;
+    userSelect.required = canSelectUser;
+    if (!canSelectUser) userSelect.value = '';
+  }
+}
+
+function syncAdminInvoiceUserSelect() {
+  if (!isAdminMode) return;
+  const userSelect = document.getElementById('invoice-user');
+  if (!userSelect || typeof ADMIN_MOCK === 'undefined') return;
+
+  userSelect.innerHTML = '<option value="">— Selecione um usuário —</option>';
+  ADMIN_MOCK.forEach(user => {
+    const opt = document.createElement('option');
+    opt.value = user.id;
+    opt.textContent = user.nome;
+    userSelect.appendChild(opt);
+  });
 }
 
 /* ============================================
@@ -465,18 +549,11 @@ function initAdminInvoices() {
   if (!form) return;
 
   /* Exibe dropdown de usuários e botão cancelar */
-  if (userField) userField.hidden = false;
+  updateInvoiceUserFieldVisibility();
   if (cancelBtn) cancelBtn.classList.add('visible');
 
   /* Popula dropdown com usuários do ADMIN_MOCK */
-  if (userSelect) {
-    ADMIN_MOCK.forEach(user => {
-      const opt = document.createElement('option');
-      opt.value = user.id;
-      opt.textContent = user.nome;
-      userSelect.appendChild(opt);
-    });
-  }
+  syncAdminInvoiceUserSelect();
 
   function showError(msg) {
     if (!errorEl) return;
@@ -535,20 +612,21 @@ function initAdminInvoices() {
 
     /* Persiste para que admin.html consuma na próxima visita */
     const stored = getAdminStorageNotes();
-    stored.unshift({ userId, nota });
+    stored.unshift({ campaignId: getActiveCampaignId(), userId, nota });
     saveAdminStorageNotes(stored);
 
     form.reset();
     /* Garante que o dropdown continua visível após reset do form */
-    if (userField) userField.hidden = false;
+    updateInvoiceUserFieldVisibility();
 
     clearError();
     renderAdminInvoiceList();
+    renderRankingList();
   });
 
   cancelBtn?.addEventListener('click', () => {
     form.reset();
-    if (userField) userField.hidden = false;
+    updateInvoiceUserFieldVisibility();
     clearError();
   });
 }
@@ -556,7 +634,7 @@ function initAdminInvoices() {
 function renderAdminInvoiceList() {
   const listEl = document.getElementById('invoice-list');
   const countEl = document.getElementById('invoice-count');
-  const stored = ensureAdminStorageLuckyNumbers(getAdminStorageNotes());
+  const stored = ensureAdminStorageLuckyNumbers(getActiveCampaignAdminNotes());
 
   if (countEl) countEl.textContent = stored.length;
   if (!listEl) return;
@@ -704,11 +782,7 @@ function renderInvoices() {
 }
 
 function initUserInvoices() {
-  const userField = document.getElementById('invoice-user-field');
-  const userSelect = document.getElementById('invoice-user');
-
-  if (userField) userField.hidden = true;
-  if (userSelect) userSelect.value = '';
+  updateInvoiceUserFieldVisibility();
 
   renderInvoices();
 

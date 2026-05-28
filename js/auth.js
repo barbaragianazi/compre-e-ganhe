@@ -11,20 +11,20 @@ const Auth = (() => {
 
   /* Accepted credentials — mocked OTP codes */
   const USERS = {
-    'user@user.com': { role: 'user',  otp: '123456', name: 'Bárbara Gianazi',  initials: 'BG', avatar: 'assets/images/avatar-user.svg', redirectAfterLogout: 'index.html' },
-    'admin@admin.com':  { role: 'admin', otp: '654321', name: 'Beto Delazane',   initials: 'BD', avatar: 'assets/images/avatar-admin.svg', redirectAfterLogout: 'index.html' },
+    'user@user.com': { role: 'user',  otp: '123456', name: 'Bárbara Gianazi',  initials: 'BG', avatar: 'assets/images/avatar-user.svg', redirectAfterLogout: 'area-logada.html' },
+    'admin@admin.com':  { role: 'admin', otp: '654321', name: 'Beto Delazane',   initials: 'BD', avatar: 'assets/images/avatar-admin.svg', redirectAfterLogout: 'area-logada.html' },
   };
 
   const users = {
     admin: {
       name: 'Beto Delazane',
       avatar: 'assets/images/avatar-admin.svg',
-      redirectAfterLogout: 'index.html',
+      redirectAfterLogout: 'area-logada.html',
     },
     user: {
       name: 'Bárbara Gianazi',
       avatar: 'assets/images/avatar-user.svg',
-      redirectAfterLogout: 'index.html',
+      redirectAfterLogout: 'area-logada.html',
     },
   };
 
@@ -152,6 +152,11 @@ const Auth = (() => {
 
     document.querySelectorAll('[data-admin-nav]').forEach(link => {
       link.hidden = !isAdmin;
+    });
+
+    document.querySelectorAll('[data-admin-only]').forEach(el => {
+      el.hidden = !isAdmin;
+      el.style.display = isAdmin ? '' : 'none';
     });
   }
 

@@ -3,7 +3,7 @@
    ============================================ */
 
 (function guardAdmin() {
-  if (!Auth.isLoggedIn()) { window.location.href = 'index.html'; return; }
+  if (!Auth.isLoggedIn()) { window.location.href = 'area-logada.html'; return; }
   if (Auth.getRole() !== 'admin') { window.location.href = 'area-logada.html'; }
 })();
 
@@ -13,19 +13,205 @@
 
 /* Chave localStorage para notas adicionadas pelo admin via ranking.html */
 var ADMIN_NOTES_KEY = 'lp_admin_notes';
+var ADMIN_BASE_MOCK = JSON.parse(JSON.stringify(ADMIN_MOCK));
+var ADMIN_CAMPAIGN_KEY = 'lp_admin_selected_campaign';
+var DEFAULT_CAMPAIGN_ID = 'simparic-trio';
+
+var ADMIN_CAMPAIGNS = [
+  { id: 'simparic-trio', title: 'Simparic Trio — Compre & Ganhe', category: 'brindes', label: 'Brindes', validity: '31/12/2026', desc: 'Acumule pontos para resgatar brindes exclusivos.', factor: 1.00, image: 'assets/images/simparic-trio.png', cardClass: 'promo-card--c1', badgeClass: 'brindes', participants: '1.204', captured: 'R$ 284k' },
+  { id: 'apoquel', title: 'Apoquel — Bonificação Progressiva', category: 'bonificacao', label: 'Bonificação', validity: '30/11/2026', desc: 'Bonificação por volume de compras e metas atingidas.', factor: 0.82, image: 'assets/images/apoquel.png', cardClass: 'promo-card--c2', badgeClass: 'bonificacao', participants: '876', captured: 'R$ 198k' },
+  { id: 'vanguard-plus', title: 'Vanguard Plus — Dose Extra', category: 'compre-ganhe ending', label: 'Compre e ganhe', validity: '15/10/2026', desc: 'Doses adicionais para ampliar a cobertura vacinal.', factor: 0.64, image: 'assets/images/vanguard.jpg', cardClass: 'promo-card--c3', badgeClass: 'compre-ganhe', participants: '532', captured: 'R$ 96k' },
+  { id: 'revolution-plus', title: 'Revolution Plus — Prêmios para Felinos', category: 'brindes', label: 'Brindes', validity: '31/12/2026', desc: 'Troque pontos por prêmios selecionados para felinos.', factor: 0.58, image: 'assets/images/revolution-plus.webp', cardClass: 'promo-card--c4', badgeClass: 'brindes', participants: '445', captured: 'R$ 112k' },
+  { id: 'cerenia', title: 'Cerenia — Bônus por Volume', category: 'bonificacao ending', label: 'Bonificação', validity: '20/10/2026', desc: 'Créditos para próximas compras ao atingir metas.', factor: 0.46, image: 'assets/images/cerenia.webp', cardClass: 'promo-card--c5', badgeClass: 'bonificacao', participants: '318', captured: 'R$ 74k' },
+  { id: 'convenia', title: 'Convenia — Kit Clínica', category: 'compre-ganhe', label: 'Compre e ganhe', validity: '31/12/2026', desc: 'Materiais e equipamentos de apoio clínico.', factor: 0.72, image: 'assets/images/convenia.png', cardClass: 'promo-card--c6', badgeClass: 'compre-ganhe', participants: '621', captured: 'R$ 143k' }
+];
+
+var CAMPAIGN_FILTERS = [
+  { id: 'all', label: 'Todas' },
+  { id: 'bonificacao', label: 'Bonificação' },
+  { id: 'brindes', label: 'Brindes' },
+  { id: 'compre-ganhe', label: 'Compre e ganhe' },
+  { id: 'ending', label: 'Termina em breve' }
+];
+
+var CAMPAIGN_NAMES = {
+  'simparic-trio': ['Carlos Eduardo Silva', 'Marina Silva Costa', 'Roberto Oliveira Santos', 'Juliana Costa Pereira', 'Fernando Almeida Souza', 'Camila Ferreira Santos', 'Gustavo Ribeiro Almeida', 'Amanda Pereira Lima', 'Paulo Mendes Rocha', 'Beatriz Gomes Martins', 'Lucas Ferreira Gomes', 'Sophia Martins Souza', 'Rafael Almeida Costa', 'Larissa Ribeiro Santos', 'Henrique Oliveira Lima', 'Daniela Costa Fernandes'],
+  apoquel: ['Ana Luiza Martins', 'Bruno Carvalho Reis', 'Clara Mendes Alves', 'Diego Nogueira Lima', 'Elisa Prado Rocha', 'Felipe Antunes Moraes', 'Gabriela Torres Campos', 'Igor Santana Freire', 'Joana Vieira Castro', 'Leandro Pires Cunha', 'Manuela Batista Leal', 'Nicolas Ramos Teixeira', 'Olivia Duarte Farias', 'Pedro Henrique Matos', 'Renata Assis Moreira', 'Tiago Barbosa Neves'],
+  'vanguard-plus': ['Aline Furtado Melo', 'Bernardo Cunha Lopes', 'Carolina Braga Reis', 'Danilo Martins Xavier', 'Eduarda Lima Paiva', 'Fabio Correia Dutra', 'Giovana Rocha Teles', 'Helena Sampaio Castro', 'Isabela França Moura', 'Jorge Melo Batista', 'Karen Nunes Prado', 'Leonardo Sales Amaral', 'Marcela Viana Pinto', 'Otavio Barros Lins', 'Patricia Gomes Rocha', 'Vinicius Costa Braga'],
+  'revolution-plus': ['Alice Tavares Pinho', 'Breno Moura Duarte', 'Cecilia Matos Ribeiro', 'Davi Almeida Farias', 'Estela Freitas Gomes', 'Flavio Vieira Ramos', 'Heloisa Cardoso Lima', 'Iuri Campos Nobre', 'Julia Andrade Neves', 'Kaio Ferreira Torres', 'Laura Barbosa Cunha', 'Miguel Castro Reis', 'Natalia Prado Leite', 'Orlando Pires Rocha', 'Paula Nascimento Melo', 'Sergio Moreira Alves'],
+  cerenia: ['Amanda Xavier Teles', 'Caio Ribeiro Nunes', 'Debora Sales Prado', 'Enzo Farias Melo', 'Fernanda Lopes Vieira', 'Guilherme Rocha Cunha', 'Iara Batista Campos', 'Jonas Leal Correia', 'Livia Duarte Sampaio', 'Mateus Costa Pinho', 'Nicole Freire Martins', 'Pietro Moura Reis', 'Raquel Gomes Tavares', 'Samuel Alves Matos', 'Talita Prado Neves', 'Yasmin Ferreira Lima'],
+  convenia: ['Arthur Lima Barros', 'Bianca Moreira Sales', 'Cristina Prado Gomes', 'Eduardo Campos Leal', 'Flora Teixeira Rocha', 'Heitor Pires Castro', 'Ingrid Cunha Batista', 'Jose Henrique Souza', 'Leticia Ramos Paiva', 'Murilo Neves Almeida', 'Nathalia Freitas Reis', 'Rafaela Moraes Lima', 'Sandro Vieira Prado', 'Teresa Lopes Farias', 'Valentina Nobre Alves', 'William Rocha Duarte']
+};
+
+var activeCampaignId = localStorage.getItem(ADMIN_CAMPAIGN_KEY) || 'simparic-trio';
+var campaignFilter = 'all';
+var campaignPage = 1;
+var CAMPAIGN_PER_PAGE = 6;
 
 function getAdminAddedNotes() {
   try { return JSON.parse(localStorage.getItem(ADMIN_NOTES_KEY) || '[]'); }
-  catch(e) { return []; }
+  catch (e) { return []; }
+}
+
+function noteBelongsToActiveCampaign(item) {
+  return (item && item.campaignId ? item.campaignId : DEFAULT_CAMPAIGN_ID) === activeCampaignId;
 }
 
 function mergeAdminNotes() {
-  getAdminAddedNotes().forEach(function(item) {
-    var user = ADMIN_MOCK.find(function(u) { return u.id === item.userId; });
+  getAdminAddedNotes().filter(noteBelongsToActiveCampaign).forEach(function (item) {
+    var user = ADMIN_MOCK.find(function (u) { return u.id === item.userId; });
     if (!user) return;
-    var exists = user.notas.some(function(n) { return n.id === item.nota.id; });
+    var exists = user.notas.some(function (n) { return n.id === item.nota.id; });
     if (!exists) user.notas.push(item.nota);
   });
+}
+
+function getActiveCampaign() {
+  return ADMIN_CAMPAIGNS.find(function (c) { return c.id === activeCampaignId; }) || ADMIN_CAMPAIGNS[0];
+}
+
+function buildCampaignMock(campaign) {
+  if (campaign.id === 'simparic-trio') return JSON.parse(JSON.stringify(ADMIN_BASE_MOCK));
+
+  var names = CAMPAIGN_NAMES[campaign.id] || CAMPAIGN_NAMES['simparic-trio'];
+  var statusCycle = ['validada', 'aguardando', 'validada', 'excluida', 'validada', 'aguardando'];
+  var cityCycle = [
+    ['São Paulo', 'SP'], ['Rio de Janeiro', 'RJ'], ['Belo Horizonte', 'MG'], ['Curitiba', 'PR'],
+    ['Recife', 'PE'], ['Fortaleza', 'CE'], ['Florianópolis', 'SC'], ['Salvador', 'BA']
+  ];
+
+  return ADMIN_BASE_MOCK.map(function (user, userIndex) {
+    var city = cityCycle[(userIndex + campaign.id.length) % cityCycle.length];
+    return {
+      id: user.id,
+      nome: names[userIndex] || user.nome,
+      email: campaign.id + '.' + user.id + '@email.com',
+      cidade: city[0],
+      estado: city[1],
+      notas: user.notas.map(function (nota, noteIndex) {
+        var status = statusCycle[(noteIndex + userIndex + campaign.id.length) % statusCycle.length];
+        var value = Math.round((nota.valor * campaign.factor + ((userIndex + 1) * 43) + (noteIndex * 17)) * 100) / 100;
+        var month = String(((noteIndex + campaign.id.length) % 5) + 1).padStart(2, '0');
+        var day = String(((noteIndex * 3 + userIndex) % 26) + 1).padStart(2, '0');
+
+        return {
+          id: (ADMIN_CAMPAIGNS.findIndex(function (c) { return c.id === campaign.id; }) + 1) * 100000 + nota.id,
+          numeroNota: campaign.id.slice(0, 3).toUpperCase() + '-' + String(user.id).padStart(2, '0') + '-' + String(noteIndex + 1).padStart(3, '0'),
+          valor: value,
+          data: '2026-' + month + '-' + day,
+          status: status,
+          responsavelLancamento: names[userIndex] || user.nome,
+          arquivoNome: campaign.id + '-nf-' + String(user.id).padStart(2, '0') + '-' + String(noteIndex + 1).padStart(3, '0') + '.jpg',
+          justificativa: status === 'excluida' ? 'Nota não atende às regras da campanha ' + campaign.title + '.' : null
+        };
+      })
+    };
+  });
+}
+
+function applyCampaign(campaignId) {
+  var nextCampaign = ADMIN_CAMPAIGNS.find(function (c) { return c.id === campaignId; }) || ADMIN_CAMPAIGNS[0];
+  activeCampaignId = nextCampaign.id;
+  localStorage.setItem(ADMIN_CAMPAIGN_KEY, activeCampaignId);
+  ADMIN_MOCK = buildCampaignMock(getActiveCampaign());
+  mergeAdminNotes();
+  ensureMockAttachments();
+  adminState.currentPage = 1;
+  adminState.search = '';
+  adminState.filterPending = false;
+  adminState.sort = 'name-asc';
+  adminState.activeKPIModal = null;
+  adminState.activeUserId = null;
+  updateCampaignLabel();
+  renderKPIs();
+  renderUsers();
+}
+
+function updateCampaignLabel() {
+  var el = document.getElementById('admin-selected-campaign');
+  if (el) el.textContent = 'Campanha selecionada: ' + getActiveCampaign().title;
+}
+
+function openCampaignModal() {
+  campaignPage = 1;
+  renderCampaignModal();
+  openPrimaryModal('modal-campaign-select');
+}
+
+function renderCampaignModal() {
+  renderCampaignFilters();
+  renderCampaignCards();
+}
+
+function renderCampaignFilters() {
+  var el = document.getElementById('campaign-modal-filters');
+  if (!el) return;
+  el.innerHTML = CAMPAIGN_FILTERS.map(function (filter) {
+    return '<button class="campaign-modal__filter' + (campaignFilter === filter.id ? ' active' : '') + '" type="button" data-campaign-filter="' + filter.id + '">' +
+      '<span>' + filter.label + '</span>' +
+      '<span class="campaign-modal__filter-count">' + getCampaignFilterCount(filter.id) + '</span>' +
+      '</button>';
+  }).join('');
+}
+
+function getFilteredCampaigns() {
+  return ADMIN_CAMPAIGNS.filter(function (campaign) {
+    if (campaignFilter === 'all') return true;
+    return campaign.category.split(/\s+/).indexOf(campaignFilter) !== -1;
+  });
+}
+
+function getCampaignFilterCount(filterId) {
+  if (filterId === 'all') return ADMIN_CAMPAIGNS.length;
+  return ADMIN_CAMPAIGNS.filter(function (campaign) {
+    return campaign.category.split(/\s+/).indexOf(filterId) !== -1;
+  }).length;
+}
+
+function renderCampaignCards() {
+  var el = document.getElementById('campaign-modal-grid');
+  if (!el) return;
+  var campaigns = getFilteredCampaigns();
+  var totalPages = campaigns.length > 0 ? Math.ceil(campaigns.length / CAMPAIGN_PER_PAGE) : 1;
+  if (campaignPage > totalPages) campaignPage = totalPages;
+  var start = (campaignPage - 1) * CAMPAIGN_PER_PAGE;
+  var pageItems = campaigns.slice(start, start + CAMPAIGN_PER_PAGE);
+
+  el.innerHTML = pageItems.map(function (campaign) {
+    var ending = campaign.category.split(/\s+/).indexOf('ending') !== -1
+      ? '<span class="campaign-card__ribbon"><span class="campaign-card__ribbon-dot"></span>Termina em breve</span>'
+      : '';
+    return '<button class="campaign-card ' + campaign.cardClass + (campaign.id === activeCampaignId ? ' active' : '') + '" type="button" data-campaign-id="' + campaign.id + '" role="listitem">' +
+      
+      '<div class="campaign-card__body">' +
+      '<div class="campaign-card__tag campaign-card__tag--' + campaign.badgeClass + '">' + campaign.label + '</div>' +
+
+      '<div class="campaign-card__title">' + campaign.title + '</div>' +
+      '<div class="campaign-card__desc">' + campaign.desc + '</div>' +
+      '<div class="campaign-card__validity">Validade ' + campaign.validity + '</div>' +
+      '</div>' +
+      '<div class="campaign-card__kpis">' +
+      '<div><span>Participantes</span><strong>' + campaign.participants + '</strong></div>' +
+      '<div><span>Valor captado</span><strong>' + campaign.captured + '</strong></div>' +
+      '</div>' +
+      '</button>';
+  }).join('') + buildCampaignPagination(totalPages, campaigns.length);
+}
+
+function buildCampaignPagination(totalPages, totalItems) {
+  if (totalItems <= CAMPAIGN_PER_PAGE) return '';
+  return '<div class="admin-pagination admin-pagination--modal campaign-modal__pagination">' +
+    '<button class="admin-pagination__btn" type="button" data-campaign-page="prev"' + (campaignPage === 1 ? ' disabled' : '') + '>← Anterior</button>' +
+    '<span class="admin-pagination__info">Página ' + campaignPage + ' de ' + totalPages + '</span>' +
+    '<button class="admin-pagination__btn" type="button" data-campaign-page="next"' + (campaignPage === totalPages ? ' disabled' : '') + '>Próxima →</button>' +
+    '</div>';
+}
+
+function changeCampaignPage(direction) {
+  var totalPages = Math.max(1, Math.ceil(getFilteredCampaigns().length / CAMPAIGN_PER_PAGE));
+  if (direction === 'prev' && campaignPage > 1) campaignPage--;
+  if (direction === 'next' && campaignPage < totalPages) campaignPage++;
+  renderCampaignCards();
 }
 
 
@@ -34,15 +220,15 @@ function mergeAdminNotes() {
    ============================================ */
 
 var adminState = {
-  currentPage:   1,
-  PER_PAGE:      6,
-  search:        '',
+  currentPage: 1,
+  PER_PAGE: 6,
+  search: '',
   filterPending: false,
-  sort:          'name-asc',
-  primaryModal:  null,
-  actionModal:   null,
+  sort: 'name-asc',
+  primaryModal: null,
+  actionModal: null,
   pendingAction: null,
-  activeUserId:  null,
+  activeUserId: null,
   activeKPIModal: null,
   returnModalId: null,
   kpiModalState: {
@@ -64,10 +250,10 @@ var adminState = {
 
 function getUserStats(user) {
   var aprovadas = 0, excluidas = 0, pendentes = 0, valorValido = 0;
-  user.notas.forEach(function(n) {
-    if      (n.status === 'validada')   { aprovadas++;  valorValido += n.valor; }
-    else if (n.status === 'excluida')   { excluidas++;  }
-    else if (n.status === 'aguardando') { pendentes++;  valorValido += n.valor; }
+  user.notas.forEach(function (n) {
+    if (n.status === 'validada') { aprovadas++; valorValido += n.valor; }
+    else if (n.status === 'excluida') { excluidas++; }
+    else if (n.status === 'aguardando') { pendentes++; valorValido += n.valor; }
   });
   return { aprovadas: aprovadas, excluidas: excluidas, pendentes: pendentes, valorValido: valorValido };
 }
@@ -117,8 +303,8 @@ function getExclusionJustification(nota) {
 }
 
 function ensureMockAttachments() {
-  ADMIN_MOCK.forEach(function(user) {
-    user.notas.forEach(function(nota) {
+  ADMIN_MOCK.forEach(function (user) {
+    user.notas.forEach(function (nota) {
       if (!nota.arquivoNome) {
         nota.arquivoNome = 'anexo-' + nota.numeroNota.toLowerCase() + '.jpg';
       }
@@ -153,7 +339,7 @@ function getMockAttachmentSrc(nota) {
     '<rect x="140" y="820" width="620" height="220" rx="16" fill="#f9fafb" stroke="#e5e7eb" stroke-width="2"/>' +
     '<text x="450" y="892" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#6b7280">QR / código de barras ilustrativo</text>' +
     '<g fill="#111827">' +
-      '<rect x="184" y="930" width="6" height="78"/><rect x="198" y="910" width="12" height="98"/><rect x="220" y="924" width="8" height="84"/><rect x="236" y="900" width="16" height="108"/><rect x="262" y="934" width="6" height="74"/><rect x="276" y="916" width="10" height="92"/><rect x="296" y="904" width="14" height="104"/><rect x="318" y="930" width="7" height="78"/><rect x="334" y="914" width="11" height="94"/><rect x="354" y="900" width="18" height="108"/><rect x="382" y="926" width="7" height="82"/><rect x="398" y="908" width="12" height="100"/><rect x="420" y="936" width="6" height="72"/><rect x="434" y="900" width="14" height="108"/><rect x="456" y="922" width="8" height="86"/><rect x="472" y="908" width="12" height="100"/><rect x="494" y="934" width="6" height="74"/><rect x="508" y="900" width="16" height="108"/><rect x="534" y="926" width="8" height="82"/><rect x="550" y="910" width="10" height="98"/><rect x="570" y="936" width="6" height="72"/><rect x="584" y="904" width="14" height="104"/><rect x="606" y="920" width="10" height="88"/><rect x="626" y="900" width="18" height="108"/><rect x="654" y="932" width="6" height="76"/><rect x="668" y="914" width="10" height="94"/><rect x="688" y="904" width="14" height="104"/>' +
+    '<rect x="184" y="930" width="6" height="78"/><rect x="198" y="910" width="12" height="98"/><rect x="220" y="924" width="8" height="84"/><rect x="236" y="900" width="16" height="108"/><rect x="262" y="934" width="6" height="74"/><rect x="276" y="916" width="10" height="92"/><rect x="296" y="904" width="14" height="104"/><rect x="318" y="930" width="7" height="78"/><rect x="334" y="914" width="11" height="94"/><rect x="354" y="900" width="18" height="108"/><rect x="382" y="926" width="7" height="82"/><rect x="398" y="908" width="12" height="100"/><rect x="420" y="936" width="6" height="72"/><rect x="434" y="900" width="14" height="108"/><rect x="456" y="922" width="8" height="86"/><rect x="472" y="908" width="12" height="100"/><rect x="494" y="934" width="6" height="74"/><rect x="508" y="900" width="16" height="108"/><rect x="534" y="926" width="8" height="82"/><rect x="550" y="910" width="10" height="98"/><rect x="570" y="936" width="6" height="72"/><rect x="584" y="904" width="14" height="104"/><rect x="606" y="920" width="10" height="88"/><rect x="626" y="900" width="18" height="108"/><rect x="654" y="932" width="6" height="76"/><rect x="668" y="914" width="10" height="94"/><rect x="688" y="904" width="14" height="104"/>' +
     '</g>' +
     '</svg>';
   return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
@@ -165,7 +351,7 @@ function parseISODate(iso) {
 
 function getUserLatestNoteDate(user) {
   if (!user.notas.length) return 0;
-  return Math.max.apply(null, user.notas.map(function(n) { return parseISODate(n.data); }));
+  return Math.max.apply(null, user.notas.map(function (n) { return parseISODate(n.data); }));
 }
 
 function getSortOptionsMarkup(selectedValue) {
@@ -177,28 +363,28 @@ function getSortOptionsMarkup(selectedValue) {
     { value: 'date-desc', label: 'Mais recente' },
     { value: 'date-asc', label: 'Mais antigo' }
   ];
-  return options.map(function(option) {
+  return options.map(function (option) {
     return '<option value="' + option.value + '"' + (option.value === selectedValue ? ' selected' : '') + '>' + option.label + '</option>';
   }).join('');
 }
 
 function sortUsers(users, sort) {
-  if      (sort === 'name-asc')   users.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
-  else if (sort === 'name-desc')  users.sort(function(a, b) { return b.nome.localeCompare(a.nome, 'pt-BR'); });
-  else if (sort === 'valor-desc') users.sort(function(a, b) { return getUserStats(b).valorValido - getUserStats(a).valorValido; });
-  else if (sort === 'valor-asc')  users.sort(function(a, b) { return getUserStats(a).valorValido - getUserStats(b).valorValido; });
-  else if (sort === 'date-desc')  users.sort(function(a, b) { return getUserLatestNoteDate(b) - getUserLatestNoteDate(a); });
-  else if (sort === 'date-asc')   users.sort(function(a, b) { return getUserLatestNoteDate(a) - getUserLatestNoteDate(b); });
+  if (sort === 'name-asc') users.sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+  else if (sort === 'name-desc') users.sort(function (a, b) { return b.nome.localeCompare(a.nome, 'pt-BR'); });
+  else if (sort === 'valor-desc') users.sort(function (a, b) { return getUserStats(b).valorValido - getUserStats(a).valorValido; });
+  else if (sort === 'valor-asc') users.sort(function (a, b) { return getUserStats(a).valorValido - getUserStats(b).valorValido; });
+  else if (sort === 'date-desc') users.sort(function (a, b) { return getUserLatestNoteDate(b) - getUserLatestNoteDate(a); });
+  else if (sort === 'date-asc') users.sort(function (a, b) { return getUserLatestNoteDate(a) - getUserLatestNoteDate(b); });
   return users;
 }
 
 function sortKPINotes(list, sort) {
-  list.sort(function(a, b) {
-    if (sort === 'name-asc')  return a.user.nome.localeCompare(b.user.nome, 'pt-BR');
+  list.sort(function (a, b) {
+    if (sort === 'name-asc') return a.user.nome.localeCompare(b.user.nome, 'pt-BR');
     if (sort === 'name-desc') return b.user.nome.localeCompare(a.user.nome, 'pt-BR');
     if (sort === 'valor-desc') return b.nota.valor - a.nota.valor;
-    if (sort === 'valor-asc')  return a.nota.valor - b.nota.valor;
-    if (sort === 'date-asc')   return parseISODate(a.nota.data) - parseISODate(b.nota.data);
+    if (sort === 'valor-asc') return a.nota.valor - b.nota.valor;
+    if (sort === 'date-asc') return parseISODate(a.nota.data) - parseISODate(b.nota.data);
     return parseISODate(b.nota.data) - parseISODate(a.nota.data);
   });
   return list;
@@ -209,22 +395,24 @@ function sortKPINotes(list, sort) {
    ============================================ */
 
 function calcKPIs() {
-  var r = { totalUsuarios: ADMIN_MOCK.length, totalNotas: 0, totalValor: 0,
-            totalAguardando: 0, totalValidada: 0, totalExcluida: 0 };
-  ADMIN_MOCK.forEach(function(u) {
-    u.notas.forEach(function(n) {
-      if      (n.status === 'aguardando') { r.totalNotas++; r.totalAguardando++; r.totalValor += n.valor; }
-      else if (n.status === 'validada')   { r.totalNotas++; r.totalValidada++;   r.totalValor += n.valor; }
-      else if (n.status === 'excluida')   { r.totalExcluida++; }
+  var r = {
+    totalUsuarios: ADMIN_MOCK.length, totalNotas: 0, totalValor: 0,
+    totalAguardando: 0, totalValidada: 0, totalExcluida: 0
+  };
+  ADMIN_MOCK.forEach(function (u) {
+    u.notas.forEach(function (n) {
+      if (n.status === 'aguardando') { r.totalNotas++; r.totalAguardando++; r.totalValor += n.valor; }
+      else if (n.status === 'validada') { r.totalNotas++; r.totalValidada++; r.totalValor += n.valor; }
+      else if (n.status === 'excluida') { r.totalExcluida++; }
     });
   });
   return r;
 }
 
 function kpiCard(icon, value, label, cls, onclickFn) {
-  var extra  = onclickFn ? ' kpi-card--clickable' : '';
-  var attrs  = onclickFn ? ' role="button" tabindex="0" onclick="' + onclickFn + '"' : '';
-  var hint   = onclickFn ? '<div class="kpi-card__hint">Ver detalhes →</div>' : '';
+  var extra = onclickFn ? ' kpi-card--clickable' : '';
+  var attrs = onclickFn ? ' role="button" tabindex="0" onclick="' + onclickFn + '"' : '';
+  var hint = onclickFn ? '<div class="kpi-card__hint">Ver detalhes →</div>' : '';
   return '<div class="kpi-card ' + cls + extra + '"' + attrs + '>' +
     '<div class="kpi-card__icon">' + icon + '</div>' +
     '<div class="kpi-card__value">' + value + '</div>' +
@@ -235,12 +423,12 @@ function kpiCard(icon, value, label, cls, onclickFn) {
 function renderKPIs() {
   var k = calcKPIs();
   document.getElementById('admin-kpis').innerHTML =
-  kpiCard('⏳', k.totalAguardando,      'Aguardando validação', 'kpi-card--aguardando', 'openKPIAguardandoModal()') +
-  kpiCard('✅', k.totalValidada,        'Notas validadas',      'kpi-card--validada',   'openKPIValidadaModal()') +
-  kpiCard('🗑️', k.totalExcluida,       'Notas excluídas',      'kpi-card--excluida',   'openKPIExcluidaModal()') + 
-    kpiCard('👥', k.totalUsuarios,       'Total de usuários',    'kpi-card--total-usuarios') +
-    kpiCard('🧾', k.totalNotas,           'Total de notas',       'kpi-card--total-notas') +
-    kpiCard('💰', fmtValor(k.totalValor), 'Valor total enviado',  'kpi-card--valor-total');
+    kpiCard('⏳', k.totalAguardando, 'Aguardando validação', 'kpi-card--aguardando', 'openKPIAguardandoModal()') +
+    kpiCard('✅', k.totalValidada, 'Notas validadas', 'kpi-card--validada', 'openKPIValidadaModal()') +
+    kpiCard('🗑️', k.totalExcluida, 'Notas excluídas', 'kpi-card--excluida', 'openKPIExcluidaModal()') +
+    kpiCard('👥', k.totalUsuarios, 'Total de usuários', 'kpi-card--total-usuarios') +
+    kpiCard('🧾', k.totalNotas, 'Total de notas', 'kpi-card--total-notas') +
+    kpiCard('💰', fmtValor(k.totalValor), 'Valor total enviado', 'kpi-card--valor-total');
 }
 
 /* ============================================
@@ -249,16 +437,16 @@ function renderKPIs() {
 
 function getFilteredSortedUsers() {
   var search = adminState.search.trim().toLowerCase();
-  var users  = ADMIN_MOCK.slice();
+  var users = ADMIN_MOCK.slice();
 
   if (search) {
-    users = users.filter(function(u) {
+    users = users.filter(function (u) {
       return u.nome.toLowerCase().indexOf(search) !== -1;
     });
   }
   if (adminState.filterPending) {
-    users = users.filter(function(u) {
-      return u.notas.some(function(n) { return n.status === 'aguardando'; });
+    users = users.filter(function (u) {
+      return u.notas.some(function (n) { return n.status === 'aguardando'; });
     });
   }
 
@@ -266,9 +454,9 @@ function getFilteredSortedUsers() {
 }
 
 function buildUserCard(u) {
-  var s   = getUserStats(u);
+  var s = getUserStats(u);
   var pend = s.pendentes > 0;
-  var loc  = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+  var loc = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
     '<path d="M8 1.5A4.5 4.5 0 0 1 12.5 6c0 3-4.5 8.5-4.5 8.5S3.5 9 3.5 6A4.5 4.5 0 0 1 8 1.5Z" stroke="currentColor" stroke-width="1.5"/>' +
     '<circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg>' +
     u.cidade + ', ' + u.estado;
@@ -276,42 +464,42 @@ function buildUserCard(u) {
   return '<div class="user-card' + (pend ? ' user-card--pending' : '') + '" data-user-id="' + u.id + '">' +
     '<div class="user-card__avatar">' + initials(u.nome) + '</div>' +
     '<div class="user-card__body">' +
-      '<div class="user-card__name-row">' +
-        '<span class="user-card__name">' + u.nome + '</span>' +
-        (pend ? '<span class="user-badge user-badge--pending">Pendente</span>' : '') +
-      '</div>' +
-      '<div class="user-card__email">' + u.email + '</div>' +
-      '<div class="user-card__location">' + loc + '</div>' +
+    '<div class="user-card__name-row">' +
+    '<span class="user-card__name">' + u.nome + '</span>' +
+    (pend ? '<span class="user-badge user-badge--pending">Pendente</span>' : '') +
+    '</div>' +
+    '<div class="user-card__email">' + u.email + '</div>' +
+    '<div class="user-card__location">' + loc + '</div>' +
     '</div>' +
     '<div class="user-card__counts">' +
-      '<div class="user-card__count user-card__count--aprov">' +
-        '<span class="user-card__count-val">' + s.aprovadas + '</span>' +
-        '<span class="user-card__count-lbl">' + (s.aprovadas === 1 ? 'aprovada' : 'aprovadas') + '</span>' +
-      '</div>' +
-      '<div class="user-card__count user-card__count--pend">' +
-        '<span class="user-card__count-val">' + s.pendentes + '</span>' +
-        '<span class="user-card__count-lbl">' + (s.pendentes === 1 ? 'pendente' : 'pendentes') + '</span>' +
-      '</div>' +
-      '<div class="user-card__count user-card__count--excl">' +
-        '<span class="user-card__count-val">' + s.excluidas + '</span>' +
-        '<span class="user-card__count-lbl">' + (s.excluidas === 1 ? 'excluída' : 'excluídas') + '</span>' +
-      '</div>' +
+    '<div class="user-card__count user-card__count--aprov">' +
+    '<span class="user-card__count-val">' + s.aprovadas + '</span>' +
+    '<span class="user-card__count-lbl">' + (s.aprovadas === 1 ? 'aprovada' : 'aprovadas') + '</span>' +
+    '</div>' +
+    '<div class="user-card__count user-card__count--pend">' +
+    '<span class="user-card__count-val">' + s.pendentes + '</span>' +
+    '<span class="user-card__count-lbl">' + (s.pendentes === 1 ? 'pendente' : 'pendentes') + '</span>' +
+    '</div>' +
+    '<div class="user-card__count user-card__count--excl">' +
+    '<span class="user-card__count-val">' + s.excluidas + '</span>' +
+    '<span class="user-card__count-lbl">' + (s.excluidas === 1 ? 'excluída' : 'excluídas') + '</span>' +
+    '</div>' +
     '</div>' +
     '<div class="user-card__value-col">' +
-      '<span class="user-card__value-num">' + fmtValor(s.valorValido) + '</span>' +
-      '<button class="btn btn--outline btn--sm user-card__btn" type="button" onclick="verNotas(' + u.id + ')">Ver notas</button>' +
-      '</div>' +
-  '</div>';
+    '<span class="user-card__value-num">' + fmtValor(s.valorValido) + '</span>' +
+    '<button class="btn btn--outline btn--sm user-card__btn" type="button" onclick="verNotas(' + u.id + ')">Ver notas</button>' +
+    '</div>' +
+    '</div>';
 }
 
 function renderUsers() {
-  var users      = getFilteredSortedUsers();
+  var users = getFilteredSortedUsers();
   var totalPages = users.length > 0 ? Math.ceil(users.length / adminState.PER_PAGE) : 1;
   if (adminState.currentPage > totalPages) adminState.currentPage = totalPages;
 
-  var start     = (adminState.currentPage - 1) * adminState.PER_PAGE;
+  var start = (adminState.currentPage - 1) * adminState.PER_PAGE;
   var pageUsers = users.slice(start, start + adminState.PER_PAGE);
-  var gridEl    = document.getElementById('admin-users-grid');
+  var gridEl = document.getElementById('admin-users-grid');
 
   if (users.length === 0) {
     gridEl.innerHTML = '<div class="admin-empty" role="status" aria-live="polite">' +
@@ -394,7 +582,7 @@ function closeActionModal() {
   var el = document.getElementById(adminState.actionModal);
   el.classList.remove('is-open');
   el.setAttribute('aria-hidden', 'true');
-  adminState.actionModal  = null;
+  adminState.actionModal = null;
   adminState.pendingAction = null;
   if (!adminState.primaryModal) {
     document.getElementById('modal-overlay').classList.remove('is-open');
@@ -415,7 +603,7 @@ function verNotas(userId) {
 }
 
 function renderUserNotesModal(userId) {
-  var user = ADMIN_MOCK.find(function(u) { return u.id === userId; });
+  var user = ADMIN_MOCK.find(function (u) { return u.id === userId; });
   if (!user) return;
   document.getElementById('modal-user-notes-title').textContent = 'Notas de ' + user.nome;
   document.getElementById('modal-user-notes-body').innerHTML = buildNotesTabsUI(user);
@@ -424,25 +612,25 @@ function renderUserNotesModal(userId) {
 function buildNotesTabsUI(user) {
   var state = adminState.userNotesModal;
   var groups = {
-    aguardando: user.notas.filter(function(n) { return n.status === 'aguardando'; }),
-    validada:   user.notas.filter(function(n) { return n.status === 'validada'; }),
-    excluida:   user.notas.filter(function(n) { return n.status === 'excluida'; })
+    aguardando: user.notas.filter(function (n) { return n.status === 'aguardando'; }),
+    validada: user.notas.filter(function (n) { return n.status === 'validada'; }),
+    excluida: user.notas.filter(function (n) { return n.status === 'excluida'; })
   };
 
-  var activeTab  = state.activeTab;
+  var activeTab = state.activeTab;
   var activeNotes = groups[activeTab];
   var page = state.pages[activeTab];
   var total = activeNotes.length;
   var totalPages = total > 0 ? Math.ceil(total / state.PER_PAGE) : 1;
   if (page > totalPages) { state.pages[activeTab] = 1; page = 1; }
 
-  var start     = (page - 1) * state.PER_PAGE;
+  var start = (page - 1) * state.PER_PAGE;
   var pageNotes = activeNotes.slice(start, start + state.PER_PAGE);
 
   var tabsNav = '<div class="notes-tabs__nav" role="tablist">' +
     buildNoteTabButton('aguardando', 'Aguardando validação', groups.aguardando.length, activeTab) +
-    buildNoteTabButton('validada',   'Validadas',            groups.validada.length,   activeTab) +
-    buildNoteTabButton('excluida',   'Excluídas',            groups.excluida.length,   activeTab) +
+    buildNoteTabButton('validada', 'Validadas', groups.validada.length, activeTab) +
+    buildNoteTabButton('excluida', 'Excluídas', groups.excluida.length, activeTab) +
     '</div>';
 
   var notesList = '';
@@ -450,9 +638,9 @@ function buildNotesTabsUI(user) {
     notesList = '<p class="notes-empty">Nenhuma nota nesta categoria.</p>';
   } else {
     var canValidate = activeTab === 'aguardando';
-    var canDelete   = activeTab === 'aguardando';
-    var canPreview  = activeTab === 'excluida';
-    notesList = '<div class="notes-list">' + pageNotes.map(function(n) {
+    var canDelete = activeTab === 'aguardando';
+    var canPreview = activeTab === 'excluida';
+    notesList = '<div class="notes-list">' + pageNotes.map(function (n) {
       return buildNoteItem(n, canValidate, canDelete, canPreview);
     }).join('') + '</div>';
   }
@@ -461,7 +649,7 @@ function buildNotesTabsUI(user) {
     tabsNav +
     '<div class="notes-tabs__content">' + notesList + '</div>' +
     buildUserNotesPagination(page, totalPages, total) +
-  '</div>';
+    '</div>';
 }
 
 function buildNoteTabButton(tab, label, count, activeTab) {
@@ -469,7 +657,7 @@ function buildNoteTabButton(tab, label, count, activeTab) {
   return '<button class="notes-tab notes-tab--' + tab + (isActive ? ' is-active' : '') + '" ' +
     'data-notes-tab="' + tab + '" role="tab" aria-selected="' + isActive + '" type="button">' +
     escapeHtml(label) + ' <span class="notes-tab__count">(' + count + ')</span>' +
-  '</button>';
+    '</button>';
 }
 
 function buildUserNotesPagination(page, totalPages, total) {
@@ -478,7 +666,7 @@ function buildUserNotesPagination(page, totalPages, total) {
     '<button class="admin-pagination__btn" type="button" data-notes-page="prev"' + (isEmpty || page === 1 ? ' disabled' : '') + '>← Anterior</button>' +
     '<span class="admin-pagination__info">Página ' + page + ' de ' + totalPages + '</span>' +
     '<button class="admin-pagination__btn" type="button" data-notes-page="next"' + (isEmpty || page === totalPages ? ' disabled' : '') + '>Próxima →</button>' +
-  '</div>';
+    '</div>';
 }
 
 function buildNoteItem(nota, canValidate, canDelete, canPreview) {
@@ -487,7 +675,7 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
   if (canShowActions) {
     actions = '<div class="note-item__actions">';
     actions += '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '">Visualizar</button>';
-    if (canDelete)   actions += '<button class="btn-note btn-note--delete" type="button" data-note-action="delete" data-note-id="' + nota.id + '">Excluir</button>';
+    if (canDelete) actions += '<button class="btn-note btn-note--delete" type="button" data-note-action="delete" data-note-id="' + nota.id + '">Excluir</button>';
     if (canValidate) actions += '<button class="btn-note btn-note--validate" type="button" data-note-action="validate" data-note-id="' + nota.id + '">Validar</button>';
     actions += '</div>';
   }
@@ -505,13 +693,13 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
 
   return '<div class="note-item note-item--' + nota.status + '">' +
     '<div class="note-item__header">' +
-      '<div class="note-item__meta">' +
-        '<span class="note-item__number">' + nota.numeroNota + '</span>' +
-      '</div>' +
-      actions +
+    '<div class="note-item__meta">' +
+    '<span class="note-item__number">' + nota.numeroNota + '</span>' +
+    '</div>' +
+    actions +
     '</div>' +
     details + justif +
-  '</div>';
+    '</div>';
 }
 
 /* ============================================
@@ -569,8 +757,8 @@ function getKPIModalTitle(type) {
 
 function getKPINotesByType(type) {
   var list = [];
-  ADMIN_MOCK.forEach(function(u) {
-    u.notas.forEach(function(n) {
+  ADMIN_MOCK.forEach(function (u) {
+    u.notas.forEach(function (n) {
       if (n.status === type) list.push({ nota: n, user: u });
     });
   });
@@ -583,7 +771,7 @@ function getFilteredSortedKPINotes(type) {
   var list = getKPINotesByType(type);
 
   if (search) {
-    list = list.filter(function(item) {
+    list = list.filter(function (item) {
       return item.user.nome.toLowerCase().indexOf(search) !== -1;
     });
   }
@@ -610,10 +798,10 @@ function renderKPIModal(type) {
   body.innerHTML = '<div class="kpi-modal-content">' +
     buildKPIModalControls(type, totalItems) +
     '<div class="kpi-modal-results">' +
-      buildKPIModalList(type, pageItems, totalItems) +
+    buildKPIModalList(type, pageItems, totalItems) +
     '</div>' +
     buildKPIModalPagination(totalPages, totalItems) +
-  '</div>';
+    '</div>';
 }
 
 function buildKPIModalControls(type, totalItems) {
@@ -621,24 +809,24 @@ function buildKPIModalControls(type, totalItems) {
 
   return '<div class="kpi-modal-tools">' +
     '<div class="kpi-modal-tools__top">' +
-      '<div class="admin-search admin-search--modal">' +
-        '<div class="admin-search__wrap">' +
-          '<svg class="admin-search__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
-            '<circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"></circle>' +
-            '<path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>' +
-          '</svg>' +
-          '<input type="search" class="admin-search__input" data-kpi-search="' + type + '" placeholder="Buscar por nome do participante" value="' + escapeHtml(state.search) + '" autocomplete="off" aria-label="Buscar participante por nome">' +
-        '</div>' +
-      '</div>' +
-      '<div class="admin-controls admin-controls--modal">' +
-        '<label class="admin-sort-label" for="kpi-sort-' + type + '">Ordenar por</label>' +
-        '<select class="admin-sort-select" id="kpi-sort-' + type + '" data-kpi-sort="' + type + '" aria-label="Ordenar notas">' +
-          getSortOptionsMarkup(state.sort) +
-        '</select>' +
-      '</div>' +
+    '<div class="admin-search admin-search--modal">' +
+    '<div class="admin-search__wrap">' +
+    '<svg class="admin-search__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+    '<circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"></circle>' +
+    '<path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>' +
+    '</svg>' +
+    '<input type="search" class="admin-search__input" data-kpi-search="' + type + '" placeholder="Buscar por nome do participante" value="' + escapeHtml(state.search) + '" autocomplete="off" aria-label="Buscar participante por nome">' +
     '</div>' +
     '</div>' +
-  '</div>';
+    '<div class="admin-controls admin-controls--modal">' +
+    '<label class="admin-sort-label" for="kpi-sort-' + type + '">Ordenar por</label>' +
+    '<select class="admin-sort-select" id="kpi-sort-' + type + '" data-kpi-sort="' + type + '" aria-label="Ordenar notas">' +
+    getSortOptionsMarkup(state.sort) +
+    '</select>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '</div>';
 }
 
 function buildKPIModalList(type, pageItems, totalItems) {
@@ -646,7 +834,7 @@ function buildKPIModalList(type, pageItems, totalItems) {
     return '<div class="modal-empty modal-empty--compact"><p>Nenhuma nota encontrada para os filtros aplicados.</p></div>';
   }
 
-  return '<div class="kpi-notes-list">' + pageItems.map(function(item) {
+  return '<div class="kpi-notes-list">' + pageItems.map(function (item) {
     return buildKPINoteItem(item.nota, item.user, type === 'aguardando');
   }).join('') + '</div>';
 }
@@ -658,7 +846,7 @@ function buildKPIModalPagination(totalPages, totalItems) {
     '<button class="admin-pagination__btn" type="button" data-kpi-page="prev"' + (isEmpty || state.page === 1 ? ' disabled' : '') + '>← Anterior</button>' +
     '<span class="admin-pagination__info">Página ' + state.page + ' de ' + totalPages + '</span>' +
     '<button class="admin-pagination__btn" type="button" data-kpi-page="next"' + (isEmpty || state.page === totalPages ? ' disabled' : '') + '>Próxima →</button>' +
-  '</div>';
+    '</div>';
 }
 
 function renderKPIAguardandoModal() {
@@ -718,29 +906,29 @@ function buildKPINoteItem(nota, user, canValidate) {
     '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '">Visualizar</button>' +
     deleteAction +
     validateAction +
-  '</div>';
+    '</div>';
 
   return '<div class="kpi-note kpi-note--' + nota.status + '">' +
     '<div class="kpi-note__user">' +
-      '<div class="kpi-note__avatar">' + initials(user.nome) + '</div>' +
-      '<div class="kpi-note__user-info">' +
-        '<div class="kpi-note__user-name">' + user.nome + '</div>' +
-        '<div class="kpi-note__user-loc">' + user.cidade + ', ' + user.estado + '</div>' +
-      '</div>' +
+    '<div class="kpi-note__avatar">' + initials(user.nome) + '</div>' +
+    '<div class="kpi-note__user-info">' +
+    '<div class="kpi-note__user-name">' + user.nome + '</div>' +
+    '<div class="kpi-note__user-loc">' + user.cidade + ', ' + user.estado + '</div>' +
+    '</div>' +
     '</div>' +
     '<div class="kpi-note__meta">' +
-      '<div class="kpi-note__meta-main">' +
-        '<span class="kpi-note__number">' + nota.numeroNota + '</span>' +
-        '<span class="kpi-note__value">' + fmtValor(nota.valor) + '</span>' +
-      '</div>' +
-      '<div class="kpi-note__meta-sub">' +
-        '<span class="kpi-note__resp">Resp.: ' + nota.responsavelLancamento + '</span>' +
-        '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
-      '</div>' +
-      arquivo +
+    '<div class="kpi-note__meta-main">' +
+    '<span class="kpi-note__number">' + nota.numeroNota + '</span>' +
+    '<span class="kpi-note__value">' + fmtValor(nota.valor) + '</span>' +
+    '</div>' +
+    '<div class="kpi-note__meta-sub">' +
+    '<span class="kpi-note__resp">Resp.: ' + nota.responsavelLancamento + '</span>' +
+    '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
+    '</div>' +
+    arquivo +
     '</div>' +
     actions + justif +
-  '</div>';
+    '</div>';
 }
 
 /* ============================================
@@ -754,82 +942,82 @@ function refreshAll() {
     renderUserNotesModal(adminState.activeUserId);
   }
   if (adminState.primaryModal === 'modal-kpi-aguardando') renderKPIAguardandoModal();
-  if (adminState.primaryModal === 'modal-kpi-validada')   renderKPIValidadaModal();
-  if (adminState.primaryModal === 'modal-kpi-excluida')   renderKPIExcluidaModal();
+  if (adminState.primaryModal === 'modal-kpi-validada') renderKPIValidadaModal();
+  if (adminState.primaryModal === 'modal-kpi-excluida') renderKPIExcluidaModal();
 }
 
 /* ============================================
    EVENTS
    ============================================ */
 
-document.getElementById('admin-search').addEventListener('input', function() {
+document.getElementById('admin-search').addEventListener('input', function () {
   adminState.search = this.value;
   adminState.currentPage = 1;
   renderUsers();
 });
 
-document.getElementById('admin-filter-pending').addEventListener('change', function() {
+document.getElementById('admin-filter-pending').addEventListener('change', function () {
   adminState.filterPending = this.checked;
   adminState.currentPage = 1;
   renderUsers();
 });
 
-document.getElementById('admin-sort').addEventListener('change', function() {
+document.getElementById('admin-sort').addEventListener('change', function () {
   adminState.sort = this.value;
   adminState.currentPage = 1;
   renderUsers();
 });
 
-document.getElementById('admin-prev').addEventListener('click', function() {
+document.getElementById('admin-prev').addEventListener('click', function () {
   if (adminState.currentPage > 1) { adminState.currentPage--; renderUsers(); }
 });
 
-document.getElementById('admin-next').addEventListener('click', function() {
+document.getElementById('admin-next').addEventListener('click', function () {
   var total = Math.ceil(getFilteredSortedUsers().length / adminState.PER_PAGE);
   if (adminState.currentPage < total) { adminState.currentPage++; renderUsers(); }
 });
 
 /* Modal close buttons */
-document.querySelectorAll('.modal__close').forEach(function(btn) {
-  btn.addEventListener('click', function() {
+document.querySelectorAll('.modal__close').forEach(function (btn) {
+  btn.addEventListener('click', function () {
     var m = btn.closest('.modal');
     if (!m) return;
-    if (adminState.actionModal  === m.id) closeActionModal();
+    if (adminState.actionModal === m.id) closeActionModal();
     else if (adminState.primaryModal === m.id) closePrimaryModal();
   });
 });
 
 /* Click outside dialog */
-document.querySelectorAll('.modal').forEach(function(m) {
-  m.addEventListener('click', function(e) {
+document.querySelectorAll('.modal').forEach(function (m) {
+  m.addEventListener('click', function (e) {
     if (e.target !== m) return;
-    if (adminState.actionModal  === m.id) closeActionModal();
+    if (adminState.actionModal === m.id) closeActionModal();
     else if (adminState.primaryModal === m.id) closePrimaryModal();
   });
 });
 
 /* Overlay click */
-document.getElementById('modal-overlay').addEventListener('click', function() {
-  if (adminState.actionModal)  closeActionModal();
+document.getElementById('modal-overlay').addEventListener('click', function () {
+  if (adminState.actionModal) closeActionModal();
   else if (adminState.primaryModal) closePrimaryModal();
 });
 
 /* Escape key */
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
   if (e.key !== 'Escape') return;
-  if (adminState.actionModal)  closeActionModal();
+  if (adminState.actionModal) closeActionModal();
   else if (adminState.primaryModal) closePrimaryModal();
 });
 
 /* KPI cards — keyboard activation */
-document.getElementById('admin-kpis').addEventListener('keydown', function(e) {
+document.getElementById('admin-kpis').addEventListener('keydown', function (e) {
   if (e.key !== 'Enter' && e.key !== ' ') return;
   var card = e.target.closest('[role="button"]');
   if (card) { e.preventDefault(); card.click(); }
 });
 
 /* User notes modal — tab, pagination and action delegation */
-document.getElementById('modal-user-notes-body').addEventListener('click', function(e) {
+document.getElementById('modal-user-notes-body').addEventListener('click', function (e) {
   var tabBtn = e.target.closest('[data-notes-tab]');
   if (tabBtn) {
     var tab = tabBtn.getAttribute('data-notes-tab');
@@ -841,13 +1029,13 @@ document.getElementById('modal-user-notes-body').addEventListener('click', funct
 
   var pageBtn = e.target.closest('[data-notes-page]');
   if (pageBtn) {
-    var dir       = pageBtn.getAttribute('data-notes-page');
-    var state     = adminState.userNotesModal;
-    var user      = ADMIN_MOCK.find(function(u) { return u.id === adminState.activeUserId; });
+    var dir = pageBtn.getAttribute('data-notes-page');
+    var state = adminState.userNotesModal;
+    var user = ADMIN_MOCK.find(function (u) { return u.id === adminState.activeUserId; });
     if (user) {
-      var notes      = user.notas.filter(function(n) { return n.status === state.activeTab; });
+      var notes = user.notas.filter(function (n) { return n.status === state.activeTab; });
       var totalPages = notes.length > 0 ? Math.ceil(notes.length / state.PER_PAGE) : 1;
-      if (dir === 'prev' && state.pages[state.activeTab] > 1)          state.pages[state.activeTab]--;
+      if (dir === 'prev' && state.pages[state.activeTab] > 1) state.pages[state.activeTab]--;
       if (dir === 'next' && state.pages[state.activeTab] < totalPages) state.pages[state.activeTab]++;
     }
     renderUserNotesModal(adminState.activeUserId);
@@ -869,7 +1057,7 @@ document.getElementById('modal-user-notes-body').addEventListener('click', funct
 });
 
 /* KPI aguardando modal — action delegation */
-document.getElementById('modal-kpi-aguardando-body').addEventListener('click', function(e) {
+document.getElementById('modal-kpi-aguardando-body').addEventListener('click', function (e) {
   var btn = e.target.closest('[data-note-action]');
   if (!btn) return;
   var action = btn.getAttribute('data-note-action');
@@ -886,8 +1074,8 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
   openActionModal('modal-confirm-validate');
 });
 
-['modal-kpi-aguardando-body', 'modal-kpi-validada-body', 'modal-kpi-excluida-body'].forEach(function(id) {
-  document.getElementById(id).addEventListener('input', function(e) {
+['modal-kpi-aguardando-body', 'modal-kpi-validada-body', 'modal-kpi-excluida-body'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', function (e) {
     var input = e.target.closest('[data-kpi-search]');
     if (!input) return;
     adminState.kpiModalState.search = input.value;
@@ -895,7 +1083,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
     renderActiveKPIModal();
   });
 
-  document.getElementById(id).addEventListener('change', function(e) {
+  document.getElementById(id).addEventListener('change', function (e) {
     var select = e.target.closest('[data-kpi-sort]');
     if (!select) return;
     adminState.kpiModalState.sort = select.value;
@@ -903,7 +1091,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
     renderActiveKPIModal();
   });
 
-  document.getElementById(id).addEventListener('click', function(e) {
+  document.getElementById(id).addEventListener('click', function (e) {
     var previewBtn = e.target.closest('[data-note-action="preview"]');
     if (previewBtn) {
       openAttachmentPreview(parseInt(previewBtn.getAttribute('data-note-id'), 10));
@@ -918,7 +1106,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
 });
 
 /* Confirm validate */
-document.getElementById('btn-confirm-validate').addEventListener('click', function() {
+document.getElementById('btn-confirm-validate').addEventListener('click', function () {
   if (!adminState.pendingAction) return;
   var note = findNoteById(adminState.pendingAction.noteId);
   if (note) note.status = 'validada';
@@ -929,7 +1117,7 @@ document.getElementById('btn-confirm-validate').addEventListener('click', functi
 document.getElementById('btn-cancel-validate').addEventListener('click', closeActionModal);
 
 /* Confirm delete */
-document.getElementById('btn-confirm-delete').addEventListener('click', function() {
+document.getElementById('btn-confirm-delete').addEventListener('click', function () {
   var justificativa = document.getElementById('delete-justificativa').value.trim();
   var errorEl = document.getElementById('delete-justificativa-error');
   if (!justificativa) { errorEl.hidden = false; return; }
@@ -947,24 +1135,55 @@ document.getElementById('btn-confirm-delete').addEventListener('click', function
 
 document.getElementById('btn-cancel-delete').addEventListener('click', closeActionModal);
 
-document.getElementById('delete-justificativa').addEventListener('input', function() {
+document.getElementById('delete-justificativa').addEventListener('input', function () {
   if (this.value.trim()) document.getElementById('delete-justificativa-error').hidden = true;
 });
 
 document.getElementById('btn-note-preview-back').addEventListener('click', closePrimaryModal);
 
+document.getElementById('campaignSelectButton').addEventListener('click', function () {
+  campaignFilter = 'all';
+  openCampaignModal();
+});
+
+document.getElementById('campaignChangeButton').addEventListener('click', function () {
+  campaignFilter = 'all';
+  openCampaignModal();
+});
+
+document.getElementById('campaign-modal-filters').addEventListener('click', function (e) {
+  var btn = e.target.closest('[data-campaign-filter]');
+  if (!btn) return;
+  campaignFilter = btn.getAttribute('data-campaign-filter');
+  campaignPage = 1;
+  renderCampaignModal();
+});
+
+document.getElementById('campaign-modal-grid').addEventListener('click', function (e) {
+  var pageBtn = e.target.closest('[data-campaign-page]');
+  if (pageBtn) {
+    changeCampaignPage(pageBtn.getAttribute('data-campaign-page'));
+    return;
+  }
+
+  var card = e.target.closest('[data-campaign-id]');
+  if (!card) return;
+  applyCampaign(card.getAttribute('data-campaign-id'));
+  closePrimaryModal();
+});
+
 /* Mobile nav */
 var menuToggle = document.querySelector('.header__menu-toggle');
-var mobileNav  = document.querySelector('.mobile-nav');
+var mobileNav = document.querySelector('.mobile-nav');
 if (menuToggle && mobileNav) {
-  menuToggle.addEventListener('click', function() {
+  menuToggle.addEventListener('click', function () {
     var isOpen = mobileNav.classList.toggle('open');
     menuToggle.setAttribute('aria-expanded', String(isOpen));
   });
 }
 
 /* Header scroll shadow */
-window.addEventListener('scroll', function() {
+window.addEventListener('scroll', function () {
   document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 10);
 }, { passive: true });
 
@@ -974,7 +1193,4 @@ window.addEventListener('scroll', function() {
 
 ThemeSwitcher.init();
 Auth.initUserMenu();
-mergeAdminNotes();
-ensureMockAttachments();
-renderKPIs();
-renderUsers();
+applyCampaign(activeCampaignId);

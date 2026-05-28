@@ -3,10 +3,10 @@
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initAuthGuard();
   ThemeSwitcher.init();
   initHeader();
-  Auth.initUserMenu();
+  if (typeof LoginModal !== 'undefined') LoginModal.init();
+  refreshAreaAccessState();
   initMobileNav();
   initHeroBlurFade();
   initItemDetailsModal();
@@ -41,14 +41,54 @@ function initHeroBlurFade() {
 }
 
 /* ============================================
-   AUTH GUARD — área logada
+   ACCESS STATE — public entry with optional login
    ============================================ */
 
-function initAuthGuard() {
-  if (!document.body.classList.contains('area-logada')) return;
-  if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
-    window.location.href = 'index.html';
+window.refreshAreaAccessState = refreshAreaAccessState;
+
+function refreshAreaAccessState() {
+  const isLoggedIn = typeof Auth !== 'undefined' && Auth.isLoggedIn();
+
+  document.querySelectorAll('[data-auth-only]').forEach(el => {
+    el.hidden = !isLoggedIn;
+  });
+
+  document.querySelectorAll('[data-guest-only]').forEach(el => {
+    el.hidden = isLoggedIn;
+  });
+
+  if (isLoggedIn) {
+    Auth.initUserMenu();
+    initLoggedUserParticipationLinks();
+  } else {
+    Auth.initAdminNav();
   }
+
+  if (isLoggedIn || !document.body.classList.contains('area-logada')) return;
+
+  document.querySelectorAll('a[href="ranking.html#notas-fiscais"]').forEach(link => {
+    link.addEventListener('click', event => {
+      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) return;
+      event.preventDefault();
+      if (typeof LoginModal !== 'undefined') LoginModal.open();
+    });
+  });
+}
+
+function initLoggedUserParticipationLinks() {
+  if (!document.body.classList.contains('area-logada')) return;
+  if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return;
+
+  document.querySelectorAll('a[href="ranking.html#notas-fiscais"]').forEach(link => {
+    const firstTextNode = Array.from(link.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+
+    if (firstTextNode) {
+      firstTextNode.textContent = 'Registrar nota';
+      return;
+    }
+
+    link.textContent = 'Registrar nota';
+  });
 }
 
 /* ============================================
@@ -82,7 +122,7 @@ function initMobileNav() {
     document.body.style.overflow = isOpen ? 'hidden' : '';
   });
 
-  nav.querySelectorAll('a').forEach(link => {
+  nav.querySelectorAll('a, button').forEach(link => {
     link.addEventListener('click', () => {
       toggle.classList.remove('open');
       nav.classList.remove('open');

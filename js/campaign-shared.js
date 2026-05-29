@@ -198,6 +198,12 @@
       el.addEventListener('click', closeModal);
     });
 
+    var campaignModal = document.getElementById('modal-campaign-select');
+    campaignModal?.addEventListener('click', function (e) {
+      if (e.target !== campaignModal) return;
+      closeModal();
+    });
+
     document.getElementById('campaign-modal-filters')?.addEventListener('click', function (e) {
       var btn = e.target.closest('[data-campaign-filter]');
       if (!btn) return;

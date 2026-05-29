@@ -585,6 +585,9 @@ function initModal() {
   document.getElementById('modalClose')?.addEventListener('click', closeModal);
   document.getElementById('modalCloseBtn')?.addEventListener('click', closeModal);
   document.getElementById('modalOverlay')?.addEventListener('click', closeModal);
+  document.getElementById('detailsModal')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeModal();

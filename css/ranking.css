@@ -263,25 +263,44 @@
 }
 
 /* ============================================
-   MAIN LAYOUT — Two columns
+   MAIN LAYOUT — User (left) + Top 10 (right)
    ============================================ */
 
 .ranking-main {
   padding: var(--sp-8) 0;
 }
 
+/* Padrão: user col à esquerda, Top 10 à direita */
 .ranking-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 400px 1fr;
   gap: var(--sp-5);
   align-items: start;
 }
 
-/* Modo admin: oculta painel de performance, lista ocupa toda a largura */
+/* Sem Top 10 (meta-compras / quantidade-compras): user col ocupa largura máxima centralizada */
+.ranking-layout--no-top10 {
+  grid-template-columns: 1fr;
+}
+
+.ranking-layout--no-top10 .ranking-user-col {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Admin: apenas Top 10 em largura total */
 .ranking-layout--admin {
   grid-template-columns: 1fr;
   width: 100%;
   max-width: none;
+}
+
+/* Coluna de cards do usuário */
+.ranking-user-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
 }
 
 /* ============================================
@@ -444,11 +463,6 @@
    PERFORMANCE CARD
    ============================================ */
 
-.performance-col {
-  position: sticky;
-  top: calc(var(--header-h) + var(--sp-3));
-}
-
 .performance-card {
   background: #FFFFFF;
   border: 1px solid var(--neutral-200);
@@ -464,22 +478,32 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+  justify-content: center;
 }
 
-.performance-card__avatar {
-  width: 52px;
-  height: 52px;
+.performance-card__avatar-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-lg);
-  font-weight: 900;
-  color: #FFFFFF;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.30);
 }
+
+.performance-card__avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.performance-card__avatar-img[src=""],
+.performance-card__avatar-img:not([src]) {
+  display: none;
+}
+
 
 
 
@@ -512,6 +536,10 @@
   margin-bottom: var(--sp-4);
 }
 
+.performance-card__position-row.is-hidden {
+  display: none;
+}
+
 .performance-card__position-label {
   font-size: var(--text-xs);
   font-weight: 700;
@@ -528,43 +556,75 @@
   letter-spacing: -0.04em;
 }
 
-/* KPI Selector */
-.performance-card__kpi-label {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--neutral-500);
-  margin-bottom: 6px;
+/* ============================================
+   GAUGE COMPONENT — circular SVG progress
+   ============================================ */
+
+.gauge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.performance-card__kpi-select {
-  width: 100%;
-  font-family: var(--font-base);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--color-text);
-  background: var(--neutral-50);
-  border: 1.5px solid var(--neutral-200);
-  border-radius: var(--radius-sm);
-  padding: 10px 36px 10px 12px;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23737373' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
-  margin-bottom: var(--sp-3);
+.gauge[data-size="tiny"] {
+  width: 20px;
+  height: 20px;
 }
 
-.performance-card__kpi-select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.10);
+.gauge[data-size="small"] {
+  width: 32px;
+  height: 32px;
 }
 
-/* Progress bar */
+.gauge[data-size="medium"] {
+  width: 64px;
+  height: 64px;
+}
+
+.gauge[data-size="large"] {
+  width: 128px;
+  height: 128px;
+}
+
+.gauge__track {
+  stroke: var(--neutral-200, #E8E8E8);
+}
+
+
+.gauge__label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+  font-family: var(--font-base, sans-serif);
+  color: var(--color-text, #171717);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: -0.03em;
+}
+
+/* Gauge wrap inside performance card */
+.performance-card__gauge-wrap {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 14px;
+  padding: var(--sp-3) 0 var(--sp-2);
+}
+
+.performance-card__gauge-meta {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Progress bar (legacy — kept for reference, bar elements removed) */
 .performance-card__bar-header {
   display: flex;
   align-items: center;
@@ -573,15 +633,16 @@
 }
 
 .performance-card__kpi-name {
+  display: block;
   font-size: var(--text-xs);
   font-weight: 700;
   color: var(--neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .performance-card__bar-pct {
-  font-size: var(--text-sm);
-  font-weight: 900;
-  color: var(--color-primary);
+  display: none;
 }
 
 .performance-card__bar-track {
@@ -605,6 +666,462 @@
   font-size: var(--text-xs);
   color: var(--neutral-400);
   font-weight: 600;
+  text-align: center;
+  padding: 0 var(--sp-1) var(--sp-1);
+}
+
+.performance-card__meta {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ============================================
+   HISTORY CARD — Meu histórico de compras
+   ============================================ */
+
+.history-card {
+  background: #FFFFFF;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.history-card__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.history-card__title {
+  font-size: var(--text-base);
+  font-weight: 900;
+  color: var(--color-text);
+}
+
+.history-card__count {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--neutral-400);
+  background: var(--neutral-100);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+
+/* KPI summary por produto */
+.history-kpi-summary {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--neutral-100);
+  background: var(--color-surface);
+}
+
+.history-kpi-summary__label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+  margin-bottom: 10px;
+}
+
+.history-kpi-summary__grid {
+  display: flex;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+}
+
+.history-kpi-chip {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 100px;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.history-kpi-chip__name {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--neutral-500);
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.history-kpi-chip__value {
+  font-size: var(--text-base);
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+/* Lista de notas (preview) */
+.history-notes-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--sp-2) var(--sp-3);
+}
+
+/* Nota individual */
+.history-note {
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  transition: box-shadow var(--duration-fast);
+}
+
+.history-note:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.history-note__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.history-note__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-note__number {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.history-note__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  transition: background var(--duration-fast);
+}
+
+.history-note__action:hover {
+  background: var(--color-border);
+}
+
+.history-note__body {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.history-note__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.history-note__field-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--neutral-400);
+}
+
+.history-note__field-value {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.history-note__products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.history-note__product-tag {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}
+
+/* Status badges do histórico */
+.history-note__status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+
+.history-note__status--aprovada {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+.history-note__status--aguardando {
+  background: #FFF8E1;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.history-note__status--reprovada {
+  background: #FFF0F0;
+  color: #9B1C1C;
+  border: 1px solid #FECACA;
+}
+
+.history-note__status--excluida {
+  background: #F4F4F4;
+  color: #6B7280;
+  border: 1px solid #D1D5DB;
+}
+
+/* Botão "Ver todas" */
+.history-card__footer {
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  border-top: 1px solid var(--neutral-100);
+}
+
+.history-card__btn-all {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-primary);
+  font-family: var(--font-base);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast);
+}
+
+.history-card__btn-all:hover {
+  background: var(--color-border);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   HISTORY MODAL — lista completa + paginação
+   ============================================ */
+
+.modal__subtitle {
+  font-size: var(--text-sm);
+  color: var(--neutral-500);
+  margin-top: 2px;
+}
+
+#modal-history .modal__dialog {
+  max-height: min(78vh, 760px);
+}
+
+#modal-history .modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: min(62vh, 560px);
+  overflow: hidden;
+}
+
+.history-modal__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.history-modal__filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding-bottom: var(--sp-3);
+  flex-shrink: 0;
+}
+
+.history-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-filter--actions {
+  justify-content: flex-end;
+}
+
+.history-filter span {
+  color: var(--neutral-500);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.history-filter select {
+  width: 100%;
+  border: 1.5px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  color: var(--color-text);
+  font-family: var(--font-base);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
+.history-filter select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.10);
+  outline: none;
+}
+
+.history-filter__reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1.5px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  color: var(--neutral-700);
+  font-family: var(--font-base);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.history-filter__reset:hover,
+.history-filter__reset:focus-visible {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  outline: none;
+}
+
+.modal__dialog--history-preview {
+  max-width: 520px;
+  max-height: 720px;
+}
+
+.modal__body--history-preview {
+  overflow: auto;
+}
+
+.history-preview {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--neutral-200);
+  background: var(--neutral-100);
+}
+
+.history-preview__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.history-modal__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: var(--sp-3);
+  margin-top: var(--sp-3);
+  border-top: 1px solid var(--neutral-100);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.history-pagination__btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--neutral-200);
+  background: #FFFFFF;
+  color: var(--neutral-600);
+  font-family: var(--font-base);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.history-pagination__btn:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.history-pagination__btn.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.history-pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.history-pagination__btn--nav {
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 900px) {
+  .history-modal__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  #modal-history .modal__body {
+    height: min(68vh, 600px);
+  }
+
+  .history-modal__filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Status badge reprovada (invoices admin) */
+.invoice-item__status--reprovada {
+  background: #FFF0F0;
+  color: #9B1C1C;
+  border: 1px solid #FECACA;
 }
 
 /* ============================================
@@ -1152,14 +1669,15 @@
    ============================================ */
 
 @media (max-width: 1024px) {
-  .ranking-layout {
+
+  .ranking-layout,
+  .ranking-layout--no-top10 {
     grid-template-columns: 1fr;
   }
 
-  .performance-col {
-    position: static;
-    max-width: 520px;
-    width: 100%;
+  .ranking-layout--no-top10 .ranking-user-col {
+    max-width: 100%;
+    margin: 0;
   }
 
   .invoice-layout {
@@ -1180,6 +1698,14 @@
 
   .ranking-header__campaign {
     display: none;
+  }
+
+  .history-kpi-summary__grid {
+    gap: 8px;
+  }
+
+  .history-kpi-chip {
+    min-width: 80px;
   }
 }
 
@@ -1231,5 +1757,22 @@
   .ranking-footer__links {
     flex-wrap: wrap;
     gap: var(--sp-2);
+  }
+
+  .history-kpi-chip {
+    min-width: calc(50% - 4px);
+  }
+
+  .history-note__body {
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+
+  .history-modal__pagination {
+    flex-wrap: wrap;
+  }
+
+  .history-modal__filters {
+    grid-template-columns: 1fr;
   }
 }

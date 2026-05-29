@@ -904,6 +904,7 @@ function buildKPINoteItem(nota, user, canValidate) {
   var arquivo = '<span class="kpi-note__file"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span>';
   var actions = '<div class="kpi-note__actions">' +
     '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '">Visualizar</button>' +
+    '<a class="btn-note btn-note--attachment" href="' + getMockAttachmentSrc(nota) + '" download="' + getAttachmentFileLabel(nota) + '">Baixar</a>' +
     deleteAction +
     validateAction +
     '</div>';

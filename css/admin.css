@@ -43,18 +43,17 @@
 }
 
 .admin-intro__title {
+  display: flex;
+  flex-direction: column;
   font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 900;
   color: var(--color-text);
   line-height: 1.15;
-  margin-bottom: var(--sp-1);
 }
 
-.admin-intro__desc {
-  font-size: var(--text-base);
-  color: var(--neutral-500);
-  max-width: 560px;
-  margin-top: var(--sp-1);
+.admin-intro__headline {
+  display: block;
+  white-space: nowrap;
 }
 
 .admin-selected-campaign {
@@ -62,8 +61,8 @@
   align-items: center;
   gap: 12px;
   width: fit-content;
-  margin-top: 16px;
-  padding: 10px 14px 10px 0px;
+  margin-top: 8px;
+  /* padding: 10px 14px 10px 0px; */
   background: #FFFFFF;
   color: var(--color-text);
   font-size: var(--text-sm);
@@ -793,7 +792,8 @@ body.modal-open {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 80%;
+  /* max-width: 80%; */
+  /* height: 90vh; */
   max-height: 99vh;
   display: flex;
   flex-direction: column;
@@ -1463,7 +1463,7 @@ body.modal-open {
   display: grid;
   grid-template-columns: minmax(220px, 1fr) minmax(360px, 1.35fr) auto;
   align-items: center;
-  column-gap: var(--sp-5);
+  column-gap: var(--sp-4);
   row-gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
   border: 1px solid var(--neutral-200);
@@ -1548,14 +1548,33 @@ body.modal-open {
 
 .kpi-note__date,
 .kpi-note__file,
+.kpi-note__origem,
 .kpi-note__resp {
   font-size: var(--text-xs);
   color: var(--neutral-500);
   min-width: 0;
 }
 
+.kpi-note__left,
+.kpi-note__side {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kpi-note__side {
+  align-items: flex-end;
+}
+
+.kpi-note__origem {
+  font-weight: 800;
+  color: var(--color-text);
+}
+
 .kpi-note__file,
 .kpi-note__resp {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

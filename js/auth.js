@@ -143,6 +143,19 @@ const Auth = (() => {
       btn.classList.toggle('is-active', active);
       btn.setAttribute('aria-checked', String(active));
     });
+
+    updateStatusPageLabels();
+  }
+
+  function getStatusPageLabel() {
+    return getRankingView() === 'pontos-acumulados' ? 'Ranking' : 'Status';
+  }
+
+  function updateStatusPageLabels() {
+    const label = getStatusPageLabel();
+    document.querySelectorAll('[data-status-page-label]').forEach(el => {
+      el.textContent = label;
+    });
   }
 
   function ensureRankingViewMenu(userDropdown, logoutButton) {
@@ -252,6 +265,8 @@ const Auth = (() => {
     getMenuUser,
     getRankingView,
     setRankingView,
+    getStatusPageLabel,
+    updateStatusPageLabels,
     initUserMenu,
     initAdminNav
   };

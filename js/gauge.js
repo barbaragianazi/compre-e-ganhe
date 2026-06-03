@@ -74,7 +74,7 @@ const Gauge = (() => {
     if (showValue) {
       label = document.createElement('span');
       label.className = 'gauge__label';
-      label.style.fontSize = Math.max(8, Math.floor(size * 0.195)) + 'px';
+      label.style.fontSize = Math.max(8, Math.floor(size * 0.155)) + 'px';
       label.textContent = '0%';
       el.appendChild(label);
     }

@@ -19,7 +19,6 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
-
 <body class="ranking-page">
 
   <!-- ==========================================
@@ -48,7 +47,7 @@
         <!-- Desktop nav -->
         <nav class="header__nav" aria-label="Menu principal">
           <a href="area-logada.html#promocao" class="header__nav-link">Promoção</a>
-          <a href="ranking.html" class="header__nav-link active" aria-current="page">Status</a>
+          <a href="ranking.html" class="header__nav-link active" aria-current="page" data-status-page-label>Status</a>
           <a href="winners.html" class="header__nav-link">Ganhadores</a>
           <a href="admin.html" class="header__nav-link" data-admin-nav hidden>Administração</a>
         </nav>
@@ -90,7 +89,7 @@
   <!-- Mobile nav drawer -->
   <nav class="mobile-nav" aria-label="Menu mobile">
     <a href="area-logada.html#promocao">Promoção</a>
-    <a href="ranking.html" class="active" aria-current="page">Status</a>
+    <a href="ranking.html" class="active" aria-current="page" data-status-page-label>Status</a>
     <a href="winners.html">Ganhadores</a>
     <a href="admin.html" data-admin-nav hidden>Admin</a>
     <a href="ranking.html#notas-fiscais" class="btn btn--primary"
@@ -110,14 +109,14 @@
           <h1 class="ranking-intro__title reveal reveal-delay-1" id="ranking-page-title">
             <div class="ranking-intro__eyebrow reveal">
               <span class="ranking-intro__line" aria-hidden="true"></span>
-              Status
+              <span data-status-page-label>Status</span>
               <span class="ranking-intro__line" aria-hidden="true"></span>
             </div>
+            <span class="ranking-intro__headline">Meu <span data-status-page-label style="text-transform: lowercase;">status</span> na campanha</span>
             <div class="admin-selected-campaign reveal" aria-live="polite" data-admin-only hidden>
               <span class="js-selected-campaign">Campanha selecionada: Simparic Trio — Compre &amp; Ganhe</span>
               <button class="admin-selected-campaign__btn js-campaign-change" type="button">Alterar</button>
             </div>
-            Meu status na campanha
           </h1>
           <div class="ranking-intro__image" aria-hidden="true">
             <svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -195,37 +194,28 @@
           <div class="ranking-user-col" id="ranking-user-col">
 
             <!-- Card: Meu desempenho -->
-            <div class="performance-card reveal" id="performance-card" aria-label="Meu desempenho">
+            <!-- <div class="performance-card reveal" id="performance-card" aria-label="Meu desempenho">
 
 
 
-              <div class="performance-card__body">
-                <div class="performance-card__position-row" id="position-row" aria-label="Posição atual no ranking">
-                  <span class="performance-card__position-label">Sua posição</span>
-                  <span class="performance-card__position-value">#42</span>
-                </div>
-
-
-
-              </div>
-            </div><!-- /.performance-card -->
-
+            </div>/.performance-card -->
+            
             <!-- Card: Meu histórico de compras -->
             <div class="history-card reveal" id="history-card" aria-label="Meu histórico de compras">
               <div class="history-card__head">
-                <div class="histoy-title-count">
+                <div class="history-card__title-wrap">
                   <h3 class="history-card__title">Meu histórico de compras</h3>
                   <span class="history-card__count" id="history-count" aria-live="polite">0 notas</span>
                 </div>
-                <div class="performance-card__gauge-wrap">
-                  <div class="gauge" id="kpi-gauge" data-value="0" data-size="medium" data-show-value="true"
+                <div class="history-card__metric">
+                  <span class="performance-card__kpi-name" id="kpi-name">—</span>
+                  <span class="performance-card__bar-pct" id="kpi-pct" aria-hidden="true"></span>
+                  <div class="performance-card__bar-text" id="kpi-text"></div>
+                </div>
+                <div class="history-card__gauge">
+                  <div class="gauge" id="kpi-gauge" data-value="0" data-size="large" data-show-value="true"
                     role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
                     aria-label="Progresso do KPI">
-                  </div>
-                  <div class="performance-card__gauge-meta">
-                    <span class="performance-card__kpi-name" id="kpi-name">—</span>
-                    <span class="performance-card__bar-pct" id="kpi-pct" aria-hidden="true"></span>
-                    <div class="performance-card__bar-text" id="kpi-text"></div>
                   </div>
                 </div>
               </div>
@@ -388,7 +378,6 @@
       <div class="modal__head">
         <div>
           <h2 class="modal__title" id="modal-history-title">Meu histórico de compras</h2>
-          <p class="modal__subtitle" id="modal-history-subtitle">Todas as notas registradas</p>
         </div>
         <button class="modal__close" id="modal-history-close" type="button" aria-label="Fechar modal">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -416,7 +405,6 @@
       <div class="modal__head">
         <div>
           <h2 class="modal__title" id="modal-history-preview-title">Visualizar nota</h2>
-          <p class="modal__subtitle" id="modal-history-preview-subtitle">Prévia da nota de compra</p>
         </div>
         <button class="modal__close" id="modal-history-preview-close" type="button" aria-label="Fechar prévia">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -438,7 +426,6 @@
       <div class="modal__head">
         <div>
           <h2 class="modal__title" id="modal-campaign-select-title">Selecionar campanha</h2>
-          <p class="modal__subtitle">Escolha a campanha para atualizar os dados do ranking.</p>
         </div>
         <button class="modal__close" type="button" aria-label="Fechar modal">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

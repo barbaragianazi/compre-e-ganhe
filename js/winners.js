@@ -297,6 +297,10 @@ const state = {
   year: 2026,
   month: 'maio',
   activeTab: 'performance',
+  rankingView: typeof Auth !== 'undefined' && Auth.getRankingView ? Auth.getRankingView() : 'pontos-acumulados',
+  allWinnersPage: 1,
+  allWinnersSearch: '',
+  allWinnersPrize: 'all',
 };
 
 const WINNERS_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
@@ -310,6 +314,44 @@ const WINNERS_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
 const PLACE_MEDALS = ['🥇', '🥈', '🥉'];
 const PLACE_LABELS = ['1º lugar', '2º lugar', '3º lugar'];
 const PLACE_CLASSES = ['first', 'second', 'third'];
+const NON_PODIUM_VIEWS = ['meta-compras', 'quantidade-compras'];
+const ALL_WINNERS_PAGE_SIZE = 12;
+const RANKING_VIEW_LABELS = {
+  'pontos-acumulados': 'Pontos acumulados',
+  'meta-compras': 'Meta de compras',
+  'quantidade-compras': 'Quantidade de compras',
+};
+const CONTEMPLATED_PRIZES = [
+  'Mochila notebook',
+  'Squeeze térmica',
+  'Kit escritório',
+  'Garrafa térmica',
+  'Caneta premium',
+  'Caderno premium',
+  'Voucher de compras',
+  'Kit clínica',
+];
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isNonPodiumView() {
+  return NON_PODIUM_VIEWS.includes(state.rankingView);
+}
+
+function getRankingViewLabel() {
+  return RANKING_VIEW_LABELS[state.rankingView] || RANKING_VIEW_LABELS['pontos-acumulados'];
+}
+
+function getActiveCampaignTitle() {
+  return window.CampaignSelector ? CampaignSelector.getActiveCampaign().title : 'Campanha selecionada';
+}
 
 function getPeriodData() {
   const baseData = (mockAwards[state.year]?.[state.month]) || { performanceWinners: [], luckyNumberWinners: [] };
@@ -354,6 +396,49 @@ function getPeriodData() {
   return { performanceWinners, luckyNumberWinners };
 }
 
+function getCampaignUsersForWinners() {
+  if (window.CampaignSelector && WINNERS_BASE_ADMIN_MOCK.length) {
+    return CampaignSelector.buildCampaignMock(WINNERS_BASE_ADMIN_MOCK, CampaignSelector.getActiveCampaign());
+  }
+  return WINNERS_BASE_ADMIN_MOCK;
+}
+
+function buildContemplatedWinners() {
+  const users = getCampaignUsersForWinners();
+  const campaignTitle = getActiveCampaignTitle();
+  const viewLabel = getRankingViewLabel();
+  const fallbackNames = mockAwards[2026].maio.luckyNumberWinners.map(winner => winner.name);
+  const sourceNames = users.length ? users.map(user => user.nome) : fallbackNames;
+
+  return Array.from({ length: 120 }, (_, index) => {
+    const user = users[index % Math.max(users.length, 1)];
+    const name = sourceNames[index % sourceNames.length] || 'Participante contemplado';
+    const prize = CONTEMPLATED_PRIZES[(index + state.rankingView.length) % CONTEMPLATED_PRIZES.length];
+    const day = String((index % 28) + 1).padStart(2, '0');
+    const monthNumber = String(['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'].indexOf(state.month) + 1 || 5).padStart(2, '0');
+
+    return {
+      id: `${state.rankingView}-${index + 1}`,
+      name,
+      location: user ? `${user.cidade}, ${user.estado}` : 'Brasil',
+      campaign: campaignTitle,
+      combo: viewLabel,
+      prize,
+      date: `${day}/${monthNumber}/${state.year}`,
+      code: `CONT-${String(index + 1).padStart(3, '0')}`,
+    };
+  });
+}
+
+function getFilteredAllWinners() {
+  const search = state.allWinnersSearch.trim().toLowerCase();
+  return buildContemplatedWinners().filter(winner => {
+    const matchesSearch = !search || winner.name.toLowerCase().includes(search);
+    const matchesPrize = state.allWinnersPrize === 'all' || winner.prize === state.allWinnersPrize;
+    return matchesSearch && matchesPrize;
+  });
+}
+
 function initCampaignSelectorAccess() {
   if (window.CampaignSelector) {
     CampaignSelector.init();
@@ -361,6 +446,13 @@ function initCampaignSelectorAccess() {
   }
 
   window.addEventListener('campaign:changed', renderAll);
+  window.addEventListener('ranking-view:changed', event => {
+    state.rankingView = event.detail?.view?.id || Auth.getRankingView?.() || 'pontos-acumulados';
+    state.allWinnersPage = 1;
+    state.allWinnersSearch = '';
+    state.allWinnersPrize = 'all';
+    renderAll();
+  });
 
   window.addEventListener('storage', event => {
     if (!window.CampaignSelector || event.key !== CampaignSelector.key) return;
@@ -383,6 +475,12 @@ window.refreshCampaignWinners = renderAll;
 function renderPodium(winners) {
   const container = document.getElementById('podiumContainer');
   if (!container) return;
+
+  container.hidden = isNonPodiumView();
+  if (isNonPodiumView()) {
+    container.innerHTML = '';
+    return;
+  }
 
   if (!winners.length) {
     container.innerHTML = `
@@ -424,8 +522,19 @@ function renderPodium(winners) {
    ============================================ */
 
 function renderPerfTable(winners) {
+  const results = document.getElementById('performanceResults');
+  const tableWrap = document.getElementById('performanceTableWrap');
   const tbody = document.getElementById('perfTableBody');
-  if (!tbody) return;
+  if (!tbody || !results || !tableWrap) return;
+
+  if (isNonPodiumView()) {
+    tableWrap.hidden = true;
+    renderContemplatedSummary(results);
+    return;
+  }
+
+  results.innerHTML = '';
+  tableWrap.hidden = false;
 
   if (!winners.length) {
     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:var(--sp-5);color:var(--neutral-400);">Nenhum dado disponível para este período.</td></tr>`;
@@ -445,6 +554,49 @@ function renderPerfTable(winners) {
       <td class="perf-table__result">${w.result}</td>
       <td class="perf-table__prize">${w.prize}</td>
     </tr>`).join('');
+}
+
+function renderContemplatedSummary(container) {
+  const winners = buildContemplatedWinners().slice(0, 10);
+  if (!winners.length) {
+    container.innerHTML = `<div class="winners-empty">Nenhum ganhador contemplado disponível.</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="contemplated-summary">
+      <div class="contemplated-summary__head">
+        <div>
+          <p class="contemplated-summary__eyebrow">${escapeHtml(getRankingViewLabel())}</p>
+          <h3 class="contemplated-summary__title">Ganhadores contemplados</h3>
+        </div>
+        <button class="btn btn--primary contemplated-summary__btn" type="button" id="openAllWinners">
+          Ver todos os ganhadores
+        </button>
+      </div>
+      <div class="contemplated-grid" role="list">
+        ${winners.map(renderContemplatedCard).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('openAllWinners')?.addEventListener('click', openAllWinnersModal);
+  reobserveReveal();
+}
+
+function renderContemplatedCard(winner) {
+  return `
+    <article class="contemplated-card reveal" role="listitem">
+      <div class="contemplated-card__main">
+        <span class="contemplated-card__code">${escapeHtml(winner.code)}</span>
+        <strong class="contemplated-card__name">${escapeHtml(winner.name)}</strong>
+        <span class="contemplated-card__location">${escapeHtml(winner.location)}</span>
+      </div>
+      <div class="contemplated-card__meta">
+        <span>${escapeHtml(winner.combo)}</span>
+        <strong>${escapeHtml(winner.prize)}</strong>
+        <span>${escapeHtml(winner.date)}</span>
+      </div>
+    </article>`;
 }
 
 /* ============================================
@@ -486,6 +638,7 @@ function renderLuckyList(winners) {
    ============================================ */
 
 function renderAll() {
+  if (Auth.getRankingView) state.rankingView = Auth.getRankingView();
   const data = getPeriodData();
   renderPodium(data.performanceWinners);
   renderPerfTable(data.performanceWinners);
@@ -534,6 +687,13 @@ function initTabs() {
 function initFilters() {
   const yearSel  = document.getElementById('filterYear');
   const monthSel = document.getElementById('filterMonth');
+  const filtersSection = document.querySelector('.winners-filters');
+
+  if (filtersSection && Auth.getRole && Auth.getRole() !== 'admin') {
+    filtersSection.hidden = true;
+    document.body.classList.add('winners-page--user');
+  }
+
   if (!yearSel || !monthSel) return;
 
   yearSel.addEventListener('change', () => {
@@ -575,6 +735,79 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
+function openAllWinnersModal() {
+  const modal = document.getElementById('modal-all-winners');
+  if (!modal) return;
+
+  state.allWinnersPage = 1;
+  populateAllWinnersPrizeFilter();
+  renderAllWinnersModal();
+  modal.removeAttribute('hidden');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('allWinnersClose')?.focus();
+}
+
+function closeAllWinnersModal() {
+  const modal = document.getElementById('modal-all-winners');
+  if (!modal) return;
+  modal.setAttribute('hidden', '');
+  document.body.style.overflow = '';
+}
+
+function populateAllWinnersPrizeFilter() {
+  const select = document.getElementById('allWinnersPrizeFilter');
+  if (!select) return;
+
+  const prizes = Array.from(new Set(buildContemplatedWinners().map(winner => winner.prize)));
+  select.innerHTML = '<option value="all">Todos os prêmios</option>' +
+    prizes.map(prize => `<option value="${escapeHtml(prize)}">${escapeHtml(prize)}</option>`).join('');
+  select.value = state.allWinnersPrize;
+}
+
+function renderAllWinnersModal() {
+  const title = document.getElementById('allWinnersTitle');
+  const listEl = document.getElementById('allWinnersList');
+  const paginationEl = document.getElementById('allWinnersPagination');
+  const searchEl = document.getElementById('allWinnersSearch');
+  const prizeEl = document.getElementById('allWinnersPrizeFilter');
+  if (!listEl || !paginationEl) return;
+
+  if (title) title.textContent = `Todos os ganhadores - ${getRankingViewLabel()}`;
+  if (searchEl) searchEl.value = state.allWinnersSearch;
+  if (prizeEl) prizeEl.value = state.allWinnersPrize;
+
+  const filtered = getFilteredAllWinners();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ALL_WINNERS_PAGE_SIZE));
+  if (state.allWinnersPage > totalPages) state.allWinnersPage = totalPages;
+  const start = (state.allWinnersPage - 1) * ALL_WINNERS_PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + ALL_WINNERS_PAGE_SIZE);
+
+  listEl.innerHTML = pageItems.length
+    ? pageItems.map(renderAllWinnerRow).join('')
+    : '<div class="winners-empty">Nenhum ganhador encontrado para os filtros aplicados.</div>';
+
+  paginationEl.innerHTML = `
+    <button class="admin-pagination__btn" type="button" data-all-winners-page="prev"${state.allWinnersPage === 1 ? ' disabled' : ''}>← Anterior</button>
+    <span class="admin-pagination__info">Página ${state.allWinnersPage} de ${totalPages}</span>
+    <button class="admin-pagination__btn" type="button" data-all-winners-page="next"${state.allWinnersPage === totalPages ? ' disabled' : ''}>Próxima →</button>`;
+}
+
+function renderAllWinnerRow(winner) {
+  return `
+    <article class="all-winner-row" role="listitem">
+      <div>
+        <span class="all-winner-row__code">${escapeHtml(winner.code)}</span>
+        <strong class="all-winner-row__name">${escapeHtml(winner.name)}</strong>
+        <span class="all-winner-row__location">${escapeHtml(winner.location)}</span>
+      </div>
+      <div>
+        <span>${escapeHtml(winner.campaign)}</span>
+        <strong>${escapeHtml(winner.prize)}</strong>
+        <span>${escapeHtml(winner.date)}</span>
+      </div>
+    </article>`;
+}
+
 function bindModalTriggers() {
   document.querySelectorAll('[data-modal-type]').forEach(btn => {
     btn.addEventListener('click', () => openModal(btn.dataset.modalType));
@@ -588,9 +821,35 @@ function initModal() {
   document.getElementById('detailsModal')?.addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
+  document.getElementById('allWinnersClose')?.addEventListener('click', closeAllWinnersModal);
+  document.getElementById('allWinnersOverlay')?.addEventListener('click', closeAllWinnersModal);
+  document.getElementById('modal-all-winners')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAllWinnersModal();
+  });
+  document.getElementById('allWinnersSearch')?.addEventListener('input', e => {
+    state.allWinnersSearch = e.target.value;
+    state.allWinnersPage = 1;
+    renderAllWinnersModal();
+  });
+  document.getElementById('allWinnersPrizeFilter')?.addEventListener('change', e => {
+    state.allWinnersPrize = e.target.value;
+    state.allWinnersPage = 1;
+    renderAllWinnersModal();
+  });
+  document.getElementById('allWinnersPagination')?.addEventListener('click', e => {
+    const btn = e.target.closest('[data-all-winners-page]');
+    if (!btn) return;
+    const totalPages = Math.max(1, Math.ceil(getFilteredAllWinners().length / ALL_WINNERS_PAGE_SIZE));
+    if (btn.dataset.allWinnersPage === 'prev' && state.allWinnersPage > 1) state.allWinnersPage--;
+    if (btn.dataset.allWinnersPage === 'next' && state.allWinnersPage < totalPages) state.allWinnersPage++;
+    renderAllWinnersModal();
+  });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      closeModal();
+      closeAllWinnersModal();
+    }
   });
 }
 

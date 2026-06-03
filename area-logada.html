@@ -44,10 +44,10 @@
 
         <!-- Desktop Nav -->
         <nav class="header__nav" aria-label="Menu principal">
-          <a href="#promocao" class="header__nav-link active">Promoção</a>
-          <a href="ranking.html" class="header__nav-link">Status</a>
-          <a href="winners.html" class="header__nav-link">Ganhadores</a>
-          <a href="admin.html" class="header__nav-link" data-admin-nav hidden>Administração</a>
+          <a href="#promocao" class="header__nav-link active" data-auth-only hidden>Promoção</a>
+          <a href="ranking.html" class="header__nav-link" data-auth-only hidden data-status-page-label>Status</a>
+          <a href="winners.html" class="header__nav-link" data-auth-only hidden>Ganhadores</a>
+          <a href="admin.html" class="header__nav-link" data-auth-only data-admin-nav hidden>Administração</a>
         </nav>
 
         <!-- Actions -->
@@ -80,10 +80,10 @@
 
   <!-- Mobile nav drawer -->
   <nav class="mobile-nav" aria-label="Menu mobile">
-    <a href="#promocao">Promoção</a>
-    <a href="ranking.html">Status</a>
-    <a href="winners.html">Ganhadores</a>
-    <a href="admin.html" data-admin-nav hidden>Admin</a>
+    <a href="#promocao" data-auth-only hidden>Promoção</a>
+    <a href="ranking.html" data-auth-only hidden data-status-page-label>Status</a>
+    <a href="winners.html" data-auth-only hidden>Ganhadores</a>
+    <a href="admin.html" data-auth-only data-admin-nav hidden>Admin</a>
     <a href="ranking.html#notas-fiscais" class="btn btn--primary" style="margin-top:8px; display:flex; justify-content:center;">Participar agora</a>
   </nav>
 
@@ -167,7 +167,7 @@
             </div>
 
             <!-- Floating card: gift highlight -->
-            <div class="hero__card hero__card--gift" aria-hidden="true">
+            <div class="hero__card hero__card--gift" aria-hidden="true" data-auth-only hidden>
               <div class="hero__card-inner">
                 <div>
                   <div class="hero__card-label">Brinde destaque</div>
@@ -179,7 +179,7 @@
             </div>
 
             <!-- Floating card: ranking -->
-            <div class="hero__card hero__card--rank" aria-hidden="true">
+            <div class="hero__card hero__card--rank" aria-hidden="true" data-auth-only hidden>
               <div class="hero__card-label">Sua posição</div>
               <div class="hero__card-value">#12</div>
               <div class="hero__card-sub">de 1.200 participantes</div>
@@ -515,7 +515,7 @@
               
             </div>
             <div>
-              <img src="assets/images/passo-a-passo.png" alt="" class="src">
+              <img src="assets/images/passo-a-passo.png" alt="" class="cta-final__content">
             </div>
         </div>
       </div>

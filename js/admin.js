@@ -122,14 +122,15 @@ function applyCampaign(campaignId) {
   adminState.sort = 'name-asc';
   adminState.activeKPIModal = null;
   adminState.activeUserId = null;
-  updateCampaignLabel();
+  updateCampaignLabels();
   renderKPIs();
   renderUsers();
 }
 
-function updateCampaignLabel() {
-  var el = document.getElementById('admin-selected-campaign');
-  if (el) el.textContent = 'Campanha selecionada: ' + getActiveCampaign().title;
+function updateCampaignLabels() {
+  document.querySelectorAll('.js-selected-campaign').forEach(function (el) {
+    el.textContent = 'Campanha selecionada: ' + getActiveCampaign().title;
+  });
 }
 
 function openCampaignModal() {
@@ -293,6 +294,10 @@ function statusLabel(s) {
   return { aguardando: 'Aguardando', validada: 'Validada', excluida: 'Excluída' }[s] || s;
 }
 
+function origemLabel(origem) {
+  return { manual: 'Manual', 'sell-out': 'Sell-Out' }[origem] || 'Manual';
+}
+
 function canDeleteNote(nota) {
   return nota && nota.status === 'aguardando';
 }
@@ -303,10 +308,15 @@ function getExclusionJustification(nota) {
 }
 
 function ensureMockAttachments() {
-  ADMIN_MOCK.forEach(function (user) {
-    user.notas.forEach(function (nota) {
+  ADMIN_MOCK.forEach(function (user, userIndex) {
+    user.notas.forEach(function (nota, noteIndex) {
       if (!nota.arquivoNome) {
         nota.arquivoNome = 'anexo-' + nota.numeroNota.toLowerCase() + '.jpg';
+      }
+      if (!nota.origem) {
+        nota.origem = nota.numeroNota && nota.numeroNota.indexOf('NF-A') === 0
+          ? 'manual'
+          : ((userIndex + noteIndex) % 2 === 0 ? 'sell-out' : 'manual');
       }
     });
   });
@@ -639,7 +649,7 @@ function buildNotesTabsUI(user) {
   } else {
     var canValidate = activeTab === 'aguardando';
     var canDelete = activeTab === 'aguardando';
-    var canPreview = activeTab === 'excluida';
+    var canPreview = true;
     notesList = '<div class="notes-list">' + pageNotes.map(function (n) {
       return buildNoteItem(n, canValidate, canDelete, canPreview);
     }).join('') + '</div>';
@@ -670,11 +680,12 @@ function buildUserNotesPagination(page, totalPages, total) {
 }
 
 function buildNoteItem(nota, canValidate, canDelete, canPreview) {
-  var canShowActions = canValidate || canDelete || (canPreview !== false && nota.arquivoNome);
+  var canPreviewAttachment = canPreview !== false && nota.arquivoNome;
+  var canShowActions = canValidate || canDelete || canPreviewAttachment;
   var actions = '';
   if (canShowActions) {
     actions = '<div class="note-item__actions">';
-    actions += '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '">Visualizar</button>';
+    if (canPreviewAttachment) actions += '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>';
     if (canDelete) actions += '<button class="btn-note btn-note--delete" type="button" data-note-action="delete" data-note-id="' + nota.id + '">Excluir</button>';
     if (canValidate) actions += '<button class="btn-note btn-note--validate" type="button" data-note-action="validate" data-note-id="' + nota.id + '">Validar</button>';
     actions += '</div>';
@@ -683,8 +694,9 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
   var details = '<div class="note-item__details">' +
     '<div class="note-detail"><span class="note-detail__label">Valor</span><span class="note-detail__value note-detail__value--valor">' + fmtValor(nota.valor) + '</span></div>' +
     '<div class="note-detail"><span class="note-detail__label">Data</span><span class="note-detail__value">' + fmtData(nota.data) + '</span></div>' +
+    '<div class="note-detail"><span class="note-detail__label">Origem</span><span class="note-detail__value">' + origemLabel(nota.origem) + '</span></div>' +
     '<div class="note-detail"><span class="note-detail__label">Responsável</span><span class="note-detail__value">' + nota.responsavelLancamento + '</span></div>' +
-    '<div class="note-detail"><span class="note-detail__label">Arquivo</span><span class="note-detail__value note-detail__value--file"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span></div>' +
+    '<div class="note-detail"><span class="note-detail__label">Arquivo</span><span class="note-detail__value note-detail__value--file" title="' + escapeHtml(getAttachmentFileLabel(nota)) + '"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span></div>' +
     '</div>';
 
   var justif = nota.status === 'excluida'
@@ -901,10 +913,11 @@ function buildKPINoteItem(nota, user, canValidate) {
   var justif = nota.status === 'excluida'
     ? '<div class="kpi-note__justificativa"><span class="kpi-note__just-label">Justificativa:</span> <span class="kpi-note__just-text">' + escapeHtml(getExclusionJustification(nota)) + '</span></div>'
     : '';
-  var arquivo = '<span class="kpi-note__file"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span>';
+  var arquivoNome = getAttachmentFileLabel(nota);
+  var arquivo = '<span class="kpi-note__file" title="' + escapeHtml(arquivoNome) + '"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + arquivoNome + '</span>';
   var actions = '<div class="kpi-note__actions">' +
-    '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '">Visualizar</button>' +
-    '<a class="btn-note btn-note--attachment" href="' + getMockAttachmentSrc(nota) + '" download="' + getAttachmentFileLabel(nota) + '">Baixar</a>' +
+    '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>' +
+    '<a class="btn-note btn-note--attachment" href="' + getMockAttachmentSrc(nota) + '" download="' + getAttachmentFileLabel(nota) + '"><i class="fa-solid fa-download" aria-hidden="true"></i></a>' +
     deleteAction +
     validateAction +
     '</div>';
@@ -923,10 +936,15 @@ function buildKPINoteItem(nota, user, canValidate) {
     '<span class="kpi-note__value">' + fmtValor(nota.valor) + '</span>' +
     '</div>' +
     '<div class="kpi-note__meta-sub">' +
+    '<span class="kpi-note__left">' +
     '<span class="kpi-note__resp">Resp.: ' + nota.responsavelLancamento + '</span>' +
-    '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
-    '</div>' +
     arquivo +
+    '</span>' +
+    '<span class="kpi-note__side">' +
+    '<span class="kpi-note__date">' + fmtData(nota.data) + '</span>' +
+    '<span class="kpi-note__origem">' + origemLabel(nota.origem) + '</span>' +
+    '</span>' +
+    '</div>' +
     '</div>' +
     actions + justif +
     '</div>';
@@ -1142,14 +1160,11 @@ document.getElementById('delete-justificativa').addEventListener('input', functi
 
 document.getElementById('btn-note-preview-back').addEventListener('click', closePrimaryModal);
 
-document.getElementById('campaignSelectButton').addEventListener('click', function () {
-  campaignFilter = 'all';
-  openCampaignModal();
-});
-
-document.getElementById('campaignChangeButton').addEventListener('click', function () {
-  campaignFilter = 'all';
-  openCampaignModal();
+document.querySelectorAll('.js-campaign-menu-action, .js-campaign-change').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    campaignFilter = 'all';
+    openCampaignModal();
+  });
 });
 
 document.getElementById('campaign-modal-filters').addEventListener('click', function (e) {

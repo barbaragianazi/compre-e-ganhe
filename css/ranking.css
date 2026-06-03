@@ -220,7 +220,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-primary);
-  margin-bottom: var(--sp-2);
+  margin-bottom: var(--sp-1);
 }
 
 .ranking-intro__line {
@@ -231,14 +231,19 @@
   opacity: 0.4;
 }
 
-.ranking-intro__title {
+.ranking-intro__title{
   display: flex;
   flex-direction: column;
   font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 900;
   color: var(--color-text);
   line-height: 1.15;
-  margin-bottom: var(--sp-1);
+  /* margin-bottom: var(--sp-1); */
+}
+
+.ranking-intro__headline {
+  display: block;
+  white-space: nowrap;
 }
 
 .ranking-intro__image {
@@ -267,13 +272,13 @@
    ============================================ */
 
 .ranking-main {
-  padding: var(--sp-8) 0;
+  padding: var(--sp-2) 0;
 }
 
 /* Padrão: user col à esquerda, Top 10 à direita */
 .ranking-layout {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 570px 1fr;
   gap: var(--sp-5);
   align-items: start;
 }
@@ -520,41 +525,7 @@
   margin-top: 2px;
 }
 
-.performance-card__body {
-  padding: var(--sp-3) var(--sp-4) var(--sp-4);
-}
 
-/* Position row */
-.performance-card__position-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--sp-3);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--sp-4);
-}
-
-.performance-card__position-row.is-hidden {
-  display: none;
-}
-
-.performance-card__position-label {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--neutral-500);
-}
-
-.performance-card__position-value {
-  font-size: var(--text-3xl);
-  font-weight: 900;
-  color: var(--color-text);
-  line-height: 1;
-  letter-spacing: -0.04em;
-}
 
 /* ============================================
    GAUGE COMPONENT — circular SVG progress
@@ -584,8 +555,8 @@
 }
 
 .gauge[data-size="large"] {
-  width: 128px;
-  height: 128px;
+  width: 82px;
+  height: 82px;
 }
 
 .gauge__track {
@@ -598,7 +569,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-weight: 900;
+  font-weight: 700;
   font-family: var(--font-base, sans-serif);
   color: var(--color-text, #171717);
   line-height: 1;
@@ -606,6 +577,7 @@
   pointer-events: none;
   white-space: nowrap;
   letter-spacing: -0.03em;
+  font-size: 16px;
 }
 
 /* Gauge wrap inside performance card */
@@ -614,8 +586,10 @@
   flex-direction: row-reverse;
   align-items: center;
   gap: 14px;
-  padding: var(--sp-3) 0 var(--sp-2);
+  /* padding: var(--sp-3) 0 var(--sp-2); */
 }
+
+
 
 .performance-card__gauge-meta {
   text-align: center;
@@ -639,6 +613,9 @@
   color: var(--neutral-600);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  max-width: 120px;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .performance-card__bar-pct {
@@ -663,11 +640,20 @@
 }
 
 .performance-card__bar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: var(--text-xs);
   color: var(--neutral-400);
   font-weight: 600;
   text-align: center;
   padding: 0 var(--sp-1) var(--sp-1);
+  max-width: 150px;
+  overflow-wrap: anywhere;
+}
+
+.performance-card__bar-text-line {
+  display: block;
 }
 
 .performance-card__meta {
@@ -689,18 +675,26 @@
 }
 
 .history-card__head {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(130px, max-content) minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
-  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  padding: var(--sp-5) var(--sp-4);
   border-bottom: 1px solid var(--neutral-100);
+  column-gap: var(--sp-4);
+}
+
+.history-card__title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .history-card__title {
-  font-size: var(--text-base);
+  font-size: var(--text-lg);
   font-weight: 900;
   color: var(--color-text);
+  line-height: 1.35;
 }
 
 .history-card__count {
@@ -709,7 +703,26 @@
   color: var(--neutral-400);
   background: var(--neutral-100);
   border-radius: var(--radius-pill);
-  padding: 3px 10px;
+  padding: 5px 12px;
+}
+
+.history-card__metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  text-align: center;
+  justify-self: center;
+}
+
+.history-card__gauge {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  min-width: 0;
 }
 
 /* KPI summary por produto */
@@ -763,8 +776,8 @@
 .history-notes-preview {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: var(--sp-2) var(--sp-3);
+  gap: 10px;
+  padding: var(--sp-4);
 }
 
 /* Nota individual */
@@ -772,7 +785,7 @@
   background: var(--neutral-50);
   border: 1px solid var(--neutral-200);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: 16px;
   transition: box-shadow var(--duration-fast);
 }
 
@@ -784,7 +797,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -822,16 +835,16 @@
 }
 
 .history-note__body {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(80px, 0.8fr) minmax(90px, 0.9fr) minmax(130px, 1.4fr);
   gap: var(--sp-2);
-  flex-wrap: wrap;
 }
 
 .history-note__field {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 80px;
+  min-width: 0;
 }
 
 .history-note__field-label {
@@ -846,6 +859,7 @@
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-text);
+  overflow-wrap: anywhere;
 }
 
 .history-note__products {
@@ -902,7 +916,7 @@
 
 /* Botão "Ver todas" */
 .history-card__footer {
-  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
   border-top: 1px solid var(--neutral-100);
 }
 
@@ -934,21 +948,20 @@
    HISTORY MODAL — lista completa + paginação
    ============================================ */
 
-.modal__subtitle {
-  font-size: var(--text-sm);
-  color: var(--neutral-500);
-  margin-top: 2px;
-}
-
 #modal-history .modal__dialog {
-  max-height: min(78vh, 760px);
+  display: flex;
+  flex-direction: column;
+  height: min(95vh, 760px);
+  max-height: min(95vh, 760px);
 }
 
 #modal-history .modal__body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  height: min(62vh, 560px);
+  flex: 1;
+  height: auto;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -1109,7 +1122,7 @@
 
 @media (max-width: 640px) {
   #modal-history .modal__body {
-    height: min(68vh, 600px);
+    height: auto;
   }
 
   .history-modal__filters {
@@ -1129,9 +1142,9 @@
    ============================================ */
 
 .invoice-section {
-  background: var(--color-surface);
+  background: #ffffff;
   border-top: 1px solid var(--color-border);
-  padding: var(--sp-8) 0 var(--sp-12);
+  padding: var(--sp-4);
 }
 
 .invoice-section__header {
@@ -1763,8 +1776,23 @@
     min-width: calc(50% - 4px);
   }
 
+  .history-card__head {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+
+  .history-card__metric {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .history-card__gauge {
+    justify-content: flex-start;
+  }
+
   .history-note__body {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: var(--sp-1);
   }
 

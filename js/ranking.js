@@ -5,16 +5,16 @@
 /* ——— Dados de ranking estático ——— */
 
 const RANKING_DATA = [
-  { position: 1,  name: 'Carlos Eduardo',   location: 'São Paulo, SP',       points: 15850 },
-  { position: 2,  name: 'Marina Silva',      location: 'Rio de Janeiro, RJ',  points: 14320 },
-  { position: 3,  name: 'Roberto Santos',    location: 'Belo Horizonte, MG',  points: 13190 },
-  { position: 4,  name: 'Juliana Costa',     location: 'Brasília, DF',        points: 12750 },
-  { position: 5,  name: 'Fernando Oliveira', location: 'Curitiba, PR',        points: 12100 },
-  { position: 6,  name: 'Amanda Pereira',    location: 'Porto Alegre, RS',    points: 11450 },
-  { position: 7,  name: 'Paulo Mendes',      location: 'Fortaleza, CE',       points: 10880 },
-  { position: 8,  name: 'Beatriz Gomes',     location: 'Salvador, BA',        points: 10320 },
-  { position: 9,  name: 'Lucas Ferreira',    location: 'Manaus, AM',          points:  9750 },
-  { position: 10, name: 'Sophia Martins',    location: 'Recife, PE',          points:  9200 },
+  { position: 1, name: 'Carlos Eduardo', location: 'São Paulo, SP', points: 15850 },
+  { position: 2, name: 'Marina Silva', location: 'Rio de Janeiro, RJ', points: 14320 },
+  { position: 3, name: 'Roberto Santos', location: 'Belo Horizonte, MG', points: 13190 },
+  { position: 4, name: 'Juliana Costa', location: 'Brasília, DF', points: 12750 },
+  { position: 5, name: 'Fernando Oliveira', location: 'Curitiba, PR', points: 12100 },
+  { position: 6, name: 'Amanda Pereira', location: 'Porto Alegre, RS', points: 11450 },
+  { position: 7, name: 'Paulo Mendes', location: 'Fortaleza, CE', points: 10880 },
+  { position: 8, name: 'Beatriz Gomes', location: 'Salvador, BA', points: 10320 },
+  { position: 9, name: 'Lucas Ferreira', location: 'Manaus, AM', points: 9750 },
+  { position: 10, name: 'Sophia Martins', location: 'Recife, PE', points: 9200 },
 ];
 
 /* ——— KPIs de desempenho (por tipo de combo) ——— */
@@ -27,10 +27,7 @@ const KPIS = [
     current: 6750,
     goal: 62594,
     showRank: true,
-    formatText: (c, g) => {
-      const remaining = Math.max(0, g - c);
-      return `O que falta para o top 1: ${remaining.toLocaleString('pt-BR')} pontos (${c.toLocaleString('pt-BR')} / ${g.toLocaleString('pt-BR')} pontos)`;
-    },
+    formatText: c => `<b>${c.toLocaleString('pt-BR')} pontos</b>`,
   },
   {
     id: 'meta-compras',
@@ -57,31 +54,31 @@ const KPIS = [
 /* Preços unitários: Simparic R$185, Apoquel R$195, Vanguard Plus R$180 */
 
 const USER_HISTORY_NOTES = [
-  { id: 'uh_001', numeroNota: 'NF-BG-001', data: '2026-01-10', valor:  565.00, status: 'aprovada',   estabelecimento: 'PetShop Central',       produtos: [{ nome: 'Simparic',      qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel',       qtd: 1, valorUnit: 195.00 }] },
-  { id: 'uh_002', numeroNota: 'NF-BG-002', data: '2026-01-18', valor:  540.00, status: 'aprovada',   estabelecimento: 'Clínica Vet Fiel',       produtos: [{ nome: 'Vanguard Plus',  qtd: 3, valorUnit: 180.00 }] },
-  { id: 'uh_003', numeroNota: 'NF-BG-003', data: '2026-01-25', valor:  390.00, status: 'aguardando', estabelecimento: 'Pet Life Store',          produtos: [{ nome: 'Apoquel',        qtd: 2, valorUnit: 195.00 }] },
-  { id: 'uh_004', numeroNota: 'NF-BG-004', data: '2026-02-05', valor:  730.00, status: 'aprovada',   estabelecimento: 'VetMed Distribuidora',   produtos: [{ nome: 'Simparic',      qtd: 2, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_005', numeroNota: 'NF-BG-005', data: '2026-02-12', valor:  195.00, status: 'reprovada',  estabelecimento: 'AnimalCare',              produtos: [{ nome: 'Apoquel',        qtd: 1, valorUnit: 195.00 }] },
-  { id: 'uh_006', numeroNota: 'NF-BG-006', data: '2026-02-20', valor:  740.00, status: 'aprovada',   estabelecimento: 'PetShop Central',         produtos: [{ nome: 'Simparic',      qtd: 4, valorUnit: 185.00 }] },
-  { id: 'uh_007', numeroNota: 'NF-BG-007', data: '2026-02-27', valor:  540.00, status: 'aprovada',   estabelecimento: 'Clínica Vet Fiel',        produtos: [{ nome: 'Vanguard Plus',  qtd: 3, valorUnit: 180.00 }] },
-  { id: 'uh_008', numeroNota: 'NF-BG-008', data: '2026-03-07', valor:  565.00, status: 'excluida',   estabelecimento: 'Pet Life Store',          produtos: [{ nome: 'Apoquel',        qtd: 1, valorUnit: 195.00 }, { nome: 'Simparic', qtd: 2, valorUnit: 185.00 }] },
-  { id: 'uh_009', numeroNota: 'NF-BG-009', data: '2026-03-14', valor: 1125.00, status: 'aprovada',   estabelecimento: 'VetMed Distribuidora',    produtos: [{ nome: 'Simparic',      qtd: 3, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
-  { id: 'uh_010', numeroNota: 'NF-BG-010', data: '2026-03-21', valor:  360.00, status: 'aguardando', estabelecimento: 'AnimalCare',              produtos: [{ nome: 'Vanguard Plus',  qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_011', numeroNota: 'NF-BG-011', data: '2026-03-28', valor:  740.00, status: 'aprovada',   estabelecimento: 'PetShop Central',         produtos: [{ nome: 'Simparic',      qtd: 4, valorUnit: 185.00 }] },
-  { id: 'uh_012', numeroNota: 'NF-BG-012', data: '2026-04-04', valor:  585.00, status: 'aprovada',   estabelecimento: 'Clínica Vet Fiel',        produtos: [{ nome: 'Apoquel',        qtd: 3, valorUnit: 195.00 }] },
-  { id: 'uh_013', numeroNota: 'NF-BG-013', data: '2026-04-10', valor:  360.00, status: 'reprovada',  estabelecimento: 'Pet Life Store',          produtos: [{ nome: 'Vanguard Plus',  qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_014', numeroNota: 'NF-BG-014', data: '2026-04-17', valor:  925.00, status: 'aprovada',   estabelecimento: 'VetMed Distribuidora',    produtos: [{ nome: 'Simparic',      qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_015', numeroNota: 'NF-BG-015', data: '2026-04-23', valor:  555.00, status: 'aguardando', estabelecimento: 'AnimalCare',              produtos: [{ nome: 'Simparic',      qtd: 3, valorUnit: 185.00 }] },
-  { id: 'uh_016', numeroNota: 'NF-BG-016', data: '2026-04-30', valor:  780.00, status: 'aprovada',   estabelecimento: 'PetShop Central',         produtos: [{ nome: 'Apoquel',        qtd: 4, valorUnit: 195.00 }] },
-  { id: 'uh_017', numeroNota: 'NF-BG-017', data: '2026-05-06', valor:  360.00, status: 'excluida',   estabelecimento: 'Clínica Vet Fiel',        produtos: [{ nome: 'Vanguard Plus',  qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_018', numeroNota: 'NF-BG-018', data: '2026-05-10', valor:  915.00, status: 'aprovada',   estabelecimento: 'Pet Life Store',          produtos: [{ nome: 'Simparic',      qtd: 3, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_019', numeroNota: 'NF-BG-019', data: '2026-05-14', valor:  390.00, status: 'aguardando', estabelecimento: 'VetMed Distribuidora',    produtos: [{ nome: 'Apoquel',        qtd: 2, valorUnit: 195.00 }] },
-  { id: 'uh_020', numeroNota: 'NF-BG-020', data: '2026-05-18', valor: 1310.00, status: 'aprovada',   estabelecimento: 'AnimalCare',              produtos: [{ nome: 'Simparic',      qtd: 4, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
-  { id: 'uh_021', numeroNota: 'NF-BG-021', data: '2026-05-20', valor:  540.00, status: 'reprovada',  estabelecimento: 'PetShop Central',         produtos: [{ nome: 'Vanguard Plus',  qtd: 3, valorUnit: 180.00 }] },
-  { id: 'uh_022', numeroNota: 'NF-BG-022', data: '2026-05-22', valor:  380.00, status: 'aguardando', estabelecimento: 'Clínica Vet Fiel',        produtos: [{ nome: 'Simparic',      qtd: 1, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }] },
-  { id: 'uh_023', numeroNota: 'NF-BG-023', data: '2026-05-24', valor:  730.00, status: 'aprovada',   estabelecimento: 'Pet Life Store',          produtos: [{ nome: 'Simparic',      qtd: 2, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
-  { id: 'uh_024', numeroNota: 'NF-BG-024', data: '2026-05-26', valor:  195.00, status: 'reprovada',  estabelecimento: 'VetMed Distribuidora',    produtos: [{ nome: 'Apoquel',        qtd: 1, valorUnit: 195.00 }] },
-  { id: 'uh_025', numeroNota: 'NF-BG-025', data: '2026-05-28', valor:  745.00, status: 'aprovada',   estabelecimento: 'AnimalCare',              produtos: [{ nome: 'Simparic',      qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
+  { id: 'uh_001', numeroNota: 'NF-BG-001', data: '2026-01-10', valor: 565.00, status: 'aprovada', estabelecimento: 'PetShop Central', produtos: [{ nome: 'Simparic', qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }] },
+  { id: 'uh_002', numeroNota: 'NF-BG-002', data: '2026-01-18', valor: 540.00, status: 'aprovada', estabelecimento: 'Clínica Vet Fiel', produtos: [{ nome: 'Vanguard Plus', qtd: 3, valorUnit: 180.00 }] },
+  { id: 'uh_003', numeroNota: 'NF-BG-003', data: '2026-01-25', valor: 390.00, status: 'aguardando', estabelecimento: 'Pet Life Store', produtos: [{ nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }] },
+  { id: 'uh_004', numeroNota: 'NF-BG-004', data: '2026-02-05', valor: 730.00, status: 'aprovada', estabelecimento: 'VetMed Distribuidora', produtos: [{ nome: 'Simparic', qtd: 2, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_005', numeroNota: 'NF-BG-005', data: '2026-02-12', valor: 195.00, status: 'reprovada', estabelecimento: 'AnimalCare', produtos: [{ nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }] },
+  { id: 'uh_006', numeroNota: 'NF-BG-006', data: '2026-02-20', valor: 740.00, status: 'aprovada', estabelecimento: 'PetShop Central', produtos: [{ nome: 'Simparic', qtd: 4, valorUnit: 185.00 }] },
+  { id: 'uh_007', numeroNota: 'NF-BG-007', data: '2026-02-27', valor: 540.00, status: 'aprovada', estabelecimento: 'Clínica Vet Fiel', produtos: [{ nome: 'Vanguard Plus', qtd: 3, valorUnit: 180.00 }] },
+  { id: 'uh_008', numeroNota: 'NF-BG-008', data: '2026-03-07', valor: 565.00, status: 'excluida', estabelecimento: 'Pet Life Store', produtos: [{ nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }, { nome: 'Simparic', qtd: 2, valorUnit: 185.00 }] },
+  { id: 'uh_009', numeroNota: 'NF-BG-009', data: '2026-03-14', valor: 1125.00, status: 'aprovada', estabelecimento: 'VetMed Distribuidora', produtos: [{ nome: 'Simparic', qtd: 3, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
+  { id: 'uh_010', numeroNota: 'NF-BG-010', data: '2026-03-21', valor: 360.00, status: 'aguardando', estabelecimento: 'AnimalCare', produtos: [{ nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_011', numeroNota: 'NF-BG-011', data: '2026-03-28', valor: 740.00, status: 'aprovada', estabelecimento: 'PetShop Central', produtos: [{ nome: 'Simparic', qtd: 4, valorUnit: 185.00 }] },
+  { id: 'uh_012', numeroNota: 'NF-BG-012', data: '2026-04-04', valor: 585.00, status: 'aprovada', estabelecimento: 'Clínica Vet Fiel', produtos: [{ nome: 'Apoquel', qtd: 3, valorUnit: 195.00 }] },
+  { id: 'uh_013', numeroNota: 'NF-BG-013', data: '2026-04-10', valor: 360.00, status: 'reprovada', estabelecimento: 'Pet Life Store', produtos: [{ nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_014', numeroNota: 'NF-BG-014', data: '2026-04-17', valor: 925.00, status: 'aprovada', estabelecimento: 'VetMed Distribuidora', produtos: [{ nome: 'Simparic', qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_015', numeroNota: 'NF-BG-015', data: '2026-04-23', valor: 555.00, status: 'aguardando', estabelecimento: 'AnimalCare', produtos: [{ nome: 'Simparic', qtd: 3, valorUnit: 185.00 }] },
+  { id: 'uh_016', numeroNota: 'NF-BG-016', data: '2026-04-30', valor: 780.00, status: 'aprovada', estabelecimento: 'PetShop Central', produtos: [{ nome: 'Apoquel', qtd: 4, valorUnit: 195.00 }] },
+  { id: 'uh_017', numeroNota: 'NF-BG-017', data: '2026-05-06', valor: 360.00, status: 'excluida', estabelecimento: 'Clínica Vet Fiel', produtos: [{ nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_018', numeroNota: 'NF-BG-018', data: '2026-05-10', valor: 915.00, status: 'aprovada', estabelecimento: 'Pet Life Store', produtos: [{ nome: 'Simparic', qtd: 3, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_019', numeroNota: 'NF-BG-019', data: '2026-05-14', valor: 390.00, status: 'aguardando', estabelecimento: 'VetMed Distribuidora', produtos: [{ nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }] },
+  { id: 'uh_020', numeroNota: 'NF-BG-020', data: '2026-05-18', valor: 1310.00, status: 'aprovada', estabelecimento: 'AnimalCare', produtos: [{ nome: 'Simparic', qtd: 4, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 2, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
+  { id: 'uh_021', numeroNota: 'NF-BG-021', data: '2026-05-20', valor: 540.00, status: 'reprovada', estabelecimento: 'PetShop Central', produtos: [{ nome: 'Vanguard Plus', qtd: 3, valorUnit: 180.00 }] },
+  { id: 'uh_022', numeroNota: 'NF-BG-022', data: '2026-05-22', valor: 380.00, status: 'aguardando', estabelecimento: 'Clínica Vet Fiel', produtos: [{ nome: 'Simparic', qtd: 1, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }] },
+  { id: 'uh_023', numeroNota: 'NF-BG-023', data: '2026-05-24', valor: 730.00, status: 'aprovada', estabelecimento: 'Pet Life Store', produtos: [{ nome: 'Simparic', qtd: 2, valorUnit: 185.00 }, { nome: 'Vanguard Plus', qtd: 2, valorUnit: 180.00 }] },
+  { id: 'uh_024', numeroNota: 'NF-BG-024', data: '2026-05-26', valor: 195.00, status: 'reprovada', estabelecimento: 'VetMed Distribuidora', produtos: [{ nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }] },
+  { id: 'uh_025', numeroNota: 'NF-BG-025', data: '2026-05-28', valor: 745.00, status: 'aprovada', estabelecimento: 'AnimalCare', produtos: [{ nome: 'Simparic', qtd: 2, valorUnit: 185.00 }, { nome: 'Apoquel', qtd: 1, valorUnit: 195.00 }, { nome: 'Vanguard Plus', qtd: 1, valorUnit: 180.00 }] },
 ];
 
 const HISTORY_PAGE_SIZE = 6;
@@ -94,15 +91,15 @@ const historyFilters = {
 
 /* ——— Constantes ——— */
 
-const INVOICE_KEY       = 'lp_invoices';
-const ADMIN_NOTES_KEY   = 'lp_admin_notes';
+const INVOICE_KEY = 'lp_invoices';
+const ADMIN_NOTES_KEY = 'lp_admin_notes';
 const DEFAULT_CAMPAIGN_ID = 'simparic-trio';
 const RANKING_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
   ? JSON.parse(JSON.stringify(ADMIN_MOCK))
   : [];
 
-let editingId    = null;
-let isAdminMode  = false;
+let editingId = null;
+let isAdminMode = false;
 let activeRankingKPI = Auth.getRankingView ? Auth.getRankingView() : KPIS[0].id;
 
 /* ============================================
@@ -152,8 +149,8 @@ function initHeader() {
     onScroll();
   }
 
-  const toggle    = document.querySelector('.header__menu-toggle') || document.querySelector('.ranking-header__toggle');
-  const mobileNav = document.querySelector('.mobile-nav')          || document.querySelector('.ranking-mobile-nav');
+  const toggle = document.querySelector('.header__menu-toggle') || document.querySelector('.ranking-header__toggle');
+  const mobileNav = document.querySelector('.mobile-nav') || document.querySelector('.ranking-mobile-nav');
 
   if (toggle && mobileNav) {
     toggle.addEventListener('click', () => {
@@ -185,21 +182,21 @@ function initHeader() {
    ============================================ */
 
 function populateUserInfo() {
-  const name      = Auth.getName();
-  const initials  = Auth.getInitials();
-  const email     = Auth.getEmail() || '';
+  const name = Auth.getName();
+  const initials = Auth.getInitials();
+  const email = Auth.getEmail() || '';
   const firstName = name.split(' ')[0];
-  const menuUser  = Auth.getMenuUser();
+  const menuUser = Auth.getMenuUser();
 
-  document.querySelectorAll('[data-user-name]').forEach(el    => { el.textContent = name; });
-  document.querySelectorAll('[data-user-first]').forEach(el   => { el.textContent = firstName; });
-  document.querySelectorAll('[data-user-email]').forEach(el   => { el.textContent = email; });
+  document.querySelectorAll('[data-user-name]').forEach(el => { el.textContent = name; });
+  document.querySelectorAll('[data-user-first]').forEach(el => { el.textContent = firstName; });
+  document.querySelectorAll('[data-user-email]').forEach(el => { el.textContent = email; });
   document.querySelectorAll('[data-user-initials]').forEach(el => { el.textContent = initials; });
 
   const avatarImg = document.getElementById('performanceAvatarImg');
   if (avatarImg && menuUser?.avatar) {
-    avatarImg.src   = menuUser.avatar;
-    avatarImg.alt   = name;
+    avatarImg.src = menuUser.avatar;
+    avatarImg.alt = name;
     avatarImg.onerror = () => { avatarImg.hidden = true; };
   }
 }
@@ -251,7 +248,7 @@ function getMetricValueFromNotes(notes, kpiId) {
 }
 
 function getStaticRankingMetric(item, kpiId) {
-  if (kpiId === 'meta-compras')       return Math.round(item.points * 1.18);
+  if (kpiId === 'meta-compras') return Math.round(item.points * 1.18);
   if (kpiId === 'quantidade-compras') return Math.max(1, Math.round(item.points / 520));
   return item.points;
 }
@@ -329,6 +326,12 @@ function applyAdminRankingMode() {
   const userCol = document.getElementById('ranking-user-col');
   if (userCol) userCol.hidden = true;
 
+  const historyCard = document.getElementById('history-card');
+  if (historyCard) historyCard.hidden = true;
+
+  const top10Col = document.getElementById('ranking-top10-col');
+  if (top10Col) top10Col.hidden = false;
+
   const rankingLayout = document.getElementById('ranking-layout');
   if (rankingLayout) rankingLayout.classList.add('ranking-layout--admin');
 
@@ -398,18 +401,18 @@ function updateRankingMenuState(kpi) {
 function updatePerformanceKPI(kpi) {
   const gaugeEl = document.getElementById('kpi-gauge');
   const barFill = document.getElementById('kpi-bar-fill');
-  const barPct  = document.getElementById('kpi-pct');
+  const barPct = document.getElementById('kpi-pct');
   const barText = document.getElementById('kpi-text');
   const kpiName = document.getElementById('kpi-name');
 
   if (!gaugeEl && !barFill) return;
 
-  const pct        = Math.min(100, (kpi.current / kpi.goal) * 100);
+  const pct = Math.min(100, (kpi.current / kpi.goal) * 100);
   const pctRounded = Math.round(pct);
 
   if (kpiName) kpiName.textContent = kpi.label;
-  if (barPct)  barPct.textContent  = pctRounded + '%';
-  if (barText) barText.textContent = kpi.formatText(kpi.current, kpi.goal);
+  if (barPct) barPct.textContent = pctRounded + '%';
+  if (barText) barText.innerHTML = kpi.formatText(kpi.current, kpi.goal);
 
   if (gaugeEl && typeof Gauge !== 'undefined') {
     Gauge.setValue(gaugeEl, pctRounded);
@@ -421,23 +424,21 @@ function updatePerformanceKPI(kpi) {
   }
 }
 
-function updatePositionBadgeVisibility(kpiId) {
-  const posRow = document.getElementById('position-row');
-  if (!posRow) return;
-
-  const shouldShow = kpiId === 'pontos-acumulados';
-  posRow.classList.toggle('is-hidden', !shouldShow);
-  posRow.setAttribute('aria-hidden', String(!shouldShow));
-}
-
 function applyLayoutForKPI(kpiId) {
   if (isAdminMode) return;
 
-  const layout    = document.getElementById('ranking-layout');
-  const top10Col  = document.getElementById('ranking-top10-col');
+  const layout = document.getElementById('ranking-layout');
+  const top10Col = document.getElementById('ranking-top10-col');
   const showTop10 = kpiId === 'pontos-acumulados';
 
   if (layout) {
+    layout.classList.remove(
+      'ranking-layout--kpi-pontos-acumulados',
+      'ranking-layout--kpi-meta-compras',
+      'ranking-layout--kpi-quantidade-compras'
+    );
+    layout.classList.add(`ranking-layout--kpi-${kpiId}`);
+    layout.dataset.activeKpi = kpiId;
     layout.classList.toggle('ranking-layout--no-top10', !showTop10);
   }
   if (top10Col) {
@@ -449,8 +450,8 @@ function applyRankingView(kpiId) {
   const kpi = KPIS.find(item => item.id === kpiId) || KPIS[0];
   activeRankingKPI = kpi.id;
 
+  if (Auth.updateStatusPageLabels) Auth.updateStatusPageLabels();
   updateRankingMenuState(kpi);
-  updatePositionBadgeVisibility(kpi.id);
   updatePerformanceKPI(kpi);
   applyLayoutForKPI(kpi.id);
   renderRankingList();
@@ -463,11 +464,11 @@ function applyRankingView(kpiId) {
 
 function historyStatusLabel(s) {
   const labels = {
-    aprovada:   'Aprovada',
-    validada:   'Aprovada',
+    aprovada: 'Aprovada',
+    validada: 'Aprovada',
     aguardando: 'Pendente',
-    reprovada:  'Reprovada',
-    excluida:   'Excluída',
+    reprovada: 'Reprovada',
+    excluida: 'Excluída',
   };
   return labels[s] || s;
 }
@@ -475,7 +476,7 @@ function historyStatusLabel(s) {
 function historyStatusClass(s) {
   if (s === 'aprovada' || s === 'validada') return 'aprovada';
   if (s === 'aguardando') return 'aguardando';
-  if (s === 'reprovada')  return 'reprovada';
+  if (s === 'reprovada') return 'reprovada';
   return 'excluida';
 }
 
@@ -591,7 +592,7 @@ function computeHistoryKPIs() {
   approved.forEach(nota => {
     (nota.produtos || []).forEach(p => {
       if (totals[p.nome]) {
-        totals[p.nome].qtd   += p.qtd;
+        totals[p.nome].qtd += p.qtd;
         totals[p.nome].valor += p.qtd * p.valorUnit;
       }
     });
@@ -604,11 +605,11 @@ function renderHistoryKPISummary(kpiId) {
   const el = document.getElementById('history-kpi-summary');
   if (!el) return;
 
-  const totals  = computeHistoryKPIs();
+  const totals = computeHistoryKPIs();
   const produtos = ['Simparic', 'Apoquel', 'Vanguard Plus'];
 
   const useValue = kpiId === 'meta-compras';
-  const useQty   = kpiId === 'quantidade-compras';
+  const useQty = kpiId === 'quantidade-compras';
 
   if (!useValue && !useQty) {
     el.hidden = true;
@@ -623,27 +624,27 @@ function renderHistoryKPISummary(kpiId) {
     </div>
     <div class="history-kpi-summary__grid">
       ${produtos.map(nome => {
-        const t = totals[nome];
-        const display = useValue
-          ? t.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-          : `${t.qtd} un.`;
-        return `
+    const t = totals[nome];
+    const display = useValue
+      ? t.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+      : `${t.qtd} un.`;
+    return `
           <div class="history-kpi-chip">
             <span class="history-kpi-chip__name">${nome}</span>
             <span class="history-kpi-chip__value">${display}</span>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
 }
 
 function renderHistoryPreview() {
   const previewEl = document.getElementById('history-notes-preview');
-  const countEl   = document.getElementById('history-count');
+  const countEl = document.getElementById('history-count');
   if (!previewEl) return;
 
-  const total   = USER_HISTORY_NOTES.length;
+  const total = USER_HISTORY_NOTES.length;
   const preview = USER_HISTORY_NOTES.slice(0, 3);
 
   if (countEl) countEl.textContent = `${total} notas`;
@@ -652,12 +653,12 @@ function renderHistoryPreview() {
 }
 
 function buildHistoryNoteHTML(nota, showProducts = true) {
-  const sc      = historyStatusClass(nota.status);
-  const label   = historyStatusLabel(nota.status);
+  const sc = historyStatusClass(nota.status);
+  const label = historyStatusLabel(nota.status);
   const prodTags = showProducts
     ? (nota.produtos || []).map(p =>
-        `<span class="history-note__product-tag">${p.nome} ×${p.qtd}</span>`
-      ).join('')
+      `<span class="history-note__product-tag">${p.nome} ×${p.qtd}</span>`
+    ).join('')
     : '';
 
   return `
@@ -780,9 +781,9 @@ function initHistoryCard() {
 }
 
 function openHistoryModal() {
-  const modal   = document.getElementById('modal-history');
+  const modal = document.getElementById('modal-history');
   const overlay = document.getElementById('modal-overlay');
-  if (modal)   { modal.classList.add('is-open');   modal.setAttribute('aria-hidden',   'false'); }
+  if (modal) { modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); }
   if (overlay) { overlay.classList.add('is-open'); overlay.setAttribute('aria-hidden', 'false'); }
   document.body.classList.add('modal-open');
   renderHistoryModalPage(historyCurrentPage);
@@ -810,11 +811,9 @@ function openHistoryPreviewModal(noteId) {
   if (!nota || !modal) return;
 
   const title = document.getElementById('modal-history-preview-title');
-  const subtitle = document.getElementById('modal-history-preview-subtitle');
   const image = document.getElementById('history-preview-image');
 
   if (title) title.textContent = 'Visualizar ' + nota.numeroNota;
-  if (subtitle) subtitle.textContent = `${nota.estabelecimento} • ${fmtDate(nota.data)}`;
   if (image) {
     image.src = getHistoryPreviewSrc(nota);
     image.alt = 'Prévia da nota ' + nota.numeroNota;
@@ -841,27 +840,22 @@ function closeHistoryPreviewModal() {
 }
 
 function renderHistoryModalPage(page) {
-  const listEl       = document.getElementById('modal-history-list');
+  const listEl = document.getElementById('modal-history-list');
   const paginationEl = document.getElementById('modal-history-pagination');
-  const subtitleEl   = document.getElementById('modal-history-subtitle');
   if (!listEl) return;
 
   renderHistoryFilters();
 
   const filteredNotes = getFilteredHistoryNotes();
-  const total      = filteredNotes.length;
+  const total = filteredNotes.length;
   const totalPages = Math.max(1, Math.ceil(total / HISTORY_PAGE_SIZE));
   if (page > totalPages) {
     historyCurrentPage = totalPages;
     renderHistoryModalPage(totalPages);
     return;
   }
-  const start      = (page - 1) * HISTORY_PAGE_SIZE;
-  const pageNotes  = filteredNotes.slice(start, start + HISTORY_PAGE_SIZE);
-
-  if (subtitleEl) {
-    subtitleEl.textContent = `${total} notas registradas — página ${page} de ${totalPages}`;
-  }
+  const start = (page - 1) * HISTORY_PAGE_SIZE;
+  const pageNotes = filteredNotes.slice(start, start + HISTORY_PAGE_SIZE);
 
   listEl.innerHTML = pageNotes.length
     ? pageNotes.map(nota => buildHistoryNoteHTML(nota, true)).join('')
@@ -926,8 +920,8 @@ function saveAdminStorageNotes(notes) {
 
 function removeAdminStorageNote(noteId) {
   const numericId = Number(noteId);
-  const stored    = getAdminStorageNotes();
-  const noteItem  = stored.find(item => noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId);
+  const stored = getAdminStorageNotes();
+  const noteItem = stored.find(item => noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId);
   const nextStored = stored.filter(item => !(noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId));
 
   saveAdminStorageNotes(nextStored);
@@ -952,6 +946,10 @@ function statusLabelPt(s) {
   return { aguardando: 'Aguardando', validada: 'Validada', excluida: 'Excluída', reprovada: 'Reprovada' }[s] || s;
 }
 
+function origemLabelPt(origem) {
+  return { manual: 'Manual', 'sell-out': 'Sell-Out' }[origem] || 'Manual';
+}
+
 function ensureLuckyNumbers(items, saveFn) {
   let changed = false;
   const normalized = items.map(item => {
@@ -972,7 +970,8 @@ function ensureInvoiceDefaults(invoices) {
   const normalized = invoices.map(inv => {
     const next = { ...inv };
     if (!next.luckyNumber) { next.luckyNumber = generateLucky(); changed = true; }
-    if (!next.status)      { next.status      = 'aguardando';    changed = true; }
+    if (!next.status) { next.status = 'aguardando'; changed = true; }
+    if (!next.origem) { next.origem = 'manual'; changed = true; }
     return next;
   });
   if (changed) saveInvoices(normalized);
@@ -1005,13 +1004,13 @@ function ensureAdminStorageLuckyNumbers(storedNotes) {
 function initInvoices() {
   updateInvoiceUserFieldVisibility();
   if (isAdminMode) initAdminInvoices();
-  else             initUserInvoices();
+  else initUserInvoices();
 }
 
 function updateInvoiceUserFieldVisibility() {
-  const userField  = document.getElementById('invoice-user-field');
+  const userField = document.getElementById('invoice-user-field');
   const userSelect = document.getElementById('invoice-user');
-  const canSelect  = Auth.getRole() === 'admin';
+  const canSelect = Auth.getRole() === 'admin';
 
   if (userField) {
     userField.hidden = !canSelect;
@@ -1043,7 +1042,7 @@ function syncAdminInvoiceUserSelect() {
    ============================================ */
 
 function initAdminInvoices() {
-  const invoiceTitle  = document.getElementById('invoice-title');
+  const invoiceTitle = document.getElementById('invoice-title');
   if (invoiceTitle) invoiceTitle.textContent = 'Lançar nota fiscal';
 
   const formCardTitle = document.querySelector('.invoice-form__title');
@@ -1054,12 +1053,12 @@ function initAdminInvoices() {
 
   renderAdminInvoiceList();
 
-  const form       = document.getElementById('invoice-form');
+  const form = document.getElementById('invoice-form');
   const userSelect = document.getElementById('invoice-user');
   const valueInput = document.getElementById('invoice-value');
-  const fileInput  = document.getElementById('invoice-file');
-  const cancelBtn  = document.getElementById('invoice-cancel');
-  const errorEl    = document.getElementById('invoice-error');
+  const fileInput = document.getElementById('invoice-file');
+  const cancelBtn = document.getElementById('invoice-cancel');
+  const errorEl = document.getElementById('invoice-error');
 
   if (!form) return;
 
@@ -1083,10 +1082,10 @@ function initAdminInvoices() {
     e.preventDefault();
     clearError();
 
-    const userId   = userSelect ? parseInt(userSelect.value, 10) : 0;
+    const userId = userSelect ? parseInt(userSelect.value, 10) : 0;
     const rawValue = (valueInput?.value || '').trim();
-    const value    = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
-    const file     = fileInput?.files?.[0];
+    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const file = fileInput?.files?.[0];
 
     if (!userId || isNaN(userId)) { showError('Selecione um usuário para associar a nota.'); return; }
     if (!rawValue || isNaN(value) || value <= 0) { showError('Informe um valor válido maior que zero.'); return; }
@@ -1102,6 +1101,7 @@ function initAdminInvoices() {
       valor: value,
       data: new Date().toISOString().slice(0, 10),
       status: 'aguardando',
+      origem: 'manual',
       responsavelLancamento: Auth.getName(),
       arquivoNome: file.name,
       luckyNumber: generateLucky(),
@@ -1129,9 +1129,9 @@ function initAdminInvoices() {
 }
 
 function renderAdminInvoiceList() {
-  const listEl   = document.getElementById('invoice-list');
-  const countEl  = document.getElementById('invoice-count');
-  const stored   = ensureAdminStorageLuckyNumbers(getActiveCampaignAdminNotes());
+  const listEl = document.getElementById('invoice-list');
+  const countEl = document.getElementById('invoice-count');
+  const stored = ensureAdminStorageLuckyNumbers(getActiveCampaignAdminNotes());
 
   if (countEl) countEl.textContent = stored.length;
   if (!listEl) return;
@@ -1147,9 +1147,9 @@ function renderAdminInvoiceList() {
   }
 
   listEl.innerHTML = stored.map(({ userId, nota }) => {
-    const user     = ADMIN_MOCK.find(u => u.id === userId);
+    const user = ADMIN_MOCK.find(u => u.id === userId);
     const userName = user ? user.nome : 'Usuário desconhecido';
-    const dataBr   = nota.data ? nota.data.split('-').reverse().join('/') : '—';
+    const dataBr = nota.data ? nota.data.split('-').reverse().join('/') : '—';
 
     return `
       <div class="invoice-item invoice-item--admin" data-id="${nota.id}">
@@ -1175,6 +1175,10 @@ function renderAdminInvoiceList() {
           <div class="invoice-item__field">
             <div class="invoice-item__field-label">Data</div>
             <div class="invoice-item__field-value">${dataBr}</div>
+          </div>
+          <div class="invoice-item__field">
+            <div class="invoice-item__field-label">Origem</div>
+            <div class="invoice-item__field-value">${origemLabelPt(nota.origem)}</div>
           </div>
           <div class="invoice-item__field">
             <div class="invoice-item__field-label">Arquivo</div>
@@ -1204,8 +1208,8 @@ function renderAdminInvoiceList() {
    ============================================ */
 
 function renderInvoices() {
-  const listEl   = document.getElementById('invoice-list');
-  const countEl  = document.getElementById('invoice-count');
+  const listEl = document.getElementById('invoice-list');
+  const countEl = document.getElementById('invoice-count');
   const invoices = ensureInvoiceDefaults(getInvoices());
 
   if (countEl) countEl.textContent = invoices.length;
@@ -1243,6 +1247,10 @@ function renderInvoices() {
           <div class="invoice-item__field-value">${inv.date}</div>
         </div>
         <div class="invoice-item__field">
+          <div class="invoice-item__field-label">Origem</div>
+          <div class="invoice-item__field-value">${origemLabelPt(inv.origem)}</div>
+        </div>
+        <div class="invoice-item__field">
           <div class="invoice-item__field-label">Arquivo</div>
           <div class="invoice-item__field-value" title="${inv.filename}">${inv.filename}</div>
         </div>
@@ -1259,12 +1267,12 @@ function initUserInvoices() {
   updateInvoiceUserFieldVisibility();
   renderInvoices();
 
-  const form       = document.getElementById('invoice-form');
+  const form = document.getElementById('invoice-form');
   const valueInput = document.getElementById('invoice-value');
-  const fileInput  = document.getElementById('invoice-file');
-  const submitBtn  = document.getElementById('invoice-submit');
-  const cancelBtn  = document.getElementById('invoice-cancel');
-  const errorEl    = document.getElementById('invoice-error');
+  const fileInput = document.getElementById('invoice-file');
+  const submitBtn = document.getElementById('invoice-submit');
+  const cancelBtn = document.getElementById('invoice-cancel');
+  const errorEl = document.getElementById('invoice-error');
 
   if (!form) return;
 
@@ -1273,8 +1281,8 @@ function initUserInvoices() {
     clearError();
 
     const rawValue = (valueInput?.value || '').trim();
-    const value    = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
-    const file     = fileInput?.files?.[0];
+    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const file = fileInput?.files?.[0];
 
     if (!rawValue || isNaN(value) || value <= 0) {
       showError('Informe um valor válido maior que zero.');
@@ -1299,6 +1307,7 @@ function initUserInvoices() {
         filename: file.name,
         luckyNumber: generateLucky(),
         status: 'aguardando',
+        origem: 'manual',
       };
       const invoices = getInvoices();
       invoices.unshift(newInvoice);
@@ -1316,9 +1325,9 @@ function initUserInvoices() {
     if (!inv) return;
     editingId = id;
     if (valueInput) valueInput.value = inv.value;
-    if (fileInput)  fileInput.value  = '';
-    if (submitBtn)  submitBtn.textContent = 'Salvar Alteração';
-    if (cancelBtn)  cancelBtn.classList.add('visible');
+    if (fileInput) fileInput.value = '';
+    if (submitBtn) submitBtn.textContent = 'Salvar Alteração';
+    if (cancelBtn) cancelBtn.classList.add('visible');
     clearError();
     form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -1354,7 +1363,7 @@ function removeInvoice(id) {
    ============================================ */
 
 function syncInvoiceCardHeight() {
-  const layout   = document.querySelector('.invoice-layout');
+  const layout = document.querySelector('.invoice-layout');
   const formCard = document.querySelector('.invoice-form-card');
   const listCard = document.querySelector('.invoice-list-col');
   if (!layout || !formCard || !listCard) return;

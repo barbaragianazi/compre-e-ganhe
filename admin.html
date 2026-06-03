@@ -44,9 +44,9 @@
         <!-- Desktop Nav -->
         <nav class="header__nav" aria-label="Menu principal">
           <a href="area-logada.html#promocao" class="header__nav-link">Promoção</a>
-          <a href="ranking.html" class="header__nav-link">Status</a>
+          <a href="ranking.html" class="header__nav-link" data-status-page-label>Status</a>
           <a href="winners.html" class="header__nav-link">Ganhadores</a>
-          <a href="admin.html" class="header__nav-link active" aria-current="page">Administração</a>
+          <a href="admin.html" class="header__nav-link active" aria-current="page" data-admin-nav>Administração</a>
         </nav>
 
         <!-- Actions -->
@@ -60,8 +60,8 @@
               <span class="user-menu__arrow" aria-hidden="true">▾</span>
             </button>
             <div class="user-menu__dropdown" id="userDropdown" role="menu" aria-label="Menu do usuário">
-              <button class="user-menu__item" id="campaignSelectButton" type="button" role="menuitem">
-                <i class="fa-solid fa-layer-group"></i>
+              <button class="user-menu__item js-campaign-menu-action" type="button" role="menuitem" data-admin-only>
+                <i class="fa-solid fa-list-check"></i>
                 Selecionar campanha
               </button>
               <button class="user-menu__item" id="logoutButton" type="button" role="menuitem">
@@ -84,9 +84,9 @@
   <!-- Mobile nav drawer -->
   <nav class="mobile-nav" aria-label="Menu mobile">
     <a href="area-logada.html#promocao">Promoção</a>
-    <a href="ranking.html">Status</a>
+    <a href="ranking.html" data-status-page-label>Status</a>
     <a href="winners.html">Ganhadores</a>
-    <a href="admin.html" class="active" aria-current="page">Admin</a>
+    <a href="admin.html" class="active" aria-current="page" data-admin-nav>Admin</a>
     <a href="ranking.html#notas-fiscais" class="btn btn--primary" style="margin-top:8px; display:flex; justify-content:center;">Registrar nota</a>
   </nav>
 
@@ -99,18 +99,18 @@
       <div class="container">
         <div class="admin-intro__content">
           <div class="admin-intro__copy">
-            <div class="admin-intro__eyebrow">
-              <span class="admin-intro__line" aria-hidden="true"></span>
-              Administração
-              <span class="admin-intro__line" aria-hidden="true"></span>
-            </div>
-            <div class="admin-selected-campaign" aria-live="polite">
-              <span id="admin-selected-campaign">Campanha selecionada: Simparic Trio — Compre &amp; Ganhe</span>
-              <button class="admin-selected-campaign__btn" id="campaignChangeButton" type="button">Alterar</button>
-            </div>
-            <h1 class="admin-intro__title" id="admin-page-title">Painel administrativo</h1>
-            <p class="admin-intro__desc">Gerencie usuários participantes e acompanhe o desempenho das notas fiscais da
-              campanha.</p>
+            <h1 class="admin-intro__title" id="admin-page-title">
+              <div class="admin-intro__eyebrow">
+                <span class="admin-intro__line" aria-hidden="true"></span>
+                Administração
+                <span class="admin-intro__line" aria-hidden="true"></span>
+              </div>
+              <span class="admin-intro__headline">Painel administrativo</span>
+              <div class="admin-selected-campaign" aria-live="polite">
+                <span class="js-selected-campaign">Campanha selecionada: Simparic Trio — Compre &amp; Ganhe</span>
+                <button class="admin-selected-campaign__btn js-campaign-change" type="button">Alterar</button>
+              </div>
+            </h1>
           </div>
           <div class="admin-intro__image" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="702.544" height="800" viewBox="0 0 702.544 800"
@@ -330,7 +330,7 @@
   <!-- Modal: Confirmar Validação -->
   <div class="modal modal--action" id="modal-confirm-validate" role="dialog" aria-modal="true"
     aria-labelledby="modal-validate-title" aria-hidden="true">
-    <div class="modal__dialog modal__dialog--sm">
+    <div class="modal__dialog modal__dialog--lg">
       <div class="modal__head">
         <h2 class="modal__title" id="modal-validate-title">Validar nota</h2>
         <button class="modal__close" type="button" aria-label="Fechar">
@@ -353,7 +353,7 @@
   <!-- Modal: Excluir Nota -->
   <div class="modal modal--action" id="modal-delete-note" role="dialog" aria-modal="true"
     aria-labelledby="modal-delete-title" aria-hidden="true">
-    <div class="modal__dialog modal__dialog--sm">
+    <div class="modal__dialog modal__dialog--lg">
       <div class="modal__head">
         <h2 class="modal__title" id="modal-delete-title">Excluir nota</h2>
         <button class="modal__close" type="button" aria-label="Fechar">
@@ -434,7 +434,6 @@
       <div class="modal__head">
         <div>
           <h2 class="modal__title" id="modal-campaign-select-title">Selecionar campanha</h2>
-          <p class="modal__subtitle">Escolha a campanha para atualizar os dados do painel administrativo.</p>
         </div>
         <button class="modal__close" type="button" aria-label="Fechar modal">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

@@ -138,13 +138,13 @@ button {
 
 .container {
   width: 100%;
-  max-width: var(--container-max);
+  max-width: var(--container-wide);
   margin-inline: auto;
   padding-inline: var(--sp-6);
 }
 
 .container--wide {
-  max-width: var(--container-max);
+  max-width: var(--container-wide);
 }
 
 .visually-hidden {
@@ -181,13 +181,11 @@ button {
 .btn--primary {
   background: var(--color-primary);
   color: #FFFFFF;
-  /* box-shadow: 0 2px 12px rgba(var(--color-primary-rgb), 0.30); */
 }
 
 .btn--primary:hover {
   background: var(--color-primary-dark);
   transform: translateY(-1px);
-  /* box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.35); */
 }
 
 .btn--primary:active {
@@ -198,7 +196,6 @@ button {
   background: transparent;
   color: var(--color-primary);
   border: 1.5px solid var(--color-primary);
-  height: 42px;
 }
 
 .btn--outline:hover {

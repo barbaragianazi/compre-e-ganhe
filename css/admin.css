@@ -194,6 +194,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
+  flex-wrap: wrap;
 }
 
 .admin-sort-label {
@@ -237,7 +238,7 @@
   padding: var(--sp-3) var(--sp-4);
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-4);
   transition: box-shadow var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);
 }
@@ -322,6 +323,10 @@
 
 .user-card__btn {
   flex-shrink: 0;
+}
+
+.user-card__btn:hover {
+  border: 1px solid var(--neutral-600);
 }
 
 /* ---- Pagination ---- */
@@ -470,7 +475,7 @@
 
 .admin-search__wrap {
   position: relative;
-  width: 70%;
+  width: 49%;
   min-width: 30%;
 
 }
@@ -666,7 +671,7 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  gap: 12px;
+  gap: 4px;
 }
 
 .user-card__value-num {
@@ -791,9 +796,7 @@ body.modal-open {
 .modal__dialog {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  width: 100%;
-  /* max-width: 80%; */
-  /* height: 90vh; */
+  max-width: 100%;
   max-height: 99vh;
   display: flex;
   flex-direction: column;
@@ -1917,12 +1920,439 @@ body.modal-open {
 .notes-tabs__content {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 @media (max-width: 480px) {
   .notes-tab {
     padding: 8px 12px;
     font-size: var(--text-xs);
+  }
+}
+
+/* ============================================
+   USERS — Title row & upload button
+   ============================================ */
+
+.admin-users-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+
+/* ---- User origin badge ---- */
+.user-badge--origem {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.user-badge--origem-manual {
+  background: #F3F4F6;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+}
+
+.user-badge--origem-csv {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+/* ---- User card document ---- */
+.user-card__doc {
+  font-size: var(--text-xs);
+  color: var(--neutral-500);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ---- User card action buttons container ---- */
+
+.user-card__actions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.user-card--csv-imported {
+  border-color: #93C5FD;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 10px 28px rgba(37, 99, 235, 0.12);
+}
+
+.user-card--csv-imported .user-badge--origem-csv {
+  background: #DBEAFE;
+  border-color: #60A5FA;
+  color: #1E40AF;
+}
+
+.user-card__btn--edit {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ---- Danger outline button (delete) ---- */
+.btn--danger-outline {
+  background: transparent;
+  color: #EF4444;
+  border: 1.5px solid #EF4444;
+  padding: 10px var(--sp-3);
+  font-size: var(--text-xs);
+}
+
+.btn--danger-outline:hover {
+  background: #FEF2F2;
+  transform: translateY(-1px);
+}
+
+/* ---- Modal medium width ---- */
+.modal__dialog--md {
+  max-width: 560px;
+}
+
+/* ---- Modal confirm subtext ---- */
+.modal__confirm-subtext {
+  font-size: var(--text-sm);
+  color: var(--neutral-500);
+  margin: 4px 0 0;
+}
+
+.modal__confirm-subtext--danger {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--sp-2);
+  padding: 10px 12px;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-sm);
+  background: #FEF2F2;
+  color: #991B1B;
+  font-weight: 800;
+}
+
+.delete-user-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.delete-user-confirm__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #FEF2F2;
+  color: #DC2626;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.delete-user-confirm__content {
+  min-width: 0;
+}
+
+.delete-user-confirm__name {
+  margin: var(--sp-1) 0 0;
+  font-size: var(--text-lg);
+  font-weight: 900;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.admin-feedback {
+  position: fixed;
+  right: 24px;
+  top: 24px;
+  z-index: 1300;
+  max-width: min(380px, calc(100vw - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+
+.admin-feedback--success {
+  border: 1px solid #BBF7D0;
+  background: #F0FDF4;
+  color: #166534;
+}
+
+.admin-feedback--danger {
+  border: 1px solid #FCA5A5;
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+.admin-feedback.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.admin-feedback i {
+  margin-top: 2px;
+  flex: 0 0 auto;
+}
+
+/* ---- Form text input ---- */
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--neutral-200);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-family: var(--font-base);
+  color: var(--color-text);
+  background: #FFFFFF;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+}
+
+.form-input--readonly,
+.form-input[readonly] {
+  background: var(--neutral-50);
+  color: var(--neutral-600);
+  border-color: var(--neutral-200);
+  cursor: not-allowed;
+}
+
+.form-input--readonly:focus,
+.form-input[readonly]:focus {
+  border-color: var(--neutral-200);
+  box-shadow: none;
+}
+
+.form-input::placeholder {
+  color: var(--neutral-400);
+}
+
+.form-help {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--neutral-500);
+}
+
+.form-help--locked {
+  padding: 8px 10px;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-sm);
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+/* ---- Form readonly display ---- */
+.form-readonly {
+  padding: 6px 0;
+}
+
+/* ---- Upload CSV modal ---- */
+.upload-csv-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.upload-csv__desc-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upload-csv__desc {
+  font-size: var(--text-sm);
+  color: var(--neutral-600);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.upload-csv__template-btn {
+  align-self: flex-start;
+}
+
+.upload-csv__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: var(--sp-4) var(--sp-3);
+  border: 2px dashed var(--neutral-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+  text-align: center;
+  background: var(--neutral-50);
+  min-height: 120px;
+}
+
+.upload-csv__dropzone:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.03);
+}
+
+.upload-csv__dropzone--ready {
+  border-color: #10B981;
+  background: #F0FDF4;
+}
+
+.upload-csv__dropzone--error {
+  border-color: #EF4444;
+  background: #FFF5F5;
+}
+
+.upload-csv__dropzone-icon {
+  font-size: 2rem;
+  color: var(--neutral-400);
+  line-height: 1;
+}
+
+.upload-csv__dropzone-icon--file {
+  color: #10B981;
+}
+
+.upload-csv__dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upload-csv__dropzone-text span {
+  font-size: var(--text-sm);
+  color: var(--neutral-600);
+  font-weight: 600;
+}
+
+.upload-csv__filename {
+  color: var(--color-text) !important;
+  font-weight: 700 !important;
+}
+
+.upload-csv__change {
+  font-size: var(--text-xs) !important;
+  color: var(--neutral-400) !important;
+  font-weight: 500 !important;
+}
+
+.upload-csv__input {
+  display: none;
+}
+
+.upload-csv__error {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #991B1B;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+/* ---- Upload success state ---- */
+.upload-csv-content--success {
+  align-items: center;
+  padding: var(--sp-3) 0;
+  text-align: center;
+  gap: var(--sp-2);
+}
+
+.upload-csv__success-icon {
+  font-size: 3rem;
+  color: #10B981;
+  line-height: 1;
+}
+
+.upload-csv__success-msg {
+  font-size: var(--text-base);
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.upload-csv__stat {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--neutral-600);
+  margin: 0;
+}
+
+.upload-csv__included {
+  width: 100%;
+  margin-top: var(--sp-1);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  text-align: left;
+}
+
+.upload-csv__included-title {
+  margin: 0 0 8px;
+  font-size: var(--text-sm);
+  font-weight: 900;
+  color: #1D4ED8;
+}
+
+.upload-csv__included-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upload-csv__included-item {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  border: 1px solid #BFDBFE;
+  color: #1E3A8A;
+  font-size: var(--text-xs);
+  font-weight: 800;
+}
+
+/* ---- Responsive additions ---- */
+@media (max-width: 768px) {
+  .admin-users-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-card__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-csv__template-btn {
+    align-self: stretch;
+    justify-content: center;
   }
 }

@@ -13,6 +13,7 @@
 
 /* Chave localStorage para notas adicionadas pelo admin via ranking.html */
 var ADMIN_NOTES_KEY = 'lp_admin_notes';
+var ADMIN_IMPORTED_USERS_KEY = 'lp_admin_imported_users';
 var ADMIN_BASE_MOCK = JSON.parse(JSON.stringify(ADMIN_MOCK));
 var ADMIN_CAMPAIGN_KEY = 'lp_admin_selected_campaign';
 var DEFAULT_CAMPAIGN_ID = 'simparic-trio';
@@ -66,6 +67,53 @@ function mergeAdminNotes() {
   });
 }
 
+function mergeImportedUsersIntoAdminMock() {
+  var importedUsers = getImportedUsersStorage();
+  if (!importedUsers.length) return;
+
+  importedUsers.forEach(function (imported) {
+    var importedDoc = onlyDigits(imported.documento);
+    if (!importedDoc) return;
+
+    var existingByDoc = ADMIN_MOCK.find(function (user) {
+      return onlyDigits(user.documento) === importedDoc;
+    });
+
+    if (existingByDoc) {
+      existingByDoc.nome = imported.nome || existingByDoc.nome;
+      existingByDoc.documento = normalizeDocumento(imported.documento || existingByDoc.documento);
+      existingByDoc.email = imported.email || existingByDoc.email;
+      existingByDoc.telefone = normalizeTelefone(imported.telefone || existingByDoc.telefone);
+      existingByDoc.cidade = imported.cidade || existingByDoc.cidade || '';
+      existingByDoc.estado = imported.estado || existingByDoc.estado || '';
+      existingByDoc.origem = 'csv';
+      existingByDoc.origemDetalhada = imported.origemDetalhada || existingByDoc.origemDetalhada;
+      existingByDoc.dataCriacao = imported.dataCriacao || existingByDoc.dataCriacao;
+      existingByDoc.dataUltimaAtualizacao = imported.dataUltimaAtualizacao || existingByDoc.dataUltimaAtualizacao;
+      return;
+    }
+
+    var importedId = parseInt(imported.id, 10);
+    var existingById = ADMIN_MOCK.find(function (user) { return user.id === importedId; });
+    var nextId = importedId && !existingById ? importedId : getNextUserId();
+
+    ADMIN_MOCK.push({
+      id: nextId,
+      nome: imported.nome || 'Usuário importado',
+      documento: normalizeDocumento(imported.documento || ''),
+      email: imported.email || '',
+      telefone: normalizeTelefone(imported.telefone || ''),
+      cidade: imported.cidade || '',
+      estado: imported.estado || '',
+      origem: 'csv',
+      dataCriacao: imported.dataCriacao || nowISO(),
+      dataUltimaAtualizacao: imported.dataUltimaAtualizacao || nowISO(),
+      origemDetalhada: imported.origemDetalhada || 'Importação CSV',
+      notas: []
+    });
+  });
+}
+
 function getActiveCampaign() {
   return ADMIN_CAMPAIGNS.find(function (c) { return c.id === activeCampaignId; }) || ADMIN_CAMPAIGNS[0];
 }
@@ -86,6 +134,12 @@ function buildCampaignMock(campaign) {
       id: user.id,
       nome: names[userIndex] || user.nome,
       email: campaign.id + '.' + user.id + '@email.com',
+      documento: '',
+      telefone: '',
+      origem: 'manual',
+      dataCriacao: '2026-01-01T08:00:00.000Z',
+      dataUltimaAtualizacao: '2026-01-01T08:00:00.000Z',
+      origemDetalhada: 'Cadastro manual - 01/01/2026 08:00',
       cidade: city[0],
       estado: city[1],
       notas: user.notas.map(function (nota, noteIndex) {
@@ -114,14 +168,19 @@ function applyCampaign(campaignId) {
   activeCampaignId = nextCampaign.id;
   localStorage.setItem(ADMIN_CAMPAIGN_KEY, activeCampaignId);
   ADMIN_MOCK = buildCampaignMock(getActiveCampaign());
+  ensureUserFields();
+  mergeImportedUsersIntoAdminMock();
   mergeAdminNotes();
   ensureMockAttachments();
   adminState.currentPage = 1;
   adminState.search = '';
   adminState.filterPending = false;
+  adminState.originFilter = 'all';
   adminState.sort = 'name-asc';
   adminState.activeKPIModal = null;
   adminState.activeUserId = null;
+  recentImportedUserIds = [];
+  document.getElementById('admin-origin-filter').value = 'all';
   updateCampaignLabels();
   renderKPIs();
   renderUsers();
@@ -225,6 +284,7 @@ var adminState = {
   PER_PAGE: 6,
   search: '',
   filterPending: false,
+  originFilter: 'all',
   sort: 'name-asc',
   primaryModal: null,
   actionModal: null,
@@ -241,9 +301,33 @@ var adminState = {
   userNotesModal: {
     activeTab: 'aguardando',
     pages: { aguardando: 1, validada: 1, excluida: 1 },
-    PER_PAGE: 3
+    PER_PAGE: 6
   }
 };
+
+var recentImportedUserIds = [];
+var adminFeedbackTimer = null;
+
+function showAdminFeedback(message, type) {
+  var feedbackType = type || 'success';
+  var feedback = document.getElementById('admin-feedback');
+  if (!feedback) {
+    feedback = document.createElement('div');
+    feedback.id = 'admin-feedback';
+    feedback.className = 'admin-feedback';
+    feedback.setAttribute('role', 'status');
+    feedback.setAttribute('aria-live', 'polite');
+    document.body.appendChild(feedback);
+  }
+  feedback.className = 'admin-feedback admin-feedback--' + feedbackType;
+  var icon = feedbackType === 'danger' ? 'fa-triangle-exclamation' : 'fa-circle-check';
+  feedback.innerHTML = '<i class="fa-solid ' + icon + '" aria-hidden="true"></i><span>' + escapeHtml(message) + '</span>';
+  feedback.classList.add('show');
+  clearTimeout(adminFeedbackTimer);
+  adminFeedbackTimer = setTimeout(function () {
+    feedback.classList.remove('show');
+  }, 3200);
+}
 
 /* ============================================
    HELPERS
@@ -296,6 +380,113 @@ function statusLabel(s) {
 
 function origemLabel(origem) {
   return { manual: 'Manual', 'sell-out': 'Sell-Out' }[origem] || 'Manual';
+}
+
+function origemUsuarioLabel(origem) {
+  return { manual: 'Manual', csv: 'Importado via CSV' }[origem] || 'Manual';
+}
+
+function fmtDateTimeShort(iso) {
+  try {
+    var d = new Date(iso);
+    return String(d.getDate()).padStart(2, '0') + '/' +
+      String(d.getMonth() + 1).padStart(2, '0') + '/' +
+      d.getFullYear() + ' ' +
+      String(d.getHours()).padStart(2, '0') + ':' +
+      String(d.getMinutes()).padStart(2, '0');
+  } catch (e) { return iso; }
+}
+
+function nowISO() {
+  return new Date().toISOString();
+}
+
+function onlyDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function maskDocumento(value) {
+  var digits = onlyDigits(value).slice(0, 14);
+  if (digits.length > 11) {
+    return digits
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2');
+  }
+  return digits
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1-$2');
+}
+
+function maskTelefone(value) {
+  var digits = onlyDigits(value).slice(0, 11);
+  if (digits.length > 10) {
+    return digits
+      .replace(/^(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2');
+  }
+  return digits
+    .replace(/^(\d{2})(\d)/, '($1) $2')
+    .replace(/(\d{4})(\d)/, '$1-$2');
+}
+
+function normalizeDocumento(value) {
+  return maskDocumento(value);
+}
+
+function normalizeTelefone(value) {
+  return maskTelefone(value);
+}
+
+function getImportedUsersStorage() {
+  try { return JSON.parse(localStorage.getItem(ADMIN_IMPORTED_USERS_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+
+function saveImportedUsersStorage(users) {
+  localStorage.setItem(ADMIN_IMPORTED_USERS_KEY, JSON.stringify(users));
+}
+
+function upsertImportedUserStorage(users, user) {
+  var docDigits = onlyDigits(user.documento);
+  if (!docDigits) return;
+  var idx = users.findIndex(function (item) { return onlyDigits(item.documento) === docDigits; });
+  var next = {
+    id: user.id,
+    nome: user.nome,
+    documento: normalizeDocumento(user.documento),
+    email: user.email,
+    telefone: normalizeTelefone(user.telefone),
+    cidade: user.cidade || '',
+    estado: user.estado || '',
+    origem: 'csv',
+    dataCriacao: user.dataCriacao,
+    dataUltimaAtualizacao: user.dataUltimaAtualizacao,
+    origemDetalhada: user.origemDetalhada || ''
+  };
+  if (idx === -1) users.push(next);
+  else users[idx] = Object.assign({}, users[idx], next);
+}
+
+function getNextUserId() {
+  var max = 0;
+  ADMIN_MOCK.forEach(function (u) { if (u.id > max) max = u.id; });
+  return max + 1;
+}
+
+function ensureUserFields() {
+  ADMIN_MOCK.forEach(function (user, i) {
+    if (!user.documento) user.documento = String(10000000000 + user.id * 97 + i * 13).slice(0, 11);
+    if (!user.telefone) user.telefone = '149' + String(90000000 + user.id * 11111).slice(0, 8);
+    user.documento = normalizeDocumento(user.documento);
+    user.telefone = normalizeTelefone(user.telefone);
+    if (!user.origem) user.origem = 'manual';
+    if (!user.dataCriacao) user.dataCriacao = '2026-01-01T08:00:00.000Z';
+    if (!user.dataUltimaAtualizacao) user.dataUltimaAtualizacao = user.dataCriacao;
+    if (!user.origemDetalhada) user.origemDetalhada = 'Cadastro manual - 01/01/2026 08:00';
+  });
 }
 
 function canDeleteNote(nota) {
@@ -459,6 +650,12 @@ function getFilteredSortedUsers() {
       return u.notas.some(function (n) { return n.status === 'aguardando'; });
     });
   }
+  if (adminState.originFilter !== 'all') {
+    users = users.filter(function (u) {
+      var origem = u.origem || 'manual';
+      return origem === adminState.originFilter;
+    });
+  }
 
   return sortUsers(users, adminState.sort);
 }
@@ -466,20 +663,26 @@ function getFilteredSortedUsers() {
 function buildUserCard(u) {
   var s = getUserStats(u);
   var pend = s.pendentes > 0;
-  var loc = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+  var origem = u.origem || 'manual';
+  var importedHighlight = recentImportedUserIds.indexOf(u.id) !== -1;
+  var locSvg = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
     '<path d="M8 1.5A4.5 4.5 0 0 1 12.5 6c0 3-4.5 8.5-4.5 8.5S3.5 9 3.5 6A4.5 4.5 0 0 1 8 1.5Z" stroke="currentColor" stroke-width="1.5"/>' +
-    '<circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg>' +
-    u.cidade + ', ' + u.estado;
+    '<circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.5"/></svg>';
+  var locText = (u.cidade || u.estado)
+    ? locSvg + escapeHtml((u.cidade ? u.cidade + (u.estado ? ', ' + u.estado : '') : u.estado))
+    : '';
 
-  return '<div class="user-card' + (pend ? ' user-card--pending' : '') + '" data-user-id="' + u.id + '">' +
+  return '<div class="user-card' + (pend ? ' user-card--pending' : '') + (importedHighlight ? ' user-card--csv-imported' : '') + '" data-user-id="' + u.id + '">' +
     '<div class="user-card__avatar">' + initials(u.nome) + '</div>' +
     '<div class="user-card__body">' +
     '<div class="user-card__name-row">' +
-    '<span class="user-card__name">' + u.nome + '</span>' +
-    (pend ? '<span class="user-badge user-badge--pending">Pendente</span>' : '') +
+    '<span class="user-card__name">' + escapeHtml(u.nome) + '</span>' +
+    (pend ? '<span class="user-badge user-badge--pending">Notas Pendentes</span>' : '') +
+    '<span class="user-badge user-badge--origem user-badge--origem-' + origem + '">' + origemUsuarioLabel(origem) + '</span>' +
     '</div>' +
-    '<div class="user-card__email">' + u.email + '</div>' +
-    '<div class="user-card__location">' + loc + '</div>' +
+    (u.documento ? '<div class="user-card__doc">Doc.: ' + escapeHtml(u.documento) + '</div>' : '') +
+    '<div class="user-card__email">' + escapeHtml(u.email) + '</div>' +
+    (locText ? '<div class="user-card__location">' + locText + '</div>' : '') +
     '</div>' +
     '<div class="user-card__counts">' +
     '<div class="user-card__count user-card__count--aprov">' +
@@ -497,7 +700,13 @@ function buildUserCard(u) {
     '</div>' +
     '<div class="user-card__value-col">' +
     '<span class="user-card__value-num">' + fmtValor(s.valorValido) + '</span>' +
-    '<button class="btn btn--outline btn--sm user-card__btn" type="button" onclick="verNotas(' + u.id + ')">Ver notas</button>' +
+    '<button class="btn btn--sm user-card__btn" type="button" onclick="verNotas(' + u.id + ')">Ver notas</button>' +
+    '</div>' +
+    '<div class="user-card__actions">' +
+    '<button class="btn btn--outline btn--sm user-card__btn--edit" type="button" data-user-action="edit" data-user-id="' + u.id + '"><i class="fa-solid fa-pen" aria-hidden="true"></i>Editar</button>' +
+    '<button class="btn btn--sm btn--danger-outline" type="button" data-user-action="delete" data-user-id="' + u.id + '" aria-label="Excluir usuário"><i class="fa-solid fa-trash" aria-hidden="true"></i>Excluir</button>' +
+    '</div>' +
+    '</div>' +
     '</div>' +
     '</div>';
 }
@@ -987,6 +1196,12 @@ document.getElementById('admin-sort').addEventListener('change', function () {
   renderUsers();
 });
 
+document.getElementById('admin-origin-filter').addEventListener('change', function () {
+  adminState.originFilter = this.value;
+  adminState.currentPage = 1;
+  renderUsers();
+});
+
 document.getElementById('admin-prev').addEventListener('click', function () {
   if (adminState.currentPage > 1) { adminState.currentPage--; renderUsers(); }
 });
@@ -1131,6 +1346,7 @@ document.getElementById('btn-confirm-validate').addEventListener('click', functi
   if (note) note.status = 'validada';
   closeActionModal();
   refreshAll();
+  if (note) showAdminFeedback('Nota ' + note.numeroNota + ' validada com sucesso.', 'success');
 });
 
 document.getElementById('btn-cancel-validate').addEventListener('click', closeActionModal);
@@ -1150,6 +1366,7 @@ document.getElementById('btn-confirm-delete').addEventListener('click', function
   note.justificativa = justificativa;
   closeActionModal();
   refreshAll();
+  showAdminFeedback('Nota ' + note.numeroNota + ' excluída com sucesso.', 'danger');
 });
 
 document.getElementById('btn-cancel-delete').addEventListener('click', closeActionModal);
@@ -1202,6 +1419,384 @@ if (menuToggle && mobileNav) {
 window.addEventListener('scroll', function () {
   document.querySelector('.header').classList.toggle('scrolled', window.scrollY > 10);
 }, { passive: true });
+
+/* ============================================
+   UPLOAD CSV
+   ============================================ */
+
+var uploadCSVState = {
+  phase: 'idle',
+  fileName: '',
+  parsedRows: [],
+  errorMsg: '',
+  importedCount: 0,
+  updatedCount: 0,
+  importedUsers: []
+};
+
+function openUploadCSVModal() {
+  uploadCSVState.phase = 'idle';
+  uploadCSVState.fileName = '';
+  uploadCSVState.parsedRows = [];
+  uploadCSVState.errorMsg = '';
+  uploadCSVState.importedCount = 0;
+  uploadCSVState.updatedCount = 0;
+  uploadCSVState.importedUsers = [];
+  renderUploadCSVModalBody();
+  openPrimaryModal('modal-upload-csv');
+}
+
+function renderUploadCSVModalBody() {
+  var body = document.getElementById('modal-upload-csv-body');
+  if (!body) return;
+  body.innerHTML = uploadCSVState.phase === 'success' ? buildUploadSuccessBody() : buildUploadMainBody();
+}
+
+function buildUploadMainBody() {
+  var phase = uploadCSVState.phase;
+  var canImport = phase === 'ready';
+  var hasFile = uploadCSVState.fileName !== '';
+
+  var dropzoneClass = 'upload-csv__dropzone' +
+    (phase === 'ready' ? ' upload-csv__dropzone--ready' : '') +
+    (phase === 'error' && hasFile ? ' upload-csv__dropzone--error' : '');
+
+  var dropContent = hasFile
+    ? '<div class="upload-csv__dropzone-icon upload-csv__dropzone-icon--file"><i class="fa-solid fa-file-csv" aria-hidden="true"></i></div>' +
+      '<div class="upload-csv__dropzone-text">' +
+      '<span class="upload-csv__filename">' + escapeHtml(uploadCSVState.fileName) + '</span>' +
+      '<span class="upload-csv__change">Clique para trocar o arquivo</span>' +
+      '</div>'
+    : '<div class="upload-csv__dropzone-icon"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i></div>' +
+      '<div class="upload-csv__dropzone-text"><span>Clique para selecionar ou arraste o arquivo CSV aqui</span></div>';
+
+  var errorHtml = phase === 'error'
+    ? '<div class="upload-csv__error" role="alert"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> ' + escapeHtml(uploadCSVState.errorMsg) + '</div>'
+    : '';
+
+  return '<div class="upload-csv-content">' +
+    '<div class="upload-csv__desc-block">' +
+    '<p class="upload-csv__desc">Envie um arquivo CSV contendo a base de clientes que deseja importar.</p>' +
+    '<p class="upload-csv__desc">O arquivo deve seguir exatamente o modelo disponibilizado abaixo.</p>' +
+    '<p class="upload-csv__desc">Não altere os nomes ou a ordem das colunas.</p>' +
+    '</div>' +
+    '<button class="btn btn--outline btn--sm upload-csv__template-btn" type="button" id="btn-download-template">' +
+    '<i class="fa-solid fa-download" aria-hidden="true"></i> Baixar template CSV' +
+    '</button>' +
+    '<label class="' + dropzoneClass + '" for="input-csv-file">' +
+    dropContent +
+    '<input type="file" id="input-csv-file" accept=".csv" class="upload-csv__input" aria-label="Selecionar arquivo CSV">' +
+    '</label>' +
+    errorHtml +
+    '<div class="modal__foot">' +
+    '<button class="modal-btn modal-btn--cancel" id="btn-cancel-upload-csv" type="button">Cancelar</button>' +
+    '<button class="modal-btn modal-btn--validate" id="btn-confirm-upload-csv" type="button"' + (canImport ? '' : ' disabled') + '>Importar</button>' +
+    '</div>' +
+    '</div>';
+}
+
+function buildUploadSuccessBody() {
+  var imp = uploadCSVState.importedCount;
+  var upd = uploadCSVState.updatedCount;
+  var statsHtml = '';
+  if (imp > 0) statsHtml += '<p class="upload-csv__stat">' + imp + (imp === 1 ? ' cliente importado.' : ' clientes importados.') + '</p>';
+  if (upd > 0) statsHtml += '<p class="upload-csv__stat">' + upd + (upd === 1 ? ' cliente atualizado.' : ' clientes atualizados.') + '</p>';
+
+  return '<div class="upload-csv-content upload-csv-content--success">' +
+    '<div class="upload-csv__success-icon"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></div>' +
+    '<p class="upload-csv__success-msg">Base de clientes importada com sucesso.</p>' +
+    statsHtml +
+    '<div class="modal__foot">' +
+    '<button class="modal-btn modal-btn--validate" id="btn-close-upload-success" type="button">Fechar</button>' +
+    '</div>' +
+    '</div>';
+}
+
+function handleCSVFileSelected(file) {
+  if (!file.name.toLowerCase().endsWith('.csv')) {
+    uploadCSVState.phase = 'error';
+    uploadCSVState.fileName = file.name;
+    uploadCSVState.errorMsg = 'Formato inválido. Apenas arquivos .csv são aceitos.';
+    uploadCSVState.parsedRows = [];
+    renderUploadCSVModalBody();
+    return;
+  }
+  uploadCSVState.fileName = file.name;
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var result = parseAndValidateCSV(e.target.result);
+    if (result.error) {
+      uploadCSVState.phase = 'error';
+      uploadCSVState.errorMsg = result.error;
+      uploadCSVState.parsedRows = [];
+    } else {
+      uploadCSVState.phase = 'ready';
+      uploadCSVState.parsedRows = result.rows;
+      uploadCSVState.errorMsg = '';
+    }
+    renderUploadCSVModalBody();
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseAndValidateCSV(text) {
+  var lines = text.replace(/^﻿/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  if (!lines.length || !lines[0].trim()) return { error: 'O arquivo está vazio.' };
+
+  var headerLine = lines[0].replace(/﻿/g, '').trim().toLowerCase();
+  if (headerLine !== 'nome,documento,email,telefone') {
+    return { error: 'O arquivo enviado não segue o modelo esperado. Baixe o template CSV e tente novamente.' };
+  }
+
+  var validRows = [];
+  var invalidCount = 0;
+  lines.slice(1).forEach(function (line) {
+    if (!line.trim()) return;
+    var parts = line.split(',');
+    if (parts.length < 4) { invalidCount++; return; }
+    var nome = parts[0].trim();
+    var documento = normalizeDocumento(parts[1].trim());
+    var email = parts[2].trim();
+    var telefone = normalizeTelefone(parts.slice(3).join(',').trim());
+    if (!nome || !documento || !email || !telefone) { invalidCount++; return; }
+    validRows.push({ nome: nome, documento: documento, email: email, telefone: telefone });
+  });
+
+  if (invalidCount > 0) {
+    return { error: 'Importação não concluída. Foram encontrados ' + invalidCount + (invalidCount === 1 ? ' registro inválido.' : ' registros inválidos.') };
+  }
+  if (!validRows.length) return { error: 'O arquivo não contém nenhum registro válido.' };
+  return { rows: validRows };
+}
+
+function downloadCSVTemplate() {
+  var content = 'nome,documento,email,telefone\nJoão Silva,12345678900,joao@email.com,14999999999\nMaria Souza,98765432100,maria@email.com,14988888888';
+  var blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'template-base-clientes.csv';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function doImportCSV() {
+  var now = nowISO();
+  var nowFmt = fmtDateTimeShort(now);
+  var importedCount = 0;
+  var updatedCount = 0;
+  var importedUsers = [];
+  var persistedImportedUsers = getImportedUsersStorage();
+  uploadCSVState.parsedRows.forEach(function (row) {
+    var rowDocumentoDigits = onlyDigits(row.documento);
+    var existing = ADMIN_MOCK.find(function (u) { return onlyDigits(u.documento) === rowDocumentoDigits; });
+    if (existing) {
+      existing.nome = row.nome;
+      existing.documento = normalizeDocumento(row.documento);
+      existing.email = row.email;
+      existing.telefone = normalizeTelefone(row.telefone);
+      existing.origem = 'csv';
+      existing.origemDetalhada = 'Importação CSV - ' + nowFmt;
+      existing.dataUltimaAtualizacao = now;
+      upsertImportedUserStorage(persistedImportedUsers, existing);
+      updatedCount++;
+    } else {
+      var newUser = {
+        id: getNextUserId(),
+        nome: row.nome,
+        documento: normalizeDocumento(row.documento),
+        email: row.email,
+        telefone: normalizeTelefone(row.telefone),
+        cidade: '',
+        estado: '',
+        origem: 'csv',
+        dataCriacao: now,
+        dataUltimaAtualizacao: now,
+        origemDetalhada: 'Importação CSV - ' + nowFmt,
+        notas: []
+      };
+      ADMIN_MOCK.push(newUser);
+      importedUsers.push(newUser);
+      upsertImportedUserStorage(persistedImportedUsers, newUser);
+      importedCount++;
+    }
+  });
+  saveImportedUsersStorage(persistedImportedUsers);
+  uploadCSVState.phase = 'success';
+  uploadCSVState.importedCount = importedCount;
+  uploadCSVState.updatedCount = updatedCount;
+  uploadCSVState.importedUsers = importedUsers;
+  recentImportedUserIds = importedUsers.map(function (user) { return user.id; });
+  renderUploadCSVModalBody();
+  adminState.currentPage = 1;
+  if (recentImportedUserIds.length) {
+    adminState.search = '';
+    adminState.filterPending = false;
+    adminState.originFilter = 'csv';
+    document.getElementById('admin-search').value = '';
+    document.getElementById('admin-filter-pending').checked = false;
+    document.getElementById('admin-origin-filter').value = 'csv';
+  }
+  renderKPIs();
+  renderUsers();
+  if (importedCount > 0) {
+    showAdminFeedback(importedCount + (importedCount === 1 ? ' usuário importado' : ' usuários importados') + ' por CSV.', 'success');
+  } else if (updatedCount > 0) {
+    showAdminFeedback(updatedCount + (updatedCount === 1 ? ' usuário atualizado' : ' usuários atualizados') + ' pelo CSV.', 'success');
+  }
+}
+
+/* ============================================
+   EDIT USER
+   ============================================ */
+
+var editUserState = { userId: null };
+
+function openEditUserModal(userId) {
+  var user = ADMIN_MOCK.find(function (u) { return u.id === userId; });
+  if (!user) return;
+  editUserState.userId = userId;
+  renderEditUserModal(user);
+  openPrimaryModal('modal-edit-user');
+}
+
+function renderEditUserModal(user) {
+  var body = document.getElementById('modal-edit-user-body');
+  if (!body) return;
+  var origem = user.origem || 'manual';
+  body.innerHTML =
+    '<div class="form-field">' +
+    '<label class="form-label" for="edit-user-nome">Nome <span class="form-required" aria-hidden="true">*</span></label>' +
+    '<input class="form-input" type="text" id="edit-user-nome" value="' + escapeHtml(user.nome) + '" autocomplete="off">' +
+    '<p class="form-error" id="edit-user-nome-error" hidden role="alert">Nome é obrigatório.</p>' +
+    '</div>' +
+    '<div class="form-field">' +
+    '<label class="form-label" for="edit-user-documento">Documento</label>' +
+    '<input class="form-input form-input--readonly" type="text" id="edit-user-documento" value="' + escapeHtml(maskDocumento(user.documento || '')) + '" readonly aria-describedby="edit-user-documento-help">' +
+    '<p class="form-help form-help--locked" id="edit-user-documento-help">Documento não pode ser editado, pois é a chave de acesso ao sistema.</p>' +
+    '</div>' +
+    '<div class="form-field">' +
+    '<label class="form-label" for="edit-user-email">E-mail <span class="form-required" aria-hidden="true">*</span></label>' +
+    '<input class="form-input" type="email" id="edit-user-email" value="' + escapeHtml(user.email) + '" autocomplete="off">' +
+    '<p class="form-error" id="edit-user-email-error" hidden role="alert">E-mail é obrigatório.</p>' +
+    '</div>' +
+    '<div class="form-field">' +
+    '<label class="form-label" for="edit-user-telefone">Telefone <span class="form-required" aria-hidden="true">*</span></label>' +
+    '<input class="form-input" type="text" id="edit-user-telefone" value="' + escapeHtml(maskTelefone(user.telefone || '')) + '" inputmode="numeric" maxlength="15" autocomplete="off">' +
+    '<p class="form-error" id="edit-user-telefone-error" hidden role="alert">Telefone é obrigatório.</p>' +
+    '</div>' +
+    '<div class="form-field">' +
+    '<label class="form-label">Origem</label>' +
+    '<div class="form-readonly"><span class="user-badge user-badge--origem user-badge--origem-' + origem + '">' + origemUsuarioLabel(origem) + '</span></div>' +
+    '</div>' +
+    '<div class="modal__foot">' +
+    '<button class="modal-btn modal-btn--cancel" id="btn-cancel-edit-user" type="button">Cancelar</button>' +
+    '<button class="modal-btn modal-btn--validate" id="btn-save-edit-user" type="button">Salvar alterações</button>' +
+    '</div>';
+}
+
+function saveEditUser() {
+  var user = ADMIN_MOCK.find(function (u) { return u.id === editUserState.userId; });
+  if (!user) return;
+
+  var fields = [
+    { inputId: 'edit-user-nome', errId: 'edit-user-nome-error' },
+    { inputId: 'edit-user-email', errId: 'edit-user-email-error' },
+    { inputId: 'edit-user-telefone', errId: 'edit-user-telefone-error' }
+  ];
+  var values = {};
+  var valid = true;
+  fields.forEach(function (f) {
+    var val = document.getElementById(f.inputId).value.trim();
+    values[f.inputId] = val;
+    var err = document.getElementById(f.errId);
+    if (!val) { if (err) err.hidden = false; valid = false; }
+    else { if (err) err.hidden = true; }
+  });
+  if (!valid) return;
+
+  user.nome = values['edit-user-nome'];
+  user.email = values['edit-user-email'];
+  user.telefone = normalizeTelefone(values['edit-user-telefone']);
+  user.dataUltimaAtualizacao = nowISO();
+  closePrimaryModal();
+  renderKPIs();
+  renderUsers();
+  showAdminFeedback('Usuário ' + user.nome + ' atualizado com sucesso.', 'success');
+}
+
+/* ============================================
+   DELETE USER
+   ============================================ */
+
+var deleteUserState = { userId: null };
+
+function openDeleteUserModal(userId) {
+  var user = ADMIN_MOCK.find(function (u) { return u.id === userId; });
+  if (!user) return;
+  deleteUserState.userId = userId;
+  var nameEl = document.getElementById('delete-user-name');
+  if (nameEl) nameEl.textContent = user.nome;
+  openActionModal('modal-delete-user');
+}
+
+/* Upload CSV button */
+document.getElementById('btn-upload-csv').addEventListener('click', openUploadCSVModal);
+
+/* Upload CSV modal body — delegation */
+document.getElementById('modal-upload-csv-body').addEventListener('click', function (e) {
+  if (e.target.closest('#btn-download-template')) { downloadCSVTemplate(); return; }
+  if (e.target.closest('#btn-cancel-upload-csv')) { closePrimaryModal(); return; }
+  var confirmBtn = e.target.closest('#btn-confirm-upload-csv');
+  if (confirmBtn && !confirmBtn.disabled) { doImportCSV(); return; }
+  if (e.target.closest('#btn-close-upload-success')) { closePrimaryModal(); return; }
+});
+
+document.getElementById('modal-upload-csv-body').addEventListener('change', function (e) {
+  var fi = e.target.closest('#input-csv-file');
+  if (fi && fi.files[0]) handleCSVFileSelected(fi.files[0]);
+});
+
+/* Edit user modal body — delegation */
+document.getElementById('modal-edit-user-body').addEventListener('click', function (e) {
+  if (e.target.closest('#btn-cancel-edit-user')) { closePrimaryModal(); return; }
+  if (e.target.closest('#btn-save-edit-user')) { saveEditUser(); return; }
+});
+
+document.getElementById('modal-edit-user-body').addEventListener('input', function (e) {
+  var input = e.target;
+  if (input.id === 'edit-user-telefone') input.value = maskTelefone(input.value);
+});
+
+/* Delete user */
+document.getElementById('btn-confirm-delete-user').addEventListener('click', function () {
+  var userId = deleteUserState.userId;
+  if (!userId) return;
+  var idx = ADMIN_MOCK.findIndex(function (u) { return u.id === userId; });
+  var deletedName = idx !== -1 ? ADMIN_MOCK[idx].nome : '';
+  if (idx !== -1) ADMIN_MOCK.splice(idx, 1);
+  recentImportedUserIds = recentImportedUserIds.filter(function (id) { return id !== userId; });
+  deleteUserState.userId = null;
+  closeActionModal();
+  renderKPIs();
+  renderUsers();
+  if (deletedName) showAdminFeedback('Usuário ' + deletedName + ' excluído com sucesso.', 'danger');
+});
+
+document.getElementById('btn-cancel-delete-user').addEventListener('click', closeActionModal);
+
+/* User grid — edit / delete delegation */
+document.getElementById('admin-users-grid').addEventListener('click', function (e) {
+  var btn = e.target.closest('[data-user-action]');
+  if (!btn) return;
+  var action = btn.getAttribute('data-user-action');
+  var userId = parseInt(btn.getAttribute('data-user-id'), 10);
+  if (action === 'edit') openEditUserModal(userId);
+  else if (action === 'delete') openDeleteUserModal(userId);
+});
 
 /* ============================================
    INIT

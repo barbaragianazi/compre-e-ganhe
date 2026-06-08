@@ -226,7 +226,13 @@
     <section class="admin-users-section" aria-labelledby="admin-users-title">
       <div class="container">
 
-        <h2 class="admin-users-title" id="admin-users-title">Usuários participantes</h2>
+        <div class="admin-users-title-row">
+          <h2 class="admin-users-title" id="admin-users-title">Usuários participantes</h2>
+          <button class="btn btn--primary btn--sm" type="button" id="btn-upload-csv">
+            <i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i>
+            Upload base de clientes (.CSV)
+          </button>
+        </div>
         <div class="admin-users-header">
           <!-- ========= -->
           <div class="admin-search">
@@ -252,11 +258,17 @@
                 <option value="date-desc">Mais recente</option>
                 <option value="date-asc">Mais antigo</option>
               </select>
+              <label class="admin-sort-label" for="admin-origin-filter">Origem</label>
+              <select class="admin-sort-select" id="admin-origin-filter" aria-label="Filtrar usuários por origem">
+                <option value="all">Todos</option>
+                <option value="manual">Manual</option>
+                <option value="csv">Importados por CSV</option>
+              </select>
               <!-- Search + Filter -->
     
               <label class="admin-filter-check">
                 <input type="checkbox" id="admin-filter-pending" class="admin-filter-check__input" />
-                <span class="admin-filter-check__text">Filtrar notas pendentes</span>
+                <span class="admin-filter-check__text">Filtrar pendências</span>
               </label>
             </div>
           </div>
@@ -471,6 +483,69 @@
           <div class="attachment-preview__frame">
             <img class="attachment-preview__image" id="note-preview-image" src="" alt="Prévia do anexo da nota">
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Upload base de clientes -->
+  <div class="modal" id="modal-upload-csv" role="dialog" aria-modal="true" aria-labelledby="modal-upload-csv-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--md">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-upload-csv-title">Upload base de clientes</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" id="modal-upload-csv-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar usuário -->
+  <div class="modal" id="modal-edit-user" role="dialog" aria-modal="true" aria-labelledby="modal-edit-user-title"
+    aria-hidden="true">
+    <div class="modal__dialog modal__dialog--sm">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-edit-user-title">Editar usuário</h2>
+        <button class="modal__close" type="button" aria-label="Fechar modal">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" id="modal-edit-user-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Excluir usuário -->
+  <div class="modal modal--action" id="modal-delete-user" role="dialog" aria-modal="true"
+    aria-labelledby="modal-delete-user-title" aria-hidden="true">
+    <div class="modal__dialog modal__dialog--sm">
+      <div class="modal__head">
+        <h2 class="modal__title" id="modal-delete-user-title">Excluir usuário</h2>
+        <button class="modal__close" type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="delete-user-confirm">
+          <div class="delete-user-confirm__icon" aria-hidden="true">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="delete-user-confirm__content">
+            <p class="modal__confirm-text">Deseja realmente excluir este usuário participante?</p>
+            <p class="delete-user-confirm__name" id="delete-user-name">Usuário selecionado</p>
+            <p class="modal__confirm-subtext modal__confirm-subtext--danger">Esta ação não poderá ser desfeita.</p>
+          </div>
+        </div>
+        <div class="modal__foot">
+          <button class="modal-btn modal-btn--cancel" id="btn-cancel-delete-user" type="button">Cancelar</button>
+          <button class="modal-btn modal-btn--delete" id="btn-confirm-delete-user" type="button">Excluir usuário</button>
         </div>
       </div>
     </div>

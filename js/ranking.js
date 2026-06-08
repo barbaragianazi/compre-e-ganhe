@@ -93,6 +93,7 @@ const historyFilters = {
 
 const INVOICE_KEY = 'lp_invoices';
 const ADMIN_NOTES_KEY = 'lp_admin_notes';
+const ADMIN_IMPORTED_USERS_KEY = 'lp_admin_imported_users';
 const DEFAULT_CAMPAIGN_ID = 'simparic-trio';
 const RANKING_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
   ? JSON.parse(JSON.stringify(ADMIN_MOCK))
@@ -101,6 +102,14 @@ const RANKING_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
 let editingId = null;
 let isAdminMode = false;
 let activeRankingKPI = Auth.getRankingView ? Auth.getRankingView() : KPIS[0].id;
+let selectedInvoiceUserId = null;
+const invoiceUserSearchState = {
+  search: '',
+  sort: 'name-asc',
+  originFilter: 'all',
+  page: 1,
+  perPage: 10,
+};
 
 /* ============================================
    INIT
@@ -224,6 +233,7 @@ function initCampaignSelectorAccess() {
 function applySelectedCampaignData() {
   if (!window.CampaignSelector || typeof ADMIN_MOCK === 'undefined') return;
   ADMIN_MOCK = CampaignSelector.buildCampaignMock(RANKING_BASE_ADMIN_MOCK, CampaignSelector.getActiveCampaign());
+  mergeImportedUsersIntoAdminMock();
   mergeAdminStorageNotes();
 }
 
@@ -304,6 +314,104 @@ function noteBelongsToActiveCampaign(item) {
 
 function getActiveCampaignAdminNotes() {
   return getAdminStorageNotes().filter(noteBelongsToActiveCampaign);
+}
+
+function onlyDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function maskDocumento(value) {
+  const digits = onlyDigits(value).slice(0, 14);
+  if (digits.length > 11) {
+    return digits
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2');
+  }
+  return digits
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1-$2');
+}
+
+function normalizeDocumento(value) {
+  return maskDocumento(value);
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getImportedUsers() {
+  try { return JSON.parse(localStorage.getItem(ADMIN_IMPORTED_USERS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function ensureRankingUserFields(user, index = 0) {
+  if (!user) return user;
+  if (!Array.isArray(user.notas)) user.notas = [];
+  if (!user.documento) user.documento = String(10000000000 + Number(user.id || index + 1) * 97 + index * 13).slice(0, 11);
+  user.documento = normalizeDocumento(user.documento);
+  if (!user.telefone) user.telefone = '149' + String(90000000 + Number(user.id || index + 1) * 11111).slice(0, 8);
+  if (!user.origem) user.origem = 'manual';
+  if (!user.cidade) user.cidade = '';
+  if (!user.estado) user.estado = '';
+  return user;
+}
+
+function getNextRankingUserId() {
+  if (typeof ADMIN_MOCK === 'undefined' || !ADMIN_MOCK.length) return 1;
+  return ADMIN_MOCK.reduce((max, user) => Math.max(max, Number(user.id) || 0), 0) + 1;
+}
+
+function mergeImportedUsersIntoAdminMock() {
+  if (typeof ADMIN_MOCK === 'undefined') return;
+
+  ADMIN_MOCK.forEach(ensureRankingUserFields);
+
+  getImportedUsers().forEach(imported => {
+    const importedDoc = onlyDigits(imported.documento);
+    if (!importedDoc) return;
+
+    const existing = ADMIN_MOCK.find(user => onlyDigits(user.documento) === importedDoc);
+    if (existing) {
+      existing.nome = imported.nome || existing.nome;
+      existing.email = imported.email || existing.email;
+      existing.telefone = imported.telefone || existing.telefone;
+      existing.documento = imported.documento || existing.documento;
+      existing.origem = 'csv';
+      existing.origemDetalhada = imported.origemDetalhada || existing.origemDetalhada;
+      existing.dataUltimaAtualizacao = imported.dataUltimaAtualizacao || existing.dataUltimaAtualizacao;
+      ensureRankingUserFields(existing);
+      return;
+    }
+
+    const importedId = Number(imported.id);
+    const nextUserId = importedId && !ADMIN_MOCK.some(user => Number(user.id) === importedId)
+      ? importedId
+      : getNextRankingUserId();
+
+    ADMIN_MOCK.push(ensureRankingUserFields({
+      id: nextUserId,
+      nome: imported.nome || 'Usuário importado',
+      email: imported.email || '',
+      telefone: imported.telefone || '',
+      documento: imported.documento || '',
+      cidade: imported.cidade || '',
+      estado: imported.estado || '',
+      origem: 'csv',
+      origemDetalhada: imported.origemDetalhada || 'Importação CSV',
+      dataCriacao: imported.dataCriacao || imported.dataUltimaAtualizacao || new Date().toISOString(),
+      dataUltimaAtualizacao: imported.dataUltimaAtualizacao || new Date().toISOString(),
+      notas: [],
+    }, ADMIN_MOCK.length));
+  });
 }
 
 function mergeAdminStorageNotes() {
@@ -756,6 +864,8 @@ function initHistoryCard() {
   const overlay = document.getElementById('modal-overlay');
   if (overlay) {
     overlay.addEventListener('click', () => {
+      const invoiceUserSearchModal = document.getElementById('modal-invoice-user-search');
+      if (invoiceUserSearchModal?.classList.contains('is-open')) closeInvoiceUserSearchModal();
       const previewModal = document.getElementById('modal-history-preview');
       if (previewModal?.classList.contains('is-open')) closeHistoryPreviewModal();
       const historyModal = document.getElementById('modal-history');
@@ -775,6 +885,7 @@ function initHistoryCard() {
 
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
+    closeInvoiceUserSearchModal();
     closeHistoryPreviewModal();
     closeHistoryModal();
   });
@@ -942,12 +1053,35 @@ function fmtCurrency(value) {
   return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+function formatMoneyInput(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (!digits) return '';
+  return (Number(digits) / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function parseMoneyInput(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (!digits) return NaN;
+  return Number(digits) / 100;
+}
+
+function bindInvoiceValueMask(valueInput) {
+  if (!valueInput || valueInput.dataset.moneyMaskBound === 'true') return;
+  valueInput.dataset.moneyMaskBound = 'true';
+  valueInput.addEventListener('input', () => {
+    valueInput.value = formatMoneyInput(valueInput.value);
+  });
+  valueInput.addEventListener('blur', () => {
+    valueInput.value = formatMoneyInput(valueInput.value);
+  });
+}
+
 function statusLabelPt(s) {
   return { aguardando: 'Aguardando', validada: 'Validada', excluida: 'Excluída', reprovada: 'Reprovada' }[s] || s;
 }
 
 function origemLabelPt(origem) {
-  return { manual: 'Manual', 'sell-out': 'Sell-Out' }[origem] || 'Manual';
+  return { manual: 'Manual', csv: 'Importado via CSV', 'sell-out': 'Sell-Out' }[origem] || 'Manual';
 }
 
 function ensureLuckyNumbers(items, saveFn) {
@@ -1009,31 +1143,278 @@ function initInvoices() {
 
 function updateInvoiceUserFieldVisibility() {
   const userField = document.getElementById('invoice-user-field');
-  const userSelect = document.getElementById('invoice-user');
+  const userInput = document.getElementById('invoice-user');
   const canSelect = Auth.getRole() === 'admin';
 
   if (userField) {
     userField.hidden = !canSelect;
     userField.setAttribute('aria-hidden', String(!canSelect));
   }
-  if (userSelect) {
-    userSelect.disabled = !canSelect;
-    userSelect.required = canSelect;
-    if (!canSelect) userSelect.value = '';
+  if (userInput) {
+    userInput.disabled = !canSelect;
+    if (!canSelect) {
+      selectedInvoiceUserId = null;
+      userInput.value = '';
+    }
   }
 }
 
 function syncAdminInvoiceUserSelect() {
   if (!isAdminMode) return;
-  const userSelect = document.getElementById('invoice-user');
-  if (!userSelect || typeof ADMIN_MOCK === 'undefined') return;
+  const userInput = document.getElementById('invoice-user');
+  if (!userInput || typeof ADMIN_MOCK === 'undefined') return;
 
-  userSelect.innerHTML = '<option value="">— Selecione um usuário —</option>';
-  ADMIN_MOCK.forEach(user => {
-    const opt = document.createElement('option');
-    opt.value = user.id;
-    opt.textContent = user.nome;
-    userSelect.appendChild(opt);
+  if (selectedInvoiceUserId) {
+    const stillExists = ADMIN_MOCK.some(user => Number(user.id) === Number(selectedInvoiceUserId));
+    if (!stillExists) selectedInvoiceUserId = null;
+  }
+
+  userInput.value = selectedInvoiceUserId || '';
+  renderSelectedInvoiceUser();
+  renderInvoiceUserSearchResults();
+}
+
+function getInvoiceSearchableUsers() {
+  if (typeof ADMIN_MOCK === 'undefined') return [];
+  return ADMIN_MOCK.slice();
+}
+
+function getSelectedInvoiceUser() {
+  if (!selectedInvoiceUserId || typeof ADMIN_MOCK === 'undefined') return null;
+  return ADMIN_MOCK.find(user => Number(user.id) === Number(selectedInvoiceUserId)) || null;
+}
+
+function getOriginBadgeHTML(user) {
+  const origin = user?.origem === 'csv' ? 'csv' : 'manual';
+  const label = origin === 'csv' ? 'Importado via CSV' : 'Manual';
+  return '<span class="user-badge user-badge--origem user-badge--origem-' + origin + '">' + label + '</span>';
+}
+
+function renderSelectedInvoiceUser() {
+  const userInput = document.getElementById('invoice-user');
+  const emptyEl = document.getElementById('invoice-user-empty');
+  const selectedEl = document.getElementById('invoice-user-selected');
+  const searchBtn = document.getElementById('invoice-user-search-btn');
+  const user = getSelectedInvoiceUser();
+
+  if (userInput) userInput.value = user ? user.id : '';
+  if (emptyEl) emptyEl.hidden = Boolean(user);
+  if (selectedEl) {
+    selectedEl.hidden = !user;
+    selectedEl.innerHTML = user ? `
+      <strong class="invoice-user-picker__name">${escapeHtml(user.nome)}</strong>
+      <span class="invoice-user-picker__meta">${escapeHtml(user.email || 'E-mail não informado')}</span>
+      <span class="invoice-user-picker__meta">${escapeHtml(user.documento || 'Documento não informado')}</span>
+      ${getOriginBadgeHTML(user)}
+    ` : '';
+  }
+  if (searchBtn) searchBtn.textContent = user ? 'Trocar usuário' : 'Pesquisar usuário';
+}
+
+function clearSelectedInvoiceUser() {
+  selectedInvoiceUserId = null;
+  renderSelectedInvoiceUser();
+}
+
+function selectInvoiceUser(userId) {
+  const numericId = Number(userId);
+  if (!numericId || typeof ADMIN_MOCK === 'undefined') return;
+  const user = ADMIN_MOCK.find(item => Number(item.id) === numericId);
+  if (!user) return;
+  selectedInvoiceUserId = numericId;
+  renderSelectedInvoiceUser();
+  closeInvoiceUserSearchModal();
+}
+
+function userMatchesInvoiceSearch(user, term) {
+  const normalizedTerm = String(term || '').trim().toLowerCase();
+  if (!normalizedTerm) return true;
+  const termDigits = onlyDigits(normalizedTerm);
+  const haystack = [
+    user.nome,
+    user.email,
+    user.documento,
+    user.telefone,
+  ].map(value => String(value || '').toLowerCase()).join(' ');
+  return haystack.includes(normalizedTerm) || (termDigits && onlyDigits(user.documento).includes(termDigits));
+}
+
+function getInvoiceUserValidAmount(user) {
+  return getEligibleNotes(user).reduce((total, note) => total + Number(note.valor || 0), 0);
+}
+
+function getInvoiceUserLatestNoteDate(user) {
+  const dates = (user.notas || [])
+    .map(note => note.data ? new Date(note.data + 'T00:00:00').getTime() : 0)
+    .filter(Boolean);
+  return dates.length ? Math.max(...dates) : 0;
+}
+
+function sortInvoiceUsers(users) {
+  const sort = invoiceUserSearchState.sort;
+  return users.sort((a, b) => {
+    if (sort === 'name-desc') return String(b.nome || '').localeCompare(String(a.nome || ''), 'pt-BR');
+    if (sort === 'valor-desc') return getInvoiceUserValidAmount(b) - getInvoiceUserValidAmount(a);
+    if (sort === 'valor-asc') return getInvoiceUserValidAmount(a) - getInvoiceUserValidAmount(b);
+    if (sort === 'date-desc') return getInvoiceUserLatestNoteDate(b) - getInvoiceUserLatestNoteDate(a);
+    if (sort === 'date-asc') return getInvoiceUserLatestNoteDate(a) - getInvoiceUserLatestNoteDate(b);
+    return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR');
+  });
+}
+
+function getFilteredSortedInvoiceUsers() {
+  let users = getInvoiceSearchableUsers();
+
+  if (invoiceUserSearchState.search.trim()) {
+    users = users.filter(user => userMatchesInvoiceSearch(user, invoiceUserSearchState.search));
+  }
+
+  if (invoiceUserSearchState.originFilter !== 'all') {
+    users = users.filter(user => (user.origem || 'manual') === invoiceUserSearchState.originFilter);
+  }
+
+  return sortInvoiceUsers(users);
+}
+
+function renderInvoiceUserSearchPagination(totalItems) {
+  const paginationEl = document.getElementById('invoice-user-pagination');
+  if (!paginationEl) return;
+
+  const totalPages = Math.max(1, Math.ceil(totalItems / invoiceUserSearchState.perPage));
+  if (invoiceUserSearchState.page > totalPages) invoiceUserSearchState.page = totalPages;
+  const isEmpty = totalItems === 0;
+
+  paginationEl.innerHTML = `
+    <button class="admin-pagination__btn" type="button" data-invoice-user-page="prev"${isEmpty || invoiceUserSearchState.page === 1 ? ' disabled' : ''}>
+      ← Anterior
+    </button>
+    <span class="admin-pagination__info">Página ${invoiceUserSearchState.page} de ${totalPages}</span>
+    <button class="admin-pagination__btn" type="button" data-invoice-user-page="next"${isEmpty || invoiceUserSearchState.page === totalPages ? ' disabled' : ''}>
+      Próxima →
+    </button>
+  `;
+}
+
+function renderInvoiceUserSearchResults() {
+  const resultsEl = document.getElementById('invoice-user-search-results');
+  if (!resultsEl) return;
+
+  const users = getFilteredSortedInvoiceUsers();
+  const totalPages = Math.max(1, Math.ceil(users.length / invoiceUserSearchState.perPage));
+  if (invoiceUserSearchState.page > totalPages) invoiceUserSearchState.page = totalPages;
+  const start = (invoiceUserSearchState.page - 1) * invoiceUserSearchState.perPage;
+  const pageUsers = users.slice(start, start + invoiceUserSearchState.perPage);
+  renderInvoiceUserSearchPagination(users.length);
+
+  if (!pageUsers.length) {
+    resultsEl.innerHTML = `
+      <div class="invoice-user-search__empty">
+        Nenhum usuário encontrado para a busca atual.
+      </div>
+    `;
+    return;
+  }
+
+  resultsEl.innerHTML = pageUsers.map(user => `
+    <article class="invoice-user-search-card${Number(user.id) === Number(selectedInvoiceUserId) ? ' is-selected' : ''}" role="listitem">
+      <div class="invoice-user-search-card__main">
+        <div class="invoice-user-search-card__top">
+          <strong class="invoice-user-search-card__name">${escapeHtml(user.nome)}</strong>
+          ${getOriginBadgeHTML(user)}
+        </div>
+        <div class="invoice-user-search-card__meta">
+          <span>${escapeHtml(user.email || 'E-mail não informado')}</span>
+          <span>${escapeHtml(user.documento || 'Documento não informado')}</span>
+        </div>
+      </div>
+      <button class="invoice-user-search-card__btn" type="button" data-invoice-user-select="${user.id}">
+        Selecionar
+      </button>
+    </article>
+  `).join('');
+}
+
+function openInvoiceUserSearchModal() {
+  const modal = document.getElementById('modal-invoice-user-search');
+  const overlay = document.getElementById('modal-overlay');
+  const searchInput = document.getElementById('invoice-user-search');
+  const sortSelect = document.getElementById('invoice-user-sort');
+  const originSelect = document.getElementById('invoice-user-origin-filter');
+  if (!modal) return;
+
+  invoiceUserSearchState.search = '';
+  invoiceUserSearchState.sort = 'name-asc';
+  invoiceUserSearchState.originFilter = 'all';
+  invoiceUserSearchState.page = 1;
+  if (searchInput) searchInput.value = '';
+  if (sortSelect) sortSelect.value = invoiceUserSearchState.sort;
+  if (originSelect) originSelect.value = invoiceUserSearchState.originFilter;
+  renderInvoiceUserSearchResults();
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  if (overlay) { overlay.classList.add('is-open'); overlay.setAttribute('aria-hidden', 'false'); }
+  document.body.classList.add('modal-open');
+  setTimeout(() => searchInput?.focus(), 0);
+}
+
+function closeInvoiceUserSearchModal() {
+  const modal = document.getElementById('modal-invoice-user-search');
+  if (!modal || !modal.classList.contains('is-open')) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+
+  const anyOtherOpen = document.querySelector('.modal.is-open');
+  if (!anyOtherOpen) {
+    const overlay = document.getElementById('modal-overlay');
+    if (overlay) { overlay.classList.remove('is-open'); overlay.setAttribute('aria-hidden', 'true'); }
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function initInvoiceUserSearchModal() {
+  const searchBtn = document.getElementById('invoice-user-search-btn');
+  const closeBtn = document.getElementById('invoice-user-search-close');
+  const searchInput = document.getElementById('invoice-user-search');
+  const sortSelect = document.getElementById('invoice-user-sort');
+  const originSelect = document.getElementById('invoice-user-origin-filter');
+  const resultsEl = document.getElementById('invoice-user-search-results');
+  const paginationEl = document.getElementById('invoice-user-pagination');
+  const modal = document.getElementById('modal-invoice-user-search');
+
+  searchBtn?.addEventListener('click', openInvoiceUserSearchModal);
+  closeBtn?.addEventListener('click', closeInvoiceUserSearchModal);
+  searchInput?.addEventListener('input', event => {
+    invoiceUserSearchState.search = event.target.value || '';
+    invoiceUserSearchState.page = 1;
+    renderInvoiceUserSearchResults();
+  });
+  sortSelect?.addEventListener('change', event => {
+    invoiceUserSearchState.sort = event.target.value || 'name-asc';
+    invoiceUserSearchState.page = 1;
+    renderInvoiceUserSearchResults();
+  });
+  originSelect?.addEventListener('change', event => {
+    invoiceUserSearchState.originFilter = event.target.value || 'all';
+    invoiceUserSearchState.page = 1;
+    renderInvoiceUserSearchResults();
+  });
+  resultsEl?.addEventListener('click', event => {
+    const btn = event.target.closest('[data-invoice-user-select]');
+    if (!btn) return;
+    selectInvoiceUser(btn.dataset.invoiceUserSelect);
+  });
+  paginationEl?.addEventListener('click', event => {
+    const btn = event.target.closest('[data-invoice-user-page]');
+    if (!btn) return;
+    const direction = btn.dataset.invoiceUserPage;
+    const totalItems = getFilteredSortedInvoiceUsers().length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / invoiceUserSearchState.perPage));
+    if (direction === 'prev' && invoiceUserSearchState.page > 1) invoiceUserSearchState.page--;
+    if (direction === 'next' && invoiceUserSearchState.page < totalPages) invoiceUserSearchState.page++;
+    renderInvoiceUserSearchResults();
+  });
+  modal?.addEventListener('click', event => {
+    if (event.target === modal) closeInvoiceUserSearchModal();
   });
 }
 
@@ -1054,7 +1435,7 @@ function initAdminInvoices() {
   renderAdminInvoiceList();
 
   const form = document.getElementById('invoice-form');
-  const userSelect = document.getElementById('invoice-user');
+  const userInput = document.getElementById('invoice-user');
   const valueInput = document.getElementById('invoice-value');
   const fileInput = document.getElementById('invoice-file');
   const cancelBtn = document.getElementById('invoice-cancel');
@@ -1065,6 +1446,8 @@ function initAdminInvoices() {
   updateInvoiceUserFieldVisibility();
   if (cancelBtn) cancelBtn.classList.add('visible');
   syncAdminInvoiceUserSelect();
+  initInvoiceUserSearchModal();
+  bindInvoiceValueMask(valueInput);
 
   function showError(msg) {
     if (!errorEl) return;
@@ -1082,9 +1465,9 @@ function initAdminInvoices() {
     e.preventDefault();
     clearError();
 
-    const userId = userSelect ? parseInt(userSelect.value, 10) : 0;
+    const userId = selectedInvoiceUserId || (userInput ? parseInt(userInput.value, 10) : 0);
     const rawValue = (valueInput?.value || '').trim();
-    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const value = parseMoneyInput(rawValue);
     const file = fileInput?.files?.[0];
 
     if (!userId || isNaN(userId)) { showError('Selecione um usuário para associar a nota.'); return; }
@@ -1115,6 +1498,7 @@ function initAdminInvoices() {
     saveAdminStorageNotes(stored);
 
     form.reset();
+    clearSelectedInvoiceUser();
     updateInvoiceUserFieldVisibility();
     clearError();
     renderAdminInvoiceList();
@@ -1123,6 +1507,7 @@ function initAdminInvoices() {
 
   cancelBtn?.addEventListener('click', () => {
     form.reset();
+    clearSelectedInvoiceUser();
     updateInvoiceUserFieldVisibility();
     clearError();
   });
@@ -1275,13 +1660,14 @@ function initUserInvoices() {
   const errorEl = document.getElementById('invoice-error');
 
   if (!form) return;
+  bindInvoiceValueMask(valueInput);
 
   form.addEventListener('submit', e => {
     e.preventDefault();
     clearError();
 
     const rawValue = (valueInput?.value || '').trim();
-    const value = parseFloat(rawValue.replace(',', '.').replace(/[^\d.]/g, ''));
+    const value = parseMoneyInput(rawValue);
     const file = fileInput?.files?.[0];
 
     if (!rawValue || isNaN(value) || value <= 0) {

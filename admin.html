@@ -255,7 +255,7 @@
                 <option value="name-desc">Nome Z–A</option>
                 <option value="valor-desc">Maior valor</option>
                 <option value="valor-asc">Menor valor</option>
-                <option value="date-desc">Mais recente</option>
+                <option value="date-desc" selected>Mais recentes</option>
                 <option value="date-asc">Mais antigo</option>
               </select>
               <label class="admin-sort-label" for="admin-origin-filter">Origem</label>
@@ -270,6 +270,9 @@
                 <input type="checkbox" id="admin-filter-pending" class="admin-filter-check__input" />
                 <span class="admin-filter-check__text">Filtrar pendências</span>
               </label>
+              <button class="history-filter__reset" type="button" id="admin-filter-reset" data-admin-filter-reset>
+                <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
+              </button>
             </div>
           </div>
 

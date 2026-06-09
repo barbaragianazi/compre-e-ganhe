@@ -613,7 +613,6 @@
   color: var(--neutral-600);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  max-width: 120px;
   text-align: center;
   overflow-wrap: anywhere;
 }
@@ -648,8 +647,15 @@
   font-weight: 600;
   text-align: center;
   padding: 0 var(--sp-1) var(--sp-1);
-  max-width: 150px;
   overflow-wrap: anywhere;
+}
+
+.performance-card__rank-label {
+  display: block;
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 0.02em;
 }
 
 .performance-card__bar-text-line {
@@ -758,6 +764,26 @@
   padding: 10px 12px;
 }
 
+.history-kpi-chip--total {
+  border-color: var(--color-primary);
+  background: var(--color-surface-alt);
+}
+
+.history-kpi-chip.is-goal-green {
+  background: #ECFDF5;
+  border-color: #6EE7B7;
+}
+
+.history-kpi-chip.is-goal-yellow {
+  background: #FFF8E1;
+  border-color: #FDE68A;
+}
+
+.history-kpi-chip.is-goal-red {
+  background: #FEF2F2;
+  border-color: #FECACA;
+}
+
 .history-kpi-chip__name {
   font-size: var(--text-xs);
   font-weight: 700;
@@ -772,6 +798,35 @@
   color: var(--color-primary);
 }
 
+.history-kpi-chip__goal,
+.history-kpi-chip__pct {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--neutral-500);
+  line-height: 1.25;
+}
+
+.history-kpi-chip__pct {
+  color: var(--color-text);
+}
+
+.history-kpi-chip.is-goal-green .history-kpi-chip__pct,
+.history-kpi-chip.is-goal-green .history-kpi-chip__value {
+  color: #047857;
+}
+
+.history-kpi-chip.is-goal-yellow .history-kpi-chip__pct,
+.history-kpi-chip.is-goal-yellow .history-kpi-chip__value {
+  color: #B45309;
+}
+
+.history-kpi-chip.is-goal-red .history-kpi-chip__pct,
+.history-kpi-chip.is-goal-red .history-kpi-chip__value {
+  color: #991B1B;
+}
+
 /* Lista de notas (preview) */
 .history-notes-preview {
   display: flex;
@@ -782,7 +837,6 @@
 
 /* Nota individual */
 .history-note {
-  background: var(--neutral-50);
   border: 1px solid var(--neutral-200);
   border-radius: var(--radius-sm);
   padding: 16px;
@@ -917,7 +971,6 @@
 /* Botão "Ver todas" */
 .history-card__footer {
   padding: var(--sp-3) var(--sp-4) var(--sp-4);
-  border-top: 1px solid var(--neutral-100);
 }
 
 .history-card__btn-all {
@@ -1024,6 +1077,7 @@
   align-items: center;
   justify-content: center;
   min-height: 42px;
+  gap: 12px;
   padding: 0 14px;
   border: 1.5px solid var(--neutral-200);
   border-radius: var(--radius-sm);
@@ -1042,6 +1096,19 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
   outline: none;
+}
+
+.history-filter__reset.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.history-filter__reset.is-active:hover,
+.history-filter__reset.is-active:focus-visible {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: #FFFFFF;
 }
 
 .modal__dialog--history-preview {
@@ -1069,9 +1136,9 @@
 .modal__dialog--invoice-user-search {
   display: flex;
   flex-direction: column;
-  width: min(96vw, 960px);
+  width: 80%;
   height: min(92vh, 780px);
-  max-width: 960px;
+  max-width: 1230px;
 }
 
 .modal__body--invoice-user-search {
@@ -1092,12 +1159,12 @@
 }
 
 .admin-search--invoice-user {
-  flex: 1 1 360px;
+  flex: 1 1 160px;
   min-width: 280px;
 }
 
 .admin-search--invoice-user .admin-search__wrap {
-  width: 100%;
+  width: 70%;
   min-width: 0;
 }
 
@@ -1729,6 +1796,23 @@
   text-overflow: ellipsis;
 }
 
+.invoice-item__products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.invoice-item__product-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+}
+
 /* Select do dropdown de usuário (modo admin) */
 .invoice-form__select {
   appearance: none;
@@ -1996,6 +2080,7 @@
   }
 
   .invoice-item__body {
+    flex-wrap: wrap;
     grid-template-columns: 1fr 1fr;
   }
 
@@ -2015,12 +2100,6 @@
 
   .history-kpi-chip {
     min-width: calc(50% - 4px);
-  }
-
-  .history-card__head {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
-    gap: var(--sp-3);
   }
 
   .history-card__metric {

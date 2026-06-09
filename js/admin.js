@@ -13,10 +13,85 @@
 
 /* Chave localStorage para notas adicionadas pelo admin via ranking.html */
 var ADMIN_NOTES_KEY = 'lp_admin_notes';
+var INVOICE_KEY = 'lp_invoices';
 var ADMIN_IMPORTED_USERS_KEY = 'lp_admin_imported_users';
 var ADMIN_BASE_MOCK = JSON.parse(JSON.stringify(ADMIN_MOCK));
 var ADMIN_CAMPAIGN_KEY = 'lp_admin_selected_campaign';
 var DEFAULT_CAMPAIGN_ID = 'simparic-trio';
+var PRODUCT_NAMES = ['Simparic', 'Apoquel', 'Vanguard Plus'];
+var PRODUCT_UNIT_PRICES = {
+  Simparic: 185,
+  Apoquel: 195,
+  'Vanguard Plus': 180,
+};
+var BARBARA_USER = {
+  id: 170,
+  nome: 'Bárbara Gianazi',
+  email: 'barbara.gianazi@email.com',
+  documento: '123.456.789-09',
+  telefone: '(14) 99999-0000',
+  cidade: 'Bauru',
+  estado: 'SP'
+};
+
+function normalizeAdminInvoiceProducts(products) {
+  if (!Array.isArray(products)) return [];
+  return products
+    .map(function (product) {
+      var name = product.nome || product.name;
+      var qtd = Math.max(0, parseInt(product.qtd || product.quantity || 0, 10) || 0);
+      if (PRODUCT_NAMES.indexOf(name) === -1 || qtd <= 0) return null;
+      return {
+        nome: name,
+        qtd: qtd,
+        valorUnit: Number(product.valorUnit || product.unitValue || PRODUCT_UNIT_PRICES[name]),
+      };
+    })
+    .filter(Boolean);
+}
+
+function getAdminInvoiceProductSeed(invoice) {
+  var raw = String(invoice && (invoice.id || invoice.numeroNota || invoice.luckyNumber || invoice.arquivoNome || invoice.filename) || 'nota');
+  return raw.split('').reduce(function (acc, char) {
+    return ((acc * 31) + char.charCodeAt(0)) >>> 0;
+  }, 7);
+}
+
+function simulateAdminInvoiceProducts(invoice) {
+  var value = Math.max(0, Number(invoice && (invoice.valor || invoice.value) || 0));
+  var seed = getAdminInvoiceProductSeed(invoice);
+  var orderedNames = PRODUCT_NAMES
+    .map(function (name, index) { return { name: name, rank: (seed + index * 17) % PRODUCT_NAMES.length }; })
+    .sort(function (a, b) { return a.rank - b.rank; })
+    .map(function (item) { return item.name; });
+  var totals = PRODUCT_NAMES.reduce(function (acc, name) {
+    acc[name] = 0;
+    return acc;
+  }, {});
+  var remaining = value;
+  var guard = 0;
+
+  while (remaining >= 180 && guard < 80) {
+    var nextName = orderedNames.find(function (name) { return PRODUCT_UNIT_PRICES[name] <= remaining + 0.01; });
+    if (!nextName) break;
+    totals[nextName] += 1;
+    remaining -= PRODUCT_UNIT_PRICES[nextName];
+    guard += 1;
+  }
+
+  if (!Object.keys(totals).some(function (name) { return totals[name] > 0; })) {
+    totals[orderedNames[seed % orderedNames.length]] = 1;
+  }
+
+  return PRODUCT_NAMES
+    .filter(function (name) { return totals[name] > 0; })
+    .map(function (name) { return { nome: name, qtd: totals[name], valorUnit: PRODUCT_UNIT_PRICES[name] }; });
+}
+
+function ensureAdminInvoiceProducts(invoice) {
+  var normalized = normalizeAdminInvoiceProducts(invoice && invoice.produtos);
+  return normalized.length ? normalized : simulateAdminInvoiceProducts(invoice);
+}
 
 var ADMIN_CAMPAIGNS = [
   { id: 'simparic-trio', title: 'Simparic Trio — Compre & Ganhe', category: 'brindes', label: 'Brindes', validity: '31/12/2026', desc: 'Acumule pontos para resgatar brindes exclusivos.', factor: 1.00, image: 'assets/images/simparic-trio.png', cardClass: 'promo-card--c1', badgeClass: 'brindes', participants: '1.204', captured: 'R$ 284k' },
@@ -50,8 +125,24 @@ var campaignPage = 1;
 var CAMPAIGN_PER_PAGE = 6;
 
 function getAdminAddedNotes() {
-  try { return JSON.parse(localStorage.getItem(ADMIN_NOTES_KEY) || '[]'); }
+  try {
+    var stored = JSON.parse(localStorage.getItem(ADMIN_NOTES_KEY) || '[]');
+    var changed = false;
+    var normalized = stored.map(function (item) {
+      if (!item || !item.nota) return item;
+      var products = ensureAdminInvoiceProducts(item.nota);
+      if (JSON.stringify(normalizeAdminInvoiceProducts(item.nota.produtos)) === JSON.stringify(products)) return item;
+      changed = true;
+      return Object.assign({}, item, { nota: Object.assign({}, item.nota, { produtos: products }) });
+    });
+    if (changed) saveAdminAddedNotes(normalized);
+    return normalized;
+  }
   catch (e) { return []; }
+}
+
+function saveAdminAddedNotes(notes) {
+  localStorage.setItem(ADMIN_NOTES_KEY, JSON.stringify(notes));
 }
 
 function noteBelongsToActiveCampaign(item) {
@@ -62,9 +153,92 @@ function mergeAdminNotes() {
   getAdminAddedNotes().filter(noteBelongsToActiveCampaign).forEach(function (item) {
     var user = ADMIN_MOCK.find(function (u) { return u.id === item.userId; });
     if (!user) return;
-    var exists = user.notas.some(function (n) { return n.id === item.nota.id; });
-    if (!exists) user.notas.push(item.nota);
+    var existingIndex = user.notas.findIndex(function (n) { return String(n.id) === String(item.nota.id); });
+    if (existingIndex === -1) user.notas.push(item.nota);
+    else user.notas[existingIndex] = Object.assign({}, user.notas[existingIndex], item.nota);
   });
+}
+
+function getBarbaraLocalInvoices() {
+  try { return JSON.parse(localStorage.getItem(INVOICE_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+
+function saveBarbaraLocalInvoices(invoices) {
+  localStorage.setItem(INVOICE_KEY, JSON.stringify(invoices));
+}
+
+function parsePtBrDateToISO(value) {
+  if (!value) return new Date().toISOString().slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  var parts = String(value).split('/');
+  if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
+  return new Date().toISOString().slice(0, 10);
+}
+
+function syncBarbaraLocalInvoicesToAdmin() {
+  var user = ensureBarbaraAdminUser();
+  var invoices = getBarbaraLocalInvoices();
+  var stored = getAdminAddedNotes();
+  var invoicesChanged = false;
+  var storedChanged = false;
+
+  var syncedInvoices = invoices.map(function (invoice) {
+    var existingIndex = stored.findIndex(function (item) {
+      return noteBelongsToActiveCampaign(item) &&
+        Number(item.userId) === Number(user.id) &&
+        (String(item.nota && item.nota.id) === String(invoice.adminNoteId || invoice.id) ||
+          String(item.nota && item.nota.sourceInvoiceId) === String(invoice.id));
+    });
+    var noteId = invoice.adminNoteId || invoice.id;
+    var existingNote = existingIndex === -1 ? null : stored[existingIndex].nota;
+    var initialStatus = ['validada', 'aprovada'].indexOf(invoice.status) !== -1
+      ? 'validada'
+      : (invoice.status === 'excluida' ? 'excluida' : 'aguardando');
+    var products = existingNote && normalizeAdminInvoiceProducts(existingNote.produtos).length
+      ? normalizeAdminInvoiceProducts(existingNote.produtos)
+      : ensureAdminInvoiceProducts(invoice);
+    var nota = {
+      id: noteId,
+      sourceInvoiceId: invoice.id,
+      numeroNota: invoice.numeroNota || 'NF-' + (invoice.luckyNumber || String(invoice.id).slice(-6)),
+      valor: Number(invoice.value || invoice.valor || 0),
+      data: parsePtBrDateToISO(invoice.date || invoice.data),
+      status: existingNote ? (existingNote.status || initialStatus) : initialStatus,
+      origem: invoice.origem || 'manual',
+      estabelecimento: invoice.estabelecimento || 'Nota lançada por Bárbara',
+      responsavelLancamento: BARBARA_USER.nome,
+      arquivoNome: invoice.filename || invoice.arquivoNome || 'Arquivo não informado',
+      luckyNumber: invoice.luckyNumber,
+      justificativa: existingNote ? (existingNote.justificativa || null) : null,
+      produtos: products
+    };
+    var item = { campaignId: activeCampaignId || DEFAULT_CAMPAIGN_ID, userId: user.id, nota: nota };
+
+    if (existingIndex === -1) {
+      stored.unshift(item);
+      storedChanged = true;
+    } else {
+      stored[existingIndex] = Object.assign({}, stored[existingIndex], item);
+      storedChanged = true;
+    }
+
+    var invoiceProducts = normalizeAdminInvoiceProducts(invoice.produtos);
+    if (
+      invoice.adminNoteId === nota.id &&
+      invoice.status === nota.status &&
+      JSON.stringify(invoiceProducts) === JSON.stringify(products)
+    ) return invoice;
+    invoicesChanged = true;
+    return Object.assign({}, invoice, {
+      adminNoteId: nota.id,
+      status: nota.status,
+      produtos: products
+    });
+  });
+
+  if (storedChanged) saveAdminAddedNotes(stored);
+  if (invoicesChanged) saveBarbaraLocalInvoices(syncedInvoices);
 }
 
 function mergeImportedUsersIntoAdminMock() {
@@ -112,6 +286,52 @@ function mergeImportedUsersIntoAdminMock() {
       notas: []
     });
   });
+}
+
+function getBarbaraImportedUserRecord() {
+  var now = nowISO();
+  return {
+    id: BARBARA_USER.id,
+    nome: BARBARA_USER.nome,
+    documento: normalizeDocumento(BARBARA_USER.documento),
+    email: BARBARA_USER.email,
+    telefone: normalizeTelefone(BARBARA_USER.telefone),
+    cidade: BARBARA_USER.cidade,
+    estado: BARBARA_USER.estado,
+    origem: 'manual',
+    dataCriacao: now,
+    dataUltimaAtualizacao: now,
+    origemDetalhada: 'Usuária comum sincronizada'
+  };
+}
+
+function ensureBarbaraImportedUserStorage() {
+  var users = getImportedUsersStorage();
+  var barbaraDoc = onlyDigits(BARBARA_USER.documento);
+  var idx = users.findIndex(function (user) {
+    return onlyDigits(user.documento) === barbaraDoc || String(user.email || '').toLowerCase() === BARBARA_USER.email;
+  });
+  var record = getBarbaraImportedUserRecord();
+  if (idx === -1) users.push(record);
+  else users[idx] = Object.assign({}, users[idx], record);
+  saveImportedUsersStorage(users);
+}
+
+function ensureBarbaraAdminUser() {
+  ensureBarbaraImportedUserStorage();
+  var barbaraDoc = onlyDigits(BARBARA_USER.documento);
+  var user = ADMIN_MOCK.find(function (item) {
+    return onlyDigits(item.documento) === barbaraDoc || String(item.email || '').toLowerCase() === BARBARA_USER.email;
+  });
+
+  if (!user) {
+    user = Object.assign(getBarbaraImportedUserRecord(), { notas: [] });
+    ADMIN_MOCK.push(user);
+  } else {
+    Object.assign(user, getBarbaraImportedUserRecord());
+    if (!Array.isArray(user.notas)) user.notas = [];
+  }
+  return user;
 }
 
 function getActiveCampaign() {
@@ -170,20 +390,24 @@ function applyCampaign(campaignId) {
   ADMIN_MOCK = buildCampaignMock(getActiveCampaign());
   ensureUserFields();
   mergeImportedUsersIntoAdminMock();
+  ensureBarbaraAdminUser();
+  syncBarbaraLocalInvoicesToAdmin();
   mergeAdminNotes();
   ensureMockAttachments();
   adminState.currentPage = 1;
   adminState.search = '';
   adminState.filterPending = false;
   adminState.originFilter = 'all';
-  adminState.sort = 'name-asc';
+  adminState.sort = 'date-desc';
   adminState.activeKPIModal = null;
   adminState.activeUserId = null;
   recentImportedUserIds = [];
   document.getElementById('admin-origin-filter').value = 'all';
+  document.getElementById('admin-sort').value = adminState.sort;
   updateCampaignLabels();
   renderKPIs();
   renderUsers();
+  updateAdminFilterResetState();
 }
 
 function updateCampaignLabels() {
@@ -285,7 +509,7 @@ var adminState = {
   search: '',
   filterPending: false,
   originFilter: 'all',
-  sort: 'name-asc',
+  sort: 'date-desc',
   primaryModal: null,
   actionModal: null,
   pendingAction: null,
@@ -368,10 +592,26 @@ function escapeHtml(str) {
 function findNoteById(id) {
   for (var i = 0; i < ADMIN_MOCK.length; i++) {
     for (var j = 0; j < ADMIN_MOCK[i].notas.length; j++) {
-      if (ADMIN_MOCK[i].notas[j].id === id) return ADMIN_MOCK[i].notas[j];
+      if (String(ADMIN_MOCK[i].notas[j].id) === String(id)) return ADMIN_MOCK[i].notas[j];
     }
   }
   return null;
+}
+
+function persistAdminStorageNoteStatus(note) {
+  if (!note) return;
+  var changed = false;
+  var stored = getAdminAddedNotes().map(function (item) {
+    if (!noteBelongsToActiveCampaign(item) || String(item.nota && item.nota.id) !== String(note.id)) return item;
+    changed = true;
+    return Object.assign({}, item, {
+      nota: Object.assign({}, item.nota, {
+        status: note.status,
+        justificativa: note.justificativa || null
+      })
+    });
+  });
+  if (changed) saveAdminAddedNotes(stored);
 }
 
 function statusLabel(s) {
@@ -561,7 +801,7 @@ function getSortOptionsMarkup(selectedValue) {
     { value: 'name-desc', label: 'Nome Z–A' },
     { value: 'valor-desc', label: 'Maior valor' },
     { value: 'valor-asc', label: 'Menor valor' },
-    { value: 'date-desc', label: 'Mais recente' },
+    { value: 'date-desc', label: 'Mais recentes' },
     { value: 'date-asc', label: 'Mais antigo' }
   ];
   return options.map(function (option) {
@@ -737,6 +977,41 @@ function renderUsers() {
   document.getElementById('admin-next').disabled = adminState.currentPage === totalPages;
 }
 
+function resetAdminUserFilters() {
+  var searchInput = document.getElementById('admin-search');
+  var sortSelect = document.getElementById('admin-sort');
+  var originSelect = document.getElementById('admin-origin-filter');
+  var pendingCheck = document.getElementById('admin-filter-pending');
+
+  adminState.search = '';
+  adminState.filterPending = false;
+  adminState.originFilter = 'all';
+  adminState.sort = 'date-desc';
+  adminState.currentPage = 1;
+
+  if (searchInput) searchInput.value = '';
+  if (sortSelect) sortSelect.value = adminState.sort;
+  if (originSelect) originSelect.value = adminState.originFilter;
+  if (pendingCheck) pendingCheck.checked = false;
+
+  renderUsers();
+  updateAdminFilterResetState();
+  searchInput && searchInput.focus();
+}
+
+function hasActiveAdminUserFilters() {
+  return adminState.search.trim() !== '' ||
+    adminState.filterPending ||
+    adminState.originFilter !== 'all' ||
+    adminState.sort !== 'date-desc';
+}
+
+function updateAdminFilterResetState() {
+  var resetBtn = document.getElementById('admin-filter-reset');
+  if (!resetBtn) return;
+  resetBtn.classList.toggle('is-active', hasActiveAdminUserFilters());
+}
+
 /* ============================================
    MODAL SYSTEM
    ============================================ */
@@ -907,6 +1182,7 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
     '<div class="note-detail"><span class="note-detail__label">Responsável</span><span class="note-detail__value">' + nota.responsavelLancamento + '</span></div>' +
     '<div class="note-detail"><span class="note-detail__label">Arquivo</span><span class="note-detail__value note-detail__value--file" title="' + escapeHtml(getAttachmentFileLabel(nota)) + '"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + getAttachmentFileLabel(nota) + '</span></div>' +
     '</div>';
+  var products = buildAdminProductTags(nota.produtos);
 
   var justif = nota.status === 'excluida'
     ? '<div class="note-item__justificativa"><span class="note-item__just-label">Justificativa da exclusão:</span> <span class="note-item__just-text">' + escapeHtml(getExclusionJustification(nota)) + '</span></div>'
@@ -919,8 +1195,18 @@ function buildNoteItem(nota, canValidate, canDelete, canPreview) {
     '</div>' +
     actions +
     '</div>' +
-    details + justif +
+    details + products + justif +
     '</div>';
+}
+
+function buildAdminProductTags(products) {
+  var normalized = normalizeAdminInvoiceProducts(products);
+  if (!normalized.length) return '';
+  var tags = normalized.map(function (product) {
+    return '<span class="admin-note-product-tag">' + escapeHtml(product.nome) + ' x' + escapeHtml(product.qtd) + '</span>';
+  }).join('');
+  if (!tags) return '';
+  return '<div class="admin-note-products" aria-label="Produtos contidos na nota">' + tags + '</div>';
 }
 
 /* ============================================
@@ -1124,6 +1410,7 @@ function buildKPINoteItem(nota, user, canValidate) {
     : '';
   var arquivoNome = getAttachmentFileLabel(nota);
   var arquivo = '<span class="kpi-note__file" title="' + escapeHtml(arquivoNome) + '"><i class="fa-solid fa-paperclip" aria-hidden="true"></i> ' + arquivoNome + '</span>';
+  var products = buildAdminProductTags(nota.produtos);
   var actions = '<div class="kpi-note__actions">' +
     '<button class="btn-note btn-note--attachment" type="button" data-note-action="preview" data-note-id="' + nota.id + '"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>' +
     '<a class="btn-note btn-note--attachment" href="' + getMockAttachmentSrc(nota) + '" download="' + getAttachmentFileLabel(nota) + '"><i class="fa-solid fa-download" aria-hidden="true"></i></a>' +
@@ -1155,7 +1442,7 @@ function buildKPINoteItem(nota, user, canValidate) {
     '</span>' +
     '</div>' +
     '</div>' +
-    actions + justif +
+    products + actions + justif +
     '</div>';
 }
 
@@ -1182,25 +1469,31 @@ document.getElementById('admin-search').addEventListener('input', function () {
   adminState.search = this.value;
   adminState.currentPage = 1;
   renderUsers();
+  updateAdminFilterResetState();
 });
 
 document.getElementById('admin-filter-pending').addEventListener('change', function () {
   adminState.filterPending = this.checked;
   adminState.currentPage = 1;
   renderUsers();
+  updateAdminFilterResetState();
 });
 
 document.getElementById('admin-sort').addEventListener('change', function () {
   adminState.sort = this.value;
   adminState.currentPage = 1;
   renderUsers();
+  updateAdminFilterResetState();
 });
 
 document.getElementById('admin-origin-filter').addEventListener('change', function () {
   adminState.originFilter = this.value;
   adminState.currentPage = 1;
   renderUsers();
+  updateAdminFilterResetState();
 });
+
+document.getElementById('admin-filter-reset').addEventListener('click', resetAdminUserFilters);
 
 document.getElementById('admin-prev').addEventListener('click', function () {
   if (adminState.currentPage > 1) { adminState.currentPage--; renderUsers(); }
@@ -1279,7 +1572,7 @@ document.getElementById('modal-user-notes-body').addEventListener('click', funct
   var btn = e.target.closest('[data-note-action]');
   if (!btn) return;
   var action = btn.getAttribute('data-note-action');
-  var noteId = parseInt(btn.getAttribute('data-note-id'), 10);
+  var noteId = btn.getAttribute('data-note-id');
   if (action === 'validate') {
     adminState.pendingAction = { noteId: noteId };
     openActionModal('modal-confirm-validate');
@@ -1295,7 +1588,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
   var btn = e.target.closest('[data-note-action]');
   if (!btn) return;
   var action = btn.getAttribute('data-note-action');
-  var noteId = parseInt(btn.getAttribute('data-note-id'), 10);
+  var noteId = btn.getAttribute('data-note-id');
   if (action === 'preview') {
     openAttachmentPreview(noteId);
     return;
@@ -1328,7 +1621,7 @@ document.getElementById('modal-kpi-aguardando-body').addEventListener('click', f
   document.getElementById(id).addEventListener('click', function (e) {
     var previewBtn = e.target.closest('[data-note-action="preview"]');
     if (previewBtn) {
-      openAttachmentPreview(parseInt(previewBtn.getAttribute('data-note-id'), 10));
+      openAttachmentPreview(previewBtn.getAttribute('data-note-id'));
       return;
     }
     var pageBtn = e.target.closest('[data-kpi-page]');
@@ -1344,6 +1637,7 @@ document.getElementById('btn-confirm-validate').addEventListener('click', functi
   if (!adminState.pendingAction) return;
   var note = findNoteById(adminState.pendingAction.noteId);
   if (note) note.status = 'validada';
+  persistAdminStorageNoteStatus(note);
   closeActionModal();
   refreshAll();
   if (note) showAdminFeedback('Nota ' + note.numeroNota + ' validada com sucesso.', 'success');
@@ -1364,6 +1658,7 @@ document.getElementById('btn-confirm-delete').addEventListener('click', function
   }
   note.status = 'excluida';
   note.justificativa = justificativa;
+  persistAdminStorageNoteStatus(note);
   closeActionModal();
   refreshAll();
   showAdminFeedback('Nota ' + note.numeroNota + ' excluída com sucesso.', 'danger');
@@ -1642,6 +1937,7 @@ function doImportCSV() {
   }
   renderKPIs();
   renderUsers();
+  updateAdminFilterResetState();
   if (importedCount > 0) {
     showAdminFeedback(importedCount + (importedCount === 1 ? ' usuário importado' : ' usuários importados') + ' por CSV.', 'success');
   } else if (updatedCount > 0) {

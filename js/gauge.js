@@ -9,9 +9,9 @@ const Gauge = (() => {
   const STROKE_WIDTHS = { tiny: 2.5, small: 3.5, medium: 6,   large: 10  };
 
   function getColor(value) {
-    if (value <= 33) return '#e2162a';
-    if (value <= 67) return '#ffae00';
-    return '#00ac3a';
+    if (value >= 100) return '#00ac3a';
+    if (value >= 65) return '#ffae00';
+    return '#e2162a';
   }
 
   function createSVG(size, radius, sw) {

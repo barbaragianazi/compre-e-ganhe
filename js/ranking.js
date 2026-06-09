@@ -24,29 +24,25 @@ const KPIS = [
     id: 'pontos-acumulados',
     label: 'Pontos acumulados',
     scoreLabel: 'pontos',
-    current: 6750,
     goal: 62594,
     showRank: true,
-    formatText: c => `<b>${c.toLocaleString('pt-BR')} pontos</b>`,
+    formatText: c => `<span class="performance-card__rank-label">Minha classificação #${USER_RANK_POSITION}</span><b>${c.toLocaleString('pt-BR')} pontos</b>`,
   },
   {
     id: 'meta-compras',
     label: 'Meta de compras',
     scoreLabel: 'meta de compras',
-    current: 8500,
     goal: 15000,
     showRank: false,
-    formatText: (c, g) =>
-      `R$ ${c.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} de R$ ${g.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    formatText: () => 'Atingimento médio das metas por produto',
   },
   {
     id: 'quantidade-compras',
     label: 'Quantidade de compras',
     scoreLabel: 'compras',
-    current: 7,
-    goal: 10,
+    goal: 200,
     showRank: false,
-    formatText: (c, g) => `${c} de ${g} compras`,
+    formatText: () => 'Atingimento médio das metas por produto',
   },
 ];
 
@@ -95,6 +91,28 @@ const INVOICE_KEY = 'lp_invoices';
 const ADMIN_NOTES_KEY = 'lp_admin_notes';
 const ADMIN_IMPORTED_USERS_KEY = 'lp_admin_imported_users';
 const DEFAULT_CAMPAIGN_ID = 'simparic-trio';
+const BARBARA_USER = {
+  id: 170,
+  nome: 'Bárbara Gianazi',
+  email: 'barbara.gianazi@email.com',
+  documento: '123.456.789-09',
+  telefone: '(14) 99999-0000',
+  cidade: 'Bauru',
+  estado: 'SP',
+};
+const USER_RANK_POSITION = 17;
+const PRODUCT_NAMES = ['Simparic', 'Apoquel', 'Vanguard Plus'];
+const PRODUCT_UNIT_PRICES = { Simparic: 185, Apoquel: 195, 'Vanguard Plus': 180 };
+const COMBO_TARGETS = {
+  'meta-compras': {
+    total: 15000,
+    products: { Simparic: 10000, Apoquel: 3000, 'Vanguard Plus': 2000 },
+  },
+  'quantidade-compras': {
+    total: 200,
+    products: { Simparic: 130, Apoquel: 40, 'Vanguard Plus': 30 },
+  },
+};
 const RANKING_BASE_ADMIN_MOCK = typeof ADMIN_MOCK !== 'undefined'
   ? JSON.parse(JSON.stringify(ADMIN_MOCK))
   : [];
@@ -119,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   guardRoute();
   isAdminMode = Auth.getRole() === 'admin';
   applySelectedCampaignData();
+  syncAllBarbaraLocalInvoicesToAdmin();
   updateInvoiceUserFieldVisibility();
 
   ThemeSwitcher.init();
@@ -234,6 +253,7 @@ function applySelectedCampaignData() {
   if (!window.CampaignSelector || typeof ADMIN_MOCK === 'undefined') return;
   ADMIN_MOCK = CampaignSelector.buildCampaignMock(RANKING_BASE_ADMIN_MOCK, CampaignSelector.getActiveCampaign());
   mergeImportedUsersIntoAdminMock();
+  ensureBarbaraAdminUser();
   mergeAdminStorageNotes();
 }
 
@@ -353,6 +373,10 @@ function getImportedUsers() {
   catch { return []; }
 }
 
+function saveImportedUsers(users) {
+  localStorage.setItem(ADMIN_IMPORTED_USERS_KEY, JSON.stringify(users));
+}
+
 function ensureRankingUserFields(user, index = 0) {
   if (!user) return user;
   if (!Array.isArray(user.notas)) user.notas = [];
@@ -414,6 +438,60 @@ function mergeImportedUsersIntoAdminMock() {
   });
 }
 
+function getBarbaraImportedUserRecord() {
+  const now = new Date().toISOString();
+  return {
+    id: BARBARA_USER.id,
+    nome: BARBARA_USER.nome,
+    email: BARBARA_USER.email,
+    telefone: BARBARA_USER.telefone,
+    documento: BARBARA_USER.documento,
+    cidade: BARBARA_USER.cidade,
+    estado: BARBARA_USER.estado,
+    origem: 'manual',
+    origemDetalhada: 'Usuária comum sincronizada',
+    dataCriacao: now,
+    dataUltimaAtualizacao: now,
+  };
+}
+
+function ensureBarbaraImportedUserStorage() {
+  const users = getImportedUsers();
+  const barbaraDoc = onlyDigits(BARBARA_USER.documento);
+  const existingIndex = users.findIndex(user =>
+    onlyDigits(user.documento) === barbaraDoc || String(user.email || '').toLowerCase() === BARBARA_USER.email
+  );
+  const barbaraRecord = getBarbaraImportedUserRecord();
+
+  if (existingIndex === -1) {
+    users.push(barbaraRecord);
+  } else {
+    users[existingIndex] = { ...users[existingIndex], ...barbaraRecord };
+  }
+  saveImportedUsers(users);
+}
+
+function ensureBarbaraAdminUser() {
+  if (typeof ADMIN_MOCK === 'undefined') return null;
+  ensureBarbaraImportedUserStorage();
+  const barbaraDoc = onlyDigits(BARBARA_USER.documento);
+  let user = ADMIN_MOCK.find(item =>
+    onlyDigits(item.documento) === barbaraDoc || String(item.email || '').toLowerCase() === BARBARA_USER.email
+  );
+
+  if (!user) {
+    user = ensureRankingUserFields({
+      ...getBarbaraImportedUserRecord(),
+      notas: [],
+    }, ADMIN_MOCK.length);
+    ADMIN_MOCK.push(user);
+    return user;
+  }
+
+  Object.assign(user, getBarbaraImportedUserRecord());
+  return ensureRankingUserFields(user);
+}
+
 function mergeAdminStorageNotes() {
   if (typeof ADMIN_MOCK === 'undefined') return;
 
@@ -421,8 +499,9 @@ function mergeAdminStorageNotes() {
     const user = ADMIN_MOCK.find(u => Number(u.id) === Number(userId));
     if (!user || !nota) return;
 
-    const exists = user.notas.some(existing => Number(existing.id) === Number(nota.id));
-    if (!exists) user.notas.unshift(nota);
+    const existingIndex = user.notas.findIndex(existing => String(existing.id) === String(nota.id));
+    if (existingIndex === -1) user.notas.unshift(nota);
+    else user.notas[existingIndex] = { ...user.notas[existingIndex], ...nota };
   });
 }
 
@@ -507,6 +586,7 @@ function updateRankingMenuState(kpi) {
 }
 
 function updatePerformanceKPI(kpi) {
+  const dynamicKpi = getDynamicKPI(kpi);
   const gaugeEl = document.getElementById('kpi-gauge');
   const barFill = document.getElementById('kpi-bar-fill');
   const barPct = document.getElementById('kpi-pct');
@@ -515,12 +595,12 @@ function updatePerformanceKPI(kpi) {
 
   if (!gaugeEl && !barFill) return;
 
-  const pct = Math.min(100, (kpi.current / kpi.goal) * 100);
+  const pct = dynamicKpi.goal ? Math.min(100, (dynamicKpi.current / dynamicKpi.goal) * 100) : 0;
   const pctRounded = Math.round(pct);
 
-  if (kpiName) kpiName.textContent = kpi.label;
+  if (kpiName) kpiName.textContent = dynamicKpi.label;
   if (barPct) barPct.textContent = pctRounded + '%';
-  if (barText) barText.innerHTML = kpi.formatText(kpi.current, kpi.goal);
+  if (barText) barText.innerHTML = dynamicKpi.formatText(dynamicKpi.current, dynamicKpi.goal);
 
   if (gaugeEl && typeof Gauge !== 'undefined') {
     Gauge.setValue(gaugeEl, pctRounded);
@@ -530,6 +610,13 @@ function updatePerformanceKPI(kpi) {
       requestAnimationFrame(() => { barFill.style.width = pct + '%'; });
     });
   }
+}
+
+function goalStatusClass(value, goal) {
+  const pct = goal ? (value / goal) * 100 : 0;
+  if (pct >= 100) return 'is-goal-green';
+  if (pct >= 65) return 'is-goal-yellow';
+  return 'is-goal-red';
 }
 
 function applyLayoutForKPI(kpiId) {
@@ -564,6 +651,18 @@ function applyRankingView(kpiId) {
   applyLayoutForKPI(kpi.id);
   renderRankingList();
   renderHistoryKPISummary(kpi.id);
+  if (!isAdminMode) renderInvoices();
+}
+
+function refreshUserDashboard() {
+  if (isAdminMode) return;
+  updatePerformanceKPI(getActiveKPI());
+  renderHistoryKPISummary(activeRankingKPI);
+  renderHistoryPreview();
+  renderInvoices();
+  if (document.getElementById('modal-history')?.classList.contains('is-open')) {
+    renderHistoryModalPage(historyCurrentPage);
+  }
 }
 
 /* ============================================
@@ -624,14 +723,15 @@ function getHistoryPeriodCutoff(period) {
   if (period === 'all') return null;
   const days = Number(period);
   if (!days) return null;
-  const latestTime = Math.max(...USER_HISTORY_NOTES.map(nota => new Date(nota.data + 'T00:00:00').getTime()));
+  const notes = getCombinedUserNotes();
+  const latestTime = Math.max(...notes.map(nota => new Date(nota.data + 'T00:00:00').getTime()));
   return latestTime - ((days - 1) * 24 * 60 * 60 * 1000);
 }
 
 function getFilteredHistoryNotes() {
   const cutoff = getHistoryPeriodCutoff(historyFilters.period);
 
-  return USER_HISTORY_NOTES.filter(nota => {
+  return getCombinedUserNotes().filter(nota => {
     const status = historyStatusClass(nota.status);
     const noteTime = new Date(nota.data + 'T00:00:00').getTime();
 
@@ -647,7 +747,8 @@ function renderHistoryFilters() {
   const filtersEl = document.getElementById('modal-history-filters');
   if (!filtersEl) return;
 
-  const establishments = Array.from(new Set(USER_HISTORY_NOTES.map(nota => nota.estabelecimento))).sort();
+  const establishments = Array.from(new Set(getCombinedUserNotes().map(nota => nota.estabelecimento))).sort();
+  const resetActiveClass = hasActiveHistoryFilters() ? ' is-active' : '';
 
   filtersEl.innerHTML = `
     <label class="history-filter">
@@ -680,11 +781,17 @@ function renderHistoryFilters() {
     </label>
     <div class="history-filter history-filter--actions">
       <span>&nbsp;</span>
-      <button class="history-filter__reset" type="button" data-history-filter-reset>
-        Limpar filtros
+      <button class="history-filter__reset${resetActiveClass}" type="button" data-history-filter-reset>
+        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
       </button>
     </div>
   `;
+}
+
+function hasActiveHistoryFilters() {
+  return historyFilters.status !== 'all' ||
+    historyFilters.period !== 'all' ||
+    historyFilters.establishment !== 'all';
 }
 
 function resetHistoryFilters() {
@@ -693,9 +800,120 @@ function resetHistoryFilters() {
   historyFilters.establishment = 'all';
 }
 
+function isApprovedUserNote(nota) {
+  return nota.status === 'aprovada' || nota.status === 'validada';
+}
+
+function parsePtBrDateToIso(value) {
+  if (!value) return new Date().toISOString().slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const parts = String(value).split('/');
+  if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return new Date().toISOString().slice(0, 10);
+}
+
+function normalizeInvoiceProducts(products) {
+  if (!Array.isArray(products)) return [];
+  return products
+    .map(product => {
+      const name = product.nome || product.name;
+      const qtd = Math.max(0, parseInt(product.qtd || product.quantity || 0, 10) || 0);
+      if (!PRODUCT_NAMES.includes(name) || qtd <= 0) return null;
+      return {
+        nome: name,
+        qtd,
+        valorUnit: Number(product.valorUnit || product.unitValue || PRODUCT_UNIT_PRICES[name]),
+      };
+    })
+    .filter(Boolean);
+}
+
+function getInvoiceProductSeed(invoice) {
+  const raw = String(invoice?.id || invoice?.numeroNota || invoice?.luckyNumber || invoice?.arquivoNome || invoice?.filename || 'nota');
+  return Array.from(raw).reduce((acc, char) => ((acc * 31) + char.charCodeAt(0)) >>> 0, 7);
+}
+
+function simulateInvoiceProducts(invoice) {
+  const value = Math.max(0, Number(invoice?.valor || invoice?.value || 0));
+  const seed = getInvoiceProductSeed(invoice);
+  const orderedNames = PRODUCT_NAMES
+    .map((name, index) => ({ name, rank: (seed + index * 17) % PRODUCT_NAMES.length }))
+    .sort((a, b) => a.rank - b.rank)
+    .map(item => item.name);
+  const totals = PRODUCT_NAMES.reduce((acc, name) => {
+    acc[name] = 0;
+    return acc;
+  }, {});
+
+  let remaining = value;
+  let guard = 0;
+  while (remaining >= 180 && guard < 80) {
+    const nextName = orderedNames.find(name => PRODUCT_UNIT_PRICES[name] <= remaining + 0.01);
+    if (!nextName) break;
+    totals[nextName] += 1;
+    remaining -= PRODUCT_UNIT_PRICES[nextName];
+    guard += 1;
+  }
+
+  if (!Object.values(totals).some(Boolean)) {
+    totals[orderedNames[seed % orderedNames.length]] = 1;
+  }
+
+  return PRODUCT_NAMES
+    .filter(name => totals[name] > 0)
+    .map(name => ({ nome: name, qtd: totals[name], valorUnit: PRODUCT_UNIT_PRICES[name] }));
+}
+
+function ensureInvoiceProducts(invoice) {
+  const normalized = normalizeInvoiceProducts(invoice?.produtos);
+  return normalized.length ? normalized : simulateInvoiceProducts(invoice);
+}
+
+function normalizeStoredInvoice(inv) {
+  const syncedAdminNote = findSyncedAdminNoteForInvoice(inv);
+  const value = Number(inv.value || inv.valor || 0);
+  const date = parsePtBrDateToIso(inv.date || inv.data);
+  const productsSource = syncedAdminNote?.nota?.produtos?.length ? syncedAdminNote.nota : { ...inv, valor: value };
+  return {
+    id: inv.id,
+    numeroNota: inv.numeroNota || `NF-${inv.luckyNumber || String(inv.id).slice(-6)}`,
+    data: date,
+    valor: value,
+    status: syncedAdminNote?.nota?.status || inv.status || 'aguardando',
+    estabelecimento: inv.estabelecimento || 'Nota lançada pelo usuário',
+    origem: inv.origem || 'manual',
+    arquivoNome: inv.filename || inv.arquivoNome || 'Arquivo não informado',
+    luckyNumber: inv.luckyNumber,
+    produtos: ensureInvoiceProducts(productsSource),
+  };
+}
+
+function compareNotesByDateDesc(a, b) {
+  const dateDiff = new Date(b.data + 'T00:00:00').getTime() - new Date(a.data + 'T00:00:00').getTime();
+  if (dateDiff) return dateDiff;
+  return String(b.id).localeCompare(String(a.id));
+}
+
+function getCombinedUserNotes() {
+  const syncedIds = new Set(getBarbaraAdminNotes().map(nota => String(nota.sourceInvoiceId || nota.id)));
+  const unsyncedLocalNotes = ensureInvoiceDefaults(getInvoices())
+    .filter(inv => !syncedIds.has(String(inv.id)) && !findSyncedAdminNoteForInvoice(inv))
+    .map(normalizeStoredInvoice);
+
+  const approvedBarbaraAdminNotes = getBarbaraAdminNotes().filter(isApprovedUserNote);
+
+  return USER_HISTORY_NOTES
+    .map(nota => ({ ...nota, produtos: ensureInvoiceProducts(nota) }))
+    .concat(approvedBarbaraAdminNotes, unsyncedLocalNotes.filter(isApprovedUserNote))
+    .sort(compareNotesByDateDesc);
+}
+
 function computeHistoryKPIs() {
-  const approved = USER_HISTORY_NOTES.filter(n => n.status === 'aprovada' || n.status === 'validada');
-  const totals = { Simparic: { qtd: 0, valor: 0 }, Apoquel: { qtd: 0, valor: 0 }, 'Vanguard Plus': { qtd: 0, valor: 0 } };
+  const approved = getCombinedUserNotes().filter(isApprovedUserNote);
+  const totals = PRODUCT_NAMES.reduce((acc, name) => {
+    acc[name] = { qtd: 0, valor: 0 };
+    return acc;
+  }, {});
 
   approved.forEach(nota => {
     (nota.produtos || []).forEach(p => {
@@ -709,12 +927,52 @@ function computeHistoryKPIs() {
   return totals;
 }
 
+function sumProductTotals(totals, field) {
+  return PRODUCT_NAMES.reduce((sum, name) => sum + Number(totals[name]?.[field] || 0), 0);
+}
+
+function getComboProgressKPI(kpiId, totals) {
+  const targets = COMBO_TARGETS[kpiId];
+  if (!targets) return { current: 0, goal: 100 };
+
+  const field = kpiId === 'meta-compras' ? 'valor' : 'qtd';
+  const productTargets = targets.products || {};
+  const productNames = PRODUCT_NAMES.filter(name => Number(productTargets[name] || 0) > 0);
+  if (!productNames.length) return { current: 0, goal: 100 };
+
+  const progressSum = productNames.reduce((sum, name) => {
+    const current = Number(totals[name]?.[field] || 0);
+    const goal = Number(productTargets[name] || 0);
+    const pct = goal ? Math.min(100, (current / goal) * 100) : 0;
+    return sum + pct;
+  }, 0);
+
+  return {
+    current: progressSum / productNames.length,
+    goal: 100,
+  };
+}
+
+function getDynamicKPI(kpi) {
+  const totals = computeHistoryKPIs();
+  if (kpi.id === 'pontos-acumulados') {
+    const current = sumProductTotals(totals, 'valor');
+    return { ...kpi, current, goal: kpi.goal };
+  }
+  if (kpi.id === 'meta-compras') {
+    return { ...kpi, ...getComboProgressKPI('meta-compras', totals) };
+  }
+  if (kpi.id === 'quantidade-compras') {
+    return { ...kpi, ...getComboProgressKPI('quantidade-compras', totals) };
+  }
+  return { ...kpi, current: 0 };
+}
+
 function renderHistoryKPISummary(kpiId) {
   const el = document.getElementById('history-kpi-summary');
   if (!el) return;
 
   const totals = computeHistoryKPIs();
-  const produtos = ['Simparic', 'Apoquel', 'Vanguard Plus'];
 
   const useValue = kpiId === 'meta-compras';
   const useQty = kpiId === 'quantidade-compras';
@@ -725,24 +983,32 @@ function renderHistoryKPISummary(kpiId) {
   }
 
   el.hidden = false;
+  const targets = COMBO_TARGETS[kpiId];
+  const field = useValue ? 'valor' : 'qtd';
+  const formatGoalValue = value => useValue
+    ? value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    : `${value} un.`;
+  const formatCurrentValue = value => useValue
+    ? value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    : `${value} un.`;
+  const renderChip = (name, current, goal) => {
+    const pct = goal ? Math.round(Math.min(100, (current / goal) * 100)) : 0;
+    return `
+      <div class="history-kpi-chip ${goalStatusClass(current, goal)}">
+        <span class="history-kpi-chip__name">${name}</span>
+        <span class="history-kpi-chip__value">${formatCurrentValue(current)}</span>
+        <span class="history-kpi-chip__goal">Meta: ${formatGoalValue(goal)}</span>
+        <span class="history-kpi-chip__pct">${pct}% atingido</span>
+      </div>
+    `;
+  };
 
   el.innerHTML = `
     <div class="history-kpi-summary__label">
-      ${useValue ? 'Valores por produto (notas aprovadas)' : 'Unidades por produto (notas aprovadas)'}
+      ${useValue ? 'Metas de compras (notas aprovadas)' : 'Metas de quantidade (notas aprovadas)'}
     </div>
     <div class="history-kpi-summary__grid">
-      ${produtos.map(nome => {
-    const t = totals[nome];
-    const display = useValue
-      ? t.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-      : `${t.qtd} un.`;
-    return `
-          <div class="history-kpi-chip">
-            <span class="history-kpi-chip__name">${nome}</span>
-            <span class="history-kpi-chip__value">${display}</span>
-          </div>
-        `;
-  }).join('')}
+      ${PRODUCT_NAMES.map(nome => renderChip(nome, totals[nome][field], targets.products[nome])).join('')}
     </div>
   `;
 }
@@ -752,22 +1018,22 @@ function renderHistoryPreview() {
   const countEl = document.getElementById('history-count');
   if (!previewEl) return;
 
-  const total = USER_HISTORY_NOTES.length;
-  const preview = USER_HISTORY_NOTES.slice(0, 3);
+  const notes = getCombinedUserNotes();
+  const total = notes.length;
+  const preview = notes.slice(0, 3);
 
   if (countEl) countEl.textContent = `${total} notas`;
 
-  previewEl.innerHTML = preview.map(nota => buildHistoryNoteHTML(nota, false)).join('');
+  const showValue = activeRankingKPI === 'quantidade-compras';
+  previewEl.innerHTML = preview.map(nota => buildHistoryNoteHTML(nota, showValue)).join('');
 }
 
-function buildHistoryNoteHTML(nota, showProducts = true) {
+function buildHistoryNoteHTML(nota, showValue = true) {
   const sc = historyStatusClass(nota.status);
   const label = historyStatusLabel(nota.status);
-  const prodTags = showProducts
-    ? (nota.produtos || []).map(p =>
-      `<span class="history-note__product-tag">${p.nome} ×${p.qtd}</span>`
-    ).join('')
-    : '';
+  const prodTags = (nota.produtos || []).map(p =>
+    `<span class="history-note__product-tag">${p.nome} x${p.qtd}</span>`
+  ).join('');
 
   return `
     <div class="history-note history-note--${sc}">
@@ -790,16 +1056,18 @@ function buildHistoryNoteHTML(nota, showProducts = true) {
           <span class="history-note__field-label">Data</span>
           <span class="history-note__field-value">${fmtDate(nota.data)}</span>
         </div>
-        <div class="history-note__field">
-          <span class="history-note__field-label">Valor</span>
-          <span class="history-note__field-value">${nota.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-        </div>
+        ${showValue ? `
+          <div class="history-note__field">
+            <span class="history-note__field-label">Valor</span>
+            <span class="history-note__field-value">${nota.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+          </div>
+        ` : ''}
         <div class="history-note__field">
           <span class="history-note__field-label">Estabelecimento</span>
           <span class="history-note__field-value">${nota.estabelecimento}</span>
         </div>
       </div>
-      ${showProducts && prodTags ? `<div class="history-note__products">${prodTags}</div>` : ''}
+      ${prodTags ? `<div class="history-note__products">${prodTags}</div>` : ''}
     </div>
   `;
 }
@@ -916,7 +1184,7 @@ function closeHistoryModal() {
 }
 
 function openHistoryPreviewModal(noteId) {
-  const nota = USER_HISTORY_NOTES.find(item => item.id === noteId);
+  const nota = getCombinedUserNotes().find(item => String(item.id) === String(noteId));
   const modal = document.getElementById('modal-history-preview');
   const overlay = document.getElementById('modal-overlay');
   if (!nota || !modal) return;
@@ -968,8 +1236,10 @@ function renderHistoryModalPage(page) {
   const start = (page - 1) * HISTORY_PAGE_SIZE;
   const pageNotes = filteredNotes.slice(start, start + HISTORY_PAGE_SIZE);
 
+  const showValue = activeRankingKPI === 'quantidade-compras';
+
   listEl.innerHTML = pageNotes.length
-    ? pageNotes.map(nota => buildHistoryNoteHTML(nota, true)).join('')
+    ? pageNotes.map(nota => buildHistoryNoteHTML(nota, showValue)).join('')
     : '<div class="invoice-empty"><div class="invoice-empty__icon" aria-hidden="true">📋</div><p class="invoice-empty__text">Nenhuma nota encontrada para os filtros selecionados.</p></div>';
 
   if (paginationEl) {
@@ -1021,7 +1291,19 @@ function saveInvoices(invoices) {
 }
 
 function getAdminStorageNotes() {
-  try { return JSON.parse(localStorage.getItem(ADMIN_NOTES_KEY) || '[]'); }
+  try {
+    const stored = JSON.parse(localStorage.getItem(ADMIN_NOTES_KEY) || '[]');
+    let changed = false;
+    const normalized = stored.map(item => {
+      if (!item?.nota) return item;
+      const products = ensureInvoiceProducts(item.nota);
+      if (JSON.stringify(normalizeInvoiceProducts(item.nota.produtos)) === JSON.stringify(products)) return item;
+      changed = true;
+      return { ...item, nota: { ...item.nota, produtos: products } };
+    });
+    if (changed) saveAdminStorageNotes(normalized);
+    return normalized;
+  }
   catch { return []; }
 }
 
@@ -1029,17 +1311,108 @@ function saveAdminStorageNotes(notes) {
   localStorage.setItem(ADMIN_NOTES_KEY, JSON.stringify(notes));
 }
 
-function removeAdminStorageNote(noteId) {
-  const numericId = Number(noteId);
+function getBarbaraAdminUserId() {
+  const user = ensureBarbaraAdminUser();
+  return user ? user.id : BARBARA_USER.id;
+}
+
+function adminNoteBelongsToBarbara(item) {
+  return noteBelongsToActiveCampaign(item) && Number(item.userId) === Number(getBarbaraAdminUserId());
+}
+
+function getBarbaraAdminNotes() {
+  return getAdminStorageNotes()
+    .filter(adminNoteBelongsToBarbara)
+    .map(item => normalizeAdminNoteForHistory(item.nota));
+}
+
+function normalizeAdminNoteForHistory(nota) {
+  const value = Number(nota.valor || 0);
+  return {
+    id: nota.id,
+    sourceInvoiceId: nota.sourceInvoiceId,
+    numeroNota: nota.numeroNota || `NF-${nota.luckyNumber || String(nota.id).slice(-6)}`,
+    data: nota.data || new Date().toISOString().slice(0, 10),
+    valor: value,
+    status: nota.status || 'aguardando',
+    estabelecimento: nota.estabelecimento || 'Nota lançada pelo administrador',
+    origem: nota.origem || 'manual',
+    arquivoNome: nota.arquivoNome || 'Arquivo não informado',
+    luckyNumber: nota.luckyNumber,
+    produtos: ensureInvoiceProducts({ ...nota, valor: value }),
+  };
+}
+
+function findSyncedAdminNoteForInvoice(inv) {
+  const syncedId = inv.adminNoteId || inv.id;
+  return getAdminStorageNotes().find(item =>
+    adminNoteBelongsToBarbara(item) &&
+    (String(item.nota?.id) === String(syncedId) || String(item.nota?.sourceInvoiceId) === String(inv.id))
+  );
+}
+
+function syncBarbaraInvoiceToAdmin(inv) {
+  const userId = getBarbaraAdminUserId();
   const stored = getAdminStorageNotes();
-  const noteItem = stored.find(item => noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId);
-  const nextStored = stored.filter(item => !(noteBelongsToActiveCampaign(item) && Number(item.nota.id) === numericId));
+  const existingIndex = stored.findIndex(item =>
+    adminNoteBelongsToBarbara(item) &&
+    (String(item.nota?.id) === String(inv.adminNoteId || inv.id) || String(item.nota?.sourceInvoiceId) === String(inv.id))
+  );
+  const noteId = inv.adminNoteId || inv.id;
+  const initialStatus = ['validada', 'aprovada'].includes(inv.status)
+    ? 'validada'
+    : (inv.status === 'excluida' ? 'excluida' : 'aguardando');
+  const existingProducts = existingIndex === -1 ? [] : normalizeInvoiceProducts(stored[existingIndex].nota.produtos);
+  const nota = {
+    id: noteId,
+    sourceInvoiceId: inv.id,
+    numeroNota: inv.numeroNota || `NF-${inv.luckyNumber || String(inv.id).slice(-6)}`,
+    valor: Number(inv.value || inv.valor || 0),
+    data: parsePtBrDateToIso(inv.date || inv.data),
+    status: existingIndex === -1 ? initialStatus : (stored[existingIndex].nota.status || initialStatus),
+    origem: inv.origem || 'manual',
+    estabelecimento: inv.estabelecimento || 'Nota lançada por Bárbara',
+    responsavelLancamento: BARBARA_USER.nome,
+    arquivoNome: inv.filename || inv.arquivoNome || 'Arquivo não informado',
+    luckyNumber: inv.luckyNumber,
+    justificativa: existingIndex === -1 ? null : (stored[existingIndex].nota.justificativa || null),
+    produtos: existingProducts.length ? existingProducts : ensureInvoiceProducts(inv),
+  };
+  const item = { campaignId: getActiveCampaignId(), userId, nota };
+
+  if (existingIndex === -1) stored.unshift(item);
+  else stored[existingIndex] = { ...stored[existingIndex], userId, campaignId: getActiveCampaignId(), nota };
+  saveAdminStorageNotes(stored);
+  return nota;
+}
+
+function syncAllBarbaraLocalInvoicesToAdmin() {
+  const invoices = ensureInvoiceDefaults(getInvoices());
+  let changed = false;
+  const syncedInvoices = invoices.map(inv => {
+    const syncedNote = syncBarbaraInvoiceToAdmin(inv);
+    if (inv.adminNoteId === syncedNote.id && inv.status === syncedNote.status) return inv;
+    changed = true;
+    return {
+      ...inv,
+      adminNoteId: syncedNote.id,
+      status: syncedNote.status,
+    };
+  });
+  if (changed) saveInvoices(syncedInvoices);
+}
+
+function removeAdminStorageNote(noteId) {
+  const targetId = String(noteId);
+  const stored = getAdminStorageNotes();
+  const noteItem = stored.find(item => noteBelongsToActiveCampaign(item) && String(item.nota.id) === targetId);
+  const nextStored = stored.filter(item => !(noteBelongsToActiveCampaign(item) && String(item.nota.id) === targetId));
 
   saveAdminStorageNotes(nextStored);
 
   if (noteItem) {
     const user = ADMIN_MOCK.find(u => u.id === noteItem.userId);
-    if (user) user.notas = user.notas.filter(nota => Number(nota.id) !== numericId);
+    if (user) user.notas = user.notas.filter(nota => String(nota.id) !== targetId);
   }
 }
 
@@ -1106,6 +1479,11 @@ function ensureInvoiceDefaults(invoices) {
     if (!next.luckyNumber) { next.luckyNumber = generateLucky(); changed = true; }
     if (!next.status) { next.status = 'aguardando'; changed = true; }
     if (!next.origem) { next.origem = 'manual'; changed = true; }
+    const products = ensureInvoiceProducts(next);
+    if (JSON.stringify(normalizeInvoiceProducts(next.produtos)) !== JSON.stringify(products)) {
+      next.produtos = products;
+      changed = true;
+    }
     return next;
   });
   if (changed) saveInvoices(normalized);
@@ -1334,6 +1712,37 @@ function renderInvoiceUserSearchResults() {
   `).join('');
 }
 
+function resetInvoiceUserSearchFilters() {
+  const searchInput = document.getElementById('invoice-user-search');
+  const sortSelect = document.getElementById('invoice-user-sort');
+  const originSelect = document.getElementById('invoice-user-origin-filter');
+
+  invoiceUserSearchState.search = '';
+  invoiceUserSearchState.sort = 'name-asc';
+  invoiceUserSearchState.originFilter = 'all';
+  invoiceUserSearchState.page = 1;
+
+  if (searchInput) searchInput.value = '';
+  if (sortSelect) sortSelect.value = invoiceUserSearchState.sort;
+  if (originSelect) originSelect.value = invoiceUserSearchState.originFilter;
+
+  updateInvoiceUserFilterResetState();
+  renderInvoiceUserSearchResults();
+  searchInput?.focus();
+}
+
+function hasActiveInvoiceUserSearchFilters() {
+  return invoiceUserSearchState.search.trim() !== '' ||
+    invoiceUserSearchState.originFilter !== 'all' ||
+    invoiceUserSearchState.sort !== 'name-asc';
+}
+
+function updateInvoiceUserFilterResetState() {
+  const resetBtn = document.getElementById('invoice-user-filter-reset');
+  if (!resetBtn) return;
+  resetBtn.classList.toggle('is-active', hasActiveInvoiceUserSearchFilters());
+}
+
 function openInvoiceUserSearchModal() {
   const modal = document.getElementById('modal-invoice-user-search');
   const overlay = document.getElementById('modal-overlay');
@@ -1349,6 +1758,7 @@ function openInvoiceUserSearchModal() {
   if (searchInput) searchInput.value = '';
   if (sortSelect) sortSelect.value = invoiceUserSearchState.sort;
   if (originSelect) originSelect.value = invoiceUserSearchState.originFilter;
+  updateInvoiceUserFilterResetState();
   renderInvoiceUserSearchResults();
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
@@ -1377,6 +1787,7 @@ function initInvoiceUserSearchModal() {
   const searchInput = document.getElementById('invoice-user-search');
   const sortSelect = document.getElementById('invoice-user-sort');
   const originSelect = document.getElementById('invoice-user-origin-filter');
+  const resetBtn = document.getElementById('invoice-user-filter-reset');
   const resultsEl = document.getElementById('invoice-user-search-results');
   const paginationEl = document.getElementById('invoice-user-pagination');
   const modal = document.getElementById('modal-invoice-user-search');
@@ -1386,18 +1797,22 @@ function initInvoiceUserSearchModal() {
   searchInput?.addEventListener('input', event => {
     invoiceUserSearchState.search = event.target.value || '';
     invoiceUserSearchState.page = 1;
+    updateInvoiceUserFilterResetState();
     renderInvoiceUserSearchResults();
   });
   sortSelect?.addEventListener('change', event => {
     invoiceUserSearchState.sort = event.target.value || 'name-asc';
     invoiceUserSearchState.page = 1;
+    updateInvoiceUserFilterResetState();
     renderInvoiceUserSearchResults();
   });
   originSelect?.addEventListener('change', event => {
     invoiceUserSearchState.originFilter = event.target.value || 'all';
     invoiceUserSearchState.page = 1;
+    updateInvoiceUserFilterResetState();
     renderInvoiceUserSearchResults();
   });
+  resetBtn?.addEventListener('click', resetInvoiceUserSearchFilters);
   resultsEl?.addEventListener('click', event => {
     const btn = event.target.closest('[data-invoice-user-select]');
     if (!btn) return;
@@ -1483,13 +1898,14 @@ function initAdminInvoices() {
       numeroNota: 'NF-A' + String(noteId).slice(-6),
       valor: value,
       data: new Date().toISOString().slice(0, 10),
-      status: 'aguardando',
+      status: 'validada',
       origem: 'manual',
       responsavelLancamento: Auth.getName(),
       arquivoNome: file.name,
       luckyNumber: generateLucky(),
       justificativa: null,
     };
+    nota.produtos = ensureInvoiceProducts(nota);
 
     user.notas.unshift(nota);
 
@@ -1574,6 +1990,7 @@ function renderAdminInvoiceList() {
             <div class="invoice-item__field-value">${nota.responsavelLancamento}</div>
           </div>
         </div>
+        ${buildInvoiceProductTagsHTML(nota.produtos)}
       </div>
     `;
   }).join('');
@@ -1595,7 +2012,7 @@ function renderAdminInvoiceList() {
 function renderInvoices() {
   const listEl = document.getElementById('invoice-list');
   const countEl = document.getElementById('invoice-count');
-  const invoices = ensureInvoiceDefaults(getInvoices());
+  const invoices = getUserSubmittedInvoices().filter(inv => inv.status === 'aguardando');
 
   if (countEl) countEl.textContent = invoices.length;
   if (!listEl) return;
@@ -1610,6 +2027,8 @@ function renderInvoices() {
     return;
   }
 
+  const showQuantityDetails = activeRankingKPI === 'quantidade-compras';
+
   listEl.innerHTML = invoices.map(inv => `
     <div class="invoice-item" data-id="${inv.id}">
       <div class="invoice-item__header">
@@ -1623,10 +2042,12 @@ function renderInvoices() {
         </div>
       </div>
       <div class="invoice-item__body">
-        <div class="invoice-item__field">
-          <div class="invoice-item__field-label">Valor</div>
-          <div class="invoice-item__field-value">${fmtCurrency(inv.value)}</div>
-        </div>
+        ${showQuantityDetails ? `
+          <div class="invoice-item__field">
+            <div class="invoice-item__field-label">Valor</div>
+            <div class="invoice-item__field-value">${fmtCurrency(inv.value)}</div>
+          </div>
+        ` : ''}
         <div class="invoice-item__field">
           <div class="invoice-item__field-label">Data</div>
           <div class="invoice-item__field-value">${inv.date}</div>
@@ -1640,6 +2061,7 @@ function renderInvoices() {
           <div class="invoice-item__field-value" title="${inv.filename}">${inv.filename}</div>
         </div>
       </div>
+      ${buildInvoiceProductTagsHTML(inv.produtos)}
     </div>
   `).join('');
 
@@ -1648,9 +2070,41 @@ function renderInvoices() {
   });
 }
 
+function getUserSubmittedInvoices() {
+  return ensureInvoiceDefaults(getInvoices()).map(inv => {
+    const adminItem = findSyncedAdminNoteForInvoice(inv);
+    if (!adminItem) return inv;
+    const productsSource = adminItem.nota.produtos?.length ? adminItem.nota : inv;
+    return {
+      ...inv,
+      status: adminItem.nota.status || inv.status,
+      value: Number(adminItem.nota.valor || inv.value || 0),
+      date: fmtDate(adminItem.nota.data),
+      filename: adminItem.nota.arquivoNome || inv.filename,
+      produtos: ensureInvoiceProducts(productsSource),
+      adminNoteId: adminItem.nota.id,
+    };
+  });
+}
+
+function buildInvoiceProductTagsHTML(products) {
+  const normalized = normalizeInvoiceProducts(products);
+  if (!normalized.length) return '';
+  return `
+    <div class="invoice-item__products" aria-label="Produtos contidos na nota">
+      ${normalized.map(product => `<span class="invoice-item__product-tag">${product.nome} x${product.qtd}</span>`).join('')}
+    </div>
+  `;
+}
+
 function initUserInvoices() {
   updateInvoiceUserFieldVisibility();
   renderInvoices();
+  window.addEventListener('storage', event => {
+    if (event.key !== INVOICE_KEY && event.key !== ADMIN_NOTES_KEY) return;
+    renderInvoices();
+    refreshUserDashboard();
+  });
 
   const form = document.getElementById('invoice-form');
   const valueInput = document.getElementById('invoice-value');
@@ -1681,6 +2135,9 @@ function initUserInvoices() {
       if (idx !== -1) {
         invoices[idx].value = value;
         if (file) invoices[idx].filename = file.name;
+        const syncedNote = syncBarbaraInvoiceToAdmin(invoices[idx]);
+        invoices[idx].adminNoteId = syncedNote.id;
+        invoices[idx].status = syncedNote.status;
         saveInvoices(invoices);
       }
       cancelEdit();
@@ -1695,13 +2152,18 @@ function initUserInvoices() {
         status: 'aguardando',
         origem: 'manual',
       };
+      newInvoice.produtos = ensureInvoiceProducts(newInvoice);
       const invoices = getInvoices();
+      const syncedNote = syncBarbaraInvoiceToAdmin(newInvoice);
+      newInvoice.adminNoteId = syncedNote.id;
+      newInvoice.status = syncedNote.status;
       invoices.unshift(newInvoice);
       saveInvoices(invoices);
       form.reset();
     }
 
     renderInvoices();
+    refreshUserDashboard();
   });
 
   cancelBtn?.addEventListener('click', cancelEdit);
@@ -1740,8 +2202,11 @@ function initUserInvoices() {
 }
 
 function removeInvoice(id) {
+  const invoice = getInvoices().find(i => i.id === id);
+  if (invoice) removeAdminStorageNote(invoice.adminNoteId || invoice.id);
   saveInvoices(getInvoices().filter(i => i.id !== id));
   renderInvoices();
+  refreshUserDashboard();
 }
 
 /* ============================================

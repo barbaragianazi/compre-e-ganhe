@@ -449,18 +449,18 @@
                 <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               </svg>
               <input class="admin-search__input" id="invoice-user-search" type="search"
-                placeholder="Busque por nome, e-mail ou CPF/documento" autocomplete="off"
+                placeholder="Busque por nome, e-mail ou documento" autocomplete="off"
                 aria-label="Buscar usuário por nome, e-mail ou documento" />
             </div>
           </div>
           <div class="admin-controls admin-controls--invoice-user">
             <label class="admin-sort-label" for="invoice-user-sort">Ordenar por</label>
             <select class="admin-sort-select" id="invoice-user-sort" aria-label="Ordenar usuários">
-              <option value="name-asc">Nome A-Z</option>
+              <option value="name-asc" selected>Nome A-Z</option>
               <option value="name-desc">Nome Z-A</option>
               <option value="valor-desc">Maior valor</option>
               <option value="valor-asc">Menor valor</option>
-              <option value="date-desc">Mais recente</option>
+              <option value="date-desc">Mais recentes</option>
               <option value="date-asc">Mais antigo</option>
             </select>
             <label class="admin-sort-label" for="invoice-user-origin-filter">Origem</label>
@@ -469,6 +469,9 @@
               <option value="manual">Manual</option>
               <option value="csv">Importados por CSV</option>
             </select>
+            <button class="history-filter__reset" type="button" id="invoice-user-filter-reset" data-invoice-user-filter-reset>
+              <i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros
+            </button>
           </div>
         </div>
         <div class="invoice-user-search__results" id="invoice-user-search-results" role="list"></div>

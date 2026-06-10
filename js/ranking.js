@@ -1024,11 +1024,10 @@ function renderHistoryPreview() {
 
   if (countEl) countEl.textContent = `${total} notas`;
 
-  const showValue = activeRankingKPI === 'quantidade-compras';
-  previewEl.innerHTML = preview.map(nota => buildHistoryNoteHTML(nota, showValue)).join('');
+  previewEl.innerHTML = preview.map(nota => buildHistoryNoteHTML(nota)).join('');
 }
 
-function buildHistoryNoteHTML(nota, showValue = true) {
+function buildHistoryNoteHTML(nota) {
   const sc = historyStatusClass(nota.status);
   const label = historyStatusLabel(nota.status);
   const prodTags = (nota.produtos || []).map(p =>
@@ -1056,12 +1055,10 @@ function buildHistoryNoteHTML(nota, showValue = true) {
           <span class="history-note__field-label">Data</span>
           <span class="history-note__field-value">${fmtDate(nota.data)}</span>
         </div>
-        ${showValue ? `
-          <div class="history-note__field">
-            <span class="history-note__field-label">Valor</span>
-            <span class="history-note__field-value">${nota.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-          </div>
-        ` : ''}
+        <div class="history-note__field">
+          <span class="history-note__field-label">Valor</span>
+          <span class="history-note__field-value">${nota.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+        </div>
         <div class="history-note__field">
           <span class="history-note__field-label">Estabelecimento</span>
           <span class="history-note__field-value">${nota.estabelecimento}</span>
@@ -1236,10 +1233,8 @@ function renderHistoryModalPage(page) {
   const start = (page - 1) * HISTORY_PAGE_SIZE;
   const pageNotes = filteredNotes.slice(start, start + HISTORY_PAGE_SIZE);
 
-  const showValue = activeRankingKPI === 'quantidade-compras';
-
   listEl.innerHTML = pageNotes.length
-    ? pageNotes.map(nota => buildHistoryNoteHTML(nota, showValue)).join('')
+    ? pageNotes.map(nota => buildHistoryNoteHTML(nota)).join('')
     : '<div class="invoice-empty"><div class="invoice-empty__icon" aria-hidden="true">📋</div><p class="invoice-empty__text">Nenhuma nota encontrada para os filtros selecionados.</p></div>';
 
   if (paginationEl) {
@@ -2027,8 +2022,6 @@ function renderInvoices() {
     return;
   }
 
-  const showQuantityDetails = activeRankingKPI === 'quantidade-compras';
-
   listEl.innerHTML = invoices.map(inv => `
     <div class="invoice-item" data-id="${inv.id}">
       <div class="invoice-item__header">
@@ -2042,12 +2035,10 @@ function renderInvoices() {
         </div>
       </div>
       <div class="invoice-item__body">
-        ${showQuantityDetails ? `
-          <div class="invoice-item__field">
-            <div class="invoice-item__field-label">Valor</div>
-            <div class="invoice-item__field-value">${fmtCurrency(inv.value)}</div>
-          </div>
-        ` : ''}
+        <div class="invoice-item__field">
+          <div class="invoice-item__field-label">Valor</div>
+          <div class="invoice-item__field-value">${fmtCurrency(inv.value)}</div>
+        </div>
         <div class="invoice-item__field">
           <div class="invoice-item__field-label">Data</div>
           <div class="invoice-item__field-value">${inv.date}</div>

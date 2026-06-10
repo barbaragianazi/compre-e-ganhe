@@ -17,7 +17,7 @@ const mockAwards = {
           result: '10.820 pontos',
           prize: 'Smart TV 55"',
           prizeDesc: 'Televisão premium para o melhor desempenho da campanha.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -26,7 +26,7 @@ const mockAwards = {
           result: '103% da meta',
           prize: 'Headphones Sony',
           prizeDesc: 'Áudio de alta fidelidade para acompanhar a rotina.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -35,20 +35,20 @@ const mockAwards = {
           result: '74 compras',
           prize: 'Smartwatch Garmin',
           prizeDesc: 'Relógio inteligente com monitoramento avançado.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '10291', name: 'Ana Souza',       prize: 'Mochila notebook'   },
-        { ticket: '38472', name: 'Bruno Costa',     prize: 'Squeeze térmica'    },
-        { ticket: '57831', name: 'Carla Mendes',    prize: 'Kit escritório'     },
-        { ticket: '62910', name: 'Diego Nunes',     prize: 'Chaveiro metálico'  },
-        { ticket: '74103', name: 'Elena Rocha',     prize: 'Caderno premium'    },
-        { ticket: '81234', name: 'Felipe Torres',   prize: 'Garrafa térmica'    },
-        { ticket: '93102', name: 'Gabi Faria',      prize: 'Pasta executiva'    },
-        { ticket: '20481', name: 'Henrique Dias',   prize: 'Caneta premium'     },
-        { ticket: '45671', name: 'Isabela Pinto',   prize: 'Kit vinho'          },
-        { ticket: '59023', name: 'João Ribeiro',    prize: 'Mochila compacta'   },
+        { ticket: '10291', name: 'Ana Souza', prize: 'Mochila notebook' },
+        { ticket: '38472', name: 'Bruno Costa', prize: 'Squeeze térmica' },
+        { ticket: '57831', name: 'Carla Mendes', prize: 'Kit escritório' },
+        { ticket: '62910', name: 'Diego Nunes', prize: 'Chaveiro metálico' },
+        { ticket: '74103', name: 'Elena Rocha', prize: 'Caderno premium' },
+        { ticket: '81234', name: 'Felipe Torres', prize: 'Garrafa térmica' },
+        { ticket: '93102', name: 'Gabi Faria', prize: 'Pasta executiva' },
+        { ticket: '20481', name: 'Henrique Dias', prize: 'Caneta premium' },
+        { ticket: '45671', name: 'Isabela Pinto', prize: 'Kit vinho' },
+        { ticket: '59023', name: 'João Ribeiro', prize: 'Mochila compacta' },
       ],
     },
     fevereiro: {
@@ -60,7 +60,7 @@ const mockAwards = {
           result: '11.340 pontos',
           prize: 'iPhone 16 Pro',
           prizeDesc: 'Smartphone topo de linha para o melhor da campanha.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -69,7 +69,7 @@ const mockAwards = {
           result: '115% da meta',
           prize: 'AirPods Pro',
           prizeDesc: 'Áudio premium sem fio para o dia a dia.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -78,20 +78,20 @@ const mockAwards = {
           result: '80 compras',
           prize: 'Apple Watch SE',
           prizeDesc: 'Smartwatch com recursos essenciais de saúde.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '11432', name: 'Marina Oliveira',  prize: 'Kit churrasco'      },
-        { ticket: '29103', name: 'Pedro Almeida',    prize: 'Mochila notebook'   },
-        { ticket: '48291', name: 'Renata Souza',     prize: 'Squeeze térmica'    },
-        { ticket: '67034', name: 'Samuel Lopes',     prize: 'Kit escritório'     },
-        { ticket: '73918', name: 'Tatiane Ferreira', prize: 'Caderno premium'    },
-        { ticket: '82047', name: 'Ulisses Costa',    prize: 'Garrafa térmica'    },
-        { ticket: '94512', name: 'Vera Ramos',       prize: 'Pasta executiva'    },
-        { ticket: '30184', name: 'Wagner Dias',      prize: 'Caneta premium'     },
-        { ticket: '56723', name: 'Xuxa Lima',        prize: 'Kit vinho'          },
-        { ticket: '68901', name: 'Yara Pinto',       prize: 'Mochila compacta'   },
+        { ticket: '11432', name: 'Marina Oliveira', prize: 'Kit churrasco' },
+        { ticket: '29103', name: 'Pedro Almeida', prize: 'Mochila notebook' },
+        { ticket: '48291', name: 'Renata Souza', prize: 'Squeeze térmica' },
+        { ticket: '67034', name: 'Samuel Lopes', prize: 'Kit escritório' },
+        { ticket: '73918', name: 'Tatiane Ferreira', prize: 'Caderno premium' },
+        { ticket: '82047', name: 'Ulisses Costa', prize: 'Garrafa térmica' },
+        { ticket: '94512', name: 'Vera Ramos', prize: 'Pasta executiva' },
+        { ticket: '30184', name: 'Wagner Dias', prize: 'Caneta premium' },
+        { ticket: '56723', name: 'Xuxa Lima', prize: 'Kit vinho' },
+        { ticket: '68901', name: 'Yara Pinto', prize: 'Mochila compacta' },
       ],
     },
     março: {
@@ -103,7 +103,7 @@ const mockAwards = {
           result: '11.900 pontos',
           prize: 'MacBook Air M3',
           prizeDesc: 'Notebook premium para o melhor desempenho da campanha.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -112,7 +112,7 @@ const mockAwards = {
           result: '110% da meta',
           prize: 'AirPods Pro 2',
           prizeDesc: 'Cancelamento ativo de ruído e áudio espacial.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -121,20 +121,20 @@ const mockAwards = {
           result: '82 compras',
           prize: 'Apple Watch Ultra',
           prizeDesc: 'Smartwatch robusto para os mais exigentes.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '13421', name: 'André Borges',    prize: 'Kit churrasco'      },
-        { ticket: '27834', name: 'Bia Castro',      prize: 'Mochila notebook'   },
-        { ticket: '49201', name: 'Cássio Melo',     prize: 'Squeeze térmica'    },
-        { ticket: '64739', name: 'Daniela Vieira',  prize: 'Kit escritório'     },
-        { ticket: '71023', name: 'Eduardo Sá',      prize: 'Caderno premium'    },
-        { ticket: '88341', name: 'Flávia Campos',   prize: 'Garrafa térmica'    },
-        { ticket: '90217', name: 'Gustavo Moura',   prize: 'Pasta executiva'    },
-        { ticket: '32918', name: 'Hélen Santos',    prize: 'Caneta premium'     },
-        { ticket: '54601', name: 'Igor Machado',    prize: 'Kit vinho'          },
-        { ticket: '67382', name: 'Júlia Pereira',   prize: 'Mochila compacta'   },
+        { ticket: '13421', name: 'André Borges', prize: 'Kit churrasco' },
+        { ticket: '27834', name: 'Bia Castro', prize: 'Mochila notebook' },
+        { ticket: '49201', name: 'Cássio Melo', prize: 'Squeeze térmica' },
+        { ticket: '64739', name: 'Daniela Vieira', prize: 'Kit escritório' },
+        { ticket: '71023', name: 'Eduardo Sá', prize: 'Caderno premium' },
+        { ticket: '88341', name: 'Flávia Campos', prize: 'Garrafa térmica' },
+        { ticket: '90217', name: 'Gustavo Moura', prize: 'Pasta executiva' },
+        { ticket: '32918', name: 'Hélen Santos', prize: 'Caneta premium' },
+        { ticket: '54601', name: 'Igor Machado', prize: 'Kit vinho' },
+        { ticket: '67382', name: 'Júlia Pereira', prize: 'Mochila compacta' },
       ],
     },
     abril: {
@@ -146,7 +146,7 @@ const mockAwards = {
           result: '12.100 pontos',
           prize: 'iPad Pro',
           prizeDesc: 'Tablet profissional para o melhor desempenho da campanha.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -155,7 +155,7 @@ const mockAwards = {
           result: '106% da meta',
           prize: 'AirPods Max',
           prizeDesc: 'Over-ear premium com áudio de alta fidelidade.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -164,20 +164,20 @@ const mockAwards = {
           result: '85 compras',
           prize: 'Apple Watch Series 9',
           prizeDesc: 'O smartwatch mais avançado da linha Apple.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '15923', name: 'Alice Ramos',     prize: 'Mochila notebook'   },
-        { ticket: '28471', name: 'Bernardo Cruz',   prize: 'Squeeze térmica'    },
-        { ticket: '41029', name: 'Camile Santos',   prize: 'Kit escritório'     },
-        { ticket: '58312', name: 'Danilo Rocha',    prize: 'Chaveiro metálico'  },
-        { ticket: '72104', name: 'Eduarda Lima',    prize: 'Caderno premium'    },
-        { ticket: '89234', name: 'Fábio Dias',      prize: 'Garrafa térmica'    },
-        { ticket: '94017', name: 'Giovana Teixeira',prize: 'Pasta executiva'    },
-        { ticket: '31842', name: 'Hugo Martins',    prize: 'Caneta premium'     },
-        { ticket: '56029', name: 'Inês Alves',      prize: 'Kit vinho'          },
-        { ticket: '67193', name: 'Jorge Menezes',   prize: 'Mochila compacta'   },
+        { ticket: '15923', name: 'Alice Ramos', prize: 'Mochila notebook' },
+        { ticket: '28471', name: 'Bernardo Cruz', prize: 'Squeeze térmica' },
+        { ticket: '41029', name: 'Camile Santos', prize: 'Kit escritório' },
+        { ticket: '58312', name: 'Danilo Rocha', prize: 'Chaveiro metálico' },
+        { ticket: '72104', name: 'Eduarda Lima', prize: 'Caderno premium' },
+        { ticket: '89234', name: 'Fábio Dias', prize: 'Garrafa térmica' },
+        { ticket: '94017', name: 'Giovana Teixeira', prize: 'Pasta executiva' },
+        { ticket: '31842', name: 'Hugo Martins', prize: 'Caneta premium' },
+        { ticket: '56029', name: 'Inês Alves', prize: 'Kit vinho' },
+        { ticket: '67193', name: 'Jorge Menezes', prize: 'Mochila compacta' },
       ],
     },
     maio: {
@@ -189,7 +189,7 @@ const mockAwards = {
           result: '12.450 pontos',
           prize: 'iPhone 17 Pro Max',
           prizeDesc: 'Smartphone premium para o melhor desempenho da campanha.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -198,7 +198,7 @@ const mockAwards = {
           result: '108% da meta',
           prize: 'AirPods Pro',
           prizeDesc: 'Áudio premium para acompanhar a rotina.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -207,35 +207,35 @@ const mockAwards = {
           result: '87 compras',
           prize: 'Apple Watch',
           prizeDesc: 'Smartwatch com monitoramento e conectividade.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '93842', name: 'Bárbara Gianazi', prize: 'Mochila notebook'   },
-        { ticket: '19482', name: 'Lucas Martins',   prize: 'Squeeze térmica azul'},
-        { ticket: '78123', name: 'Fernanda Costa',  prize: 'Kit escritório'     },
-        { ticket: '55291', name: 'Rafael Almeida',  prize: 'Chaveiro metálico'  },
-        { ticket: '33710', name: 'Patrícia Souza',  prize: 'Caderno premium'    },
-        { ticket: '90441', name: 'João Pereira',    prize: 'Garrafa térmica'    },
-        { ticket: '12880', name: 'Camila Rocha',    prize: 'Pasta executiva'    },
-        { ticket: '66732', name: 'Renata Lima',     prize: 'Caneta premium'     },
-        { ticket: '21998', name: 'Diego Fernandes', prize: 'Kit vinho'          },
-        { ticket: '48017', name: 'Amanda Ribeiro',  prize: 'Mochila compacta'   },
+        { ticket: '93842', name: 'Bárbara Gianazi', prize: 'Mochila notebook' },
+        { ticket: '19482', name: 'Lucas Martins', prize: 'Squeeze térmica azul' },
+        { ticket: '78123', name: 'Fernanda Costa', prize: 'Kit escritório' },
+        { ticket: '55291', name: 'Rafael Almeida', prize: 'Chaveiro metálico' },
+        { ticket: '33710', name: 'Patrícia Souza', prize: 'Caderno premium' },
+        { ticket: '90441', name: 'João Pereira', prize: 'Garrafa térmica' },
+        { ticket: '12880', name: 'Camila Rocha', prize: 'Pasta executiva' },
+        { ticket: '66732', name: 'Renata Lima', prize: 'Caneta premium' },
+        { ticket: '21998', name: 'Diego Fernandes', prize: 'Kit vinho' },
+        { ticket: '48017', name: 'Amanda Ribeiro', prize: 'Mochila compacta' },
       ],
     },
     junho: { performanceWinners: [], luckyNumberWinners: [] },
-    julho:  { performanceWinners: [], luckyNumberWinners: [] },
+    julho: { performanceWinners: [], luckyNumberWinners: [] },
     agosto: { performanceWinners: [], luckyNumberWinners: [] },
-    setembro:{ performanceWinners: [], luckyNumberWinners: [] },
+    setembro: { performanceWinners: [], luckyNumberWinners: [] },
     outubro: { performanceWinners: [], luckyNumberWinners: [] },
-    novembro:{ performanceWinners: [], luckyNumberWinners: [] },
-    dezembro:{ performanceWinners: [], luckyNumberWinners: [] },
+    novembro: { performanceWinners: [], luckyNumberWinners: [] },
+    dezembro: { performanceWinners: [], luckyNumberWinners: [] },
   },
   2025: {
-    janeiro:  { performanceWinners: [], luckyNumberWinners: [] },
-    fevereiro:{ performanceWinners: [], luckyNumberWinners: [] },
-    março:    { performanceWinners: [], luckyNumberWinners: [] },
-    abril:    { performanceWinners: [], luckyNumberWinners: [] },
+    janeiro: { performanceWinners: [], luckyNumberWinners: [] },
+    fevereiro: { performanceWinners: [], luckyNumberWinners: [] },
+    março: { performanceWinners: [], luckyNumberWinners: [] },
+    abril: { performanceWinners: [], luckyNumberWinners: [] },
     maio: {
       performanceWinners: [
         {
@@ -245,7 +245,7 @@ const mockAwards = {
           result: '9.870 pontos',
           prize: 'Samsung Galaxy S24',
           prizeDesc: 'Smartphone top de linha para o campeão.',
-          img: 'assets/images/iphone.webp',
+          img: 'assets/images/iphone.png',
         },
         {
           place: 2,
@@ -254,7 +254,7 @@ const mockAwards = {
           result: '104% da meta',
           prize: 'Galaxy Buds Pro',
           prizeDesc: 'Fones sem fio com cancelamento de ruído.',
-          img: 'assets/images/airpads.jpg',
+          img: 'assets/images/airpads.png',
         },
         {
           place: 3,
@@ -263,29 +263,29 @@ const mockAwards = {
           result: '71 compras',
           prize: 'Galaxy Watch 6',
           prizeDesc: 'Smartwatch com design elegante.',
-          img: 'assets/images/watch.webp',
+          img: 'assets/images/watch.png',
         },
       ],
       luckyNumberWinners: [
-        { ticket: '41209', name: 'Marcos Vieira',   prize: 'Mochila notebook'   },
-        { ticket: '32847', name: 'Natália Souza',   prize: 'Squeeze térmica'    },
-        { ticket: '56190', name: 'Osvaldo Lima',    prize: 'Kit escritório'     },
-        { ticket: '73021', name: 'Paula Rocha',     prize: 'Chaveiro metálico'  },
-        { ticket: '84913', name: 'Quirino Alves',   prize: 'Caderno premium'    },
-        { ticket: '90132', name: 'Rosa Carvalho',   prize: 'Garrafa térmica'    },
-        { ticket: '17048', name: 'Sérgio Dias',     prize: 'Pasta executiva'    },
-        { ticket: '29841', name: 'Tânia Ferreira',  prize: 'Caneta premium'     },
-        { ticket: '45902', name: 'Ubirajara Melo',  prize: 'Kit vinho'          },
-        { ticket: '63017', name: 'Valéria Nunes',   prize: 'Mochila compacta'   },
+        { ticket: '41209', name: 'Marcos Vieira', prize: 'Mochila notebook' },
+        { ticket: '32847', name: 'Natália Souza', prize: 'Squeeze térmica' },
+        { ticket: '56190', name: 'Osvaldo Lima', prize: 'Kit escritório' },
+        { ticket: '73021', name: 'Paula Rocha', prize: 'Chaveiro metálico' },
+        { ticket: '84913', name: 'Quirino Alves', prize: 'Caderno premium' },
+        { ticket: '90132', name: 'Rosa Carvalho', prize: 'Garrafa térmica' },
+        { ticket: '17048', name: 'Sérgio Dias', prize: 'Pasta executiva' },
+        { ticket: '29841', name: 'Tânia Ferreira', prize: 'Caneta premium' },
+        { ticket: '45902', name: 'Ubirajara Melo', prize: 'Kit vinho' },
+        { ticket: '63017', name: 'Valéria Nunes', prize: 'Mochila compacta' },
       ],
     },
-    junho:    { performanceWinners: [], luckyNumberWinners: [] },
-    julho:    { performanceWinners: [], luckyNumberWinners: [] },
-    agosto:   { performanceWinners: [], luckyNumberWinners: [] },
+    junho: { performanceWinners: [], luckyNumberWinners: [] },
+    julho: { performanceWinners: [], luckyNumberWinners: [] },
+    agosto: { performanceWinners: [], luckyNumberWinners: [] },
     setembro: { performanceWinners: [], luckyNumberWinners: [] },
-    outubro:  { performanceWinners: [], luckyNumberWinners: [] },
-    novembro:  { performanceWinners: [], luckyNumberWinners: [] },
-    dezembro:  { performanceWinners: [], luckyNumberWinners: [] },
+    outubro: { performanceWinners: [], luckyNumberWinners: [] },
+    novembro: { performanceWinners: [], luckyNumberWinners: [] },
+    dezembro: { performanceWinners: [], luckyNumberWinners: [] },
   },
 };
 
@@ -321,6 +321,23 @@ const RANKING_VIEW_LABELS = {
   'meta-compras': 'Meta de compras',
   'quantidade-compras': 'Quantidade de compras',
 };
+const PERFORMANCE_SWITCH_COPY = {
+  'pontos-acumulados': {
+    icon: '🏆',
+    title: 'Performance premiada',
+    desc: 'Top 3 da campanha baseado nos KPIs oficiais.',
+  },
+  'meta-compras': {
+    icon: '🎯',
+    title: 'Metas de valores atingidas',
+    desc: 'Participantes que bateram a meta de compras em valor.',
+  },
+  'quantidade-compras': {
+    icon: '🎯',
+    title: 'Metas de quantidades atingidas',
+    desc: 'Participantes que bateram a meta por quantidade de compras.',
+  },
+};
 const CONTEMPLATED_PRIZES = [
   'Mochila notebook',
   'Squeeze térmica',
@@ -347,6 +364,20 @@ function isNonPodiumView() {
 
 function getRankingViewLabel() {
   return RANKING_VIEW_LABELS[state.rankingView] || RANKING_VIEW_LABELS['pontos-acumulados'];
+}
+
+function updatePerformanceSwitchCopy() {
+  const copy = PERFORMANCE_SWITCH_COPY[state.rankingView] || PERFORMANCE_SWITCH_COPY['pontos-acumulados'];
+  const performanceTab = document.getElementById('tab-performance');
+  if (!performanceTab) return;
+
+  const icon = performanceTab.querySelector('.awards-switch__icon');
+  const title = performanceTab.querySelector('.awards-switch__title');
+  const desc = performanceTab.querySelector('.awards-switch__desc');
+
+  if (icon) icon.textContent = copy.icon;
+  if (title) title.textContent = copy.title;
+  if (desc) desc.textContent = copy.desc;
 }
 
 function getActiveCampaignTitle() {
@@ -550,9 +581,9 @@ function renderPerfTable(winners) {
         </span>
       </td>
       <td class="perf-table__name">${w.name}</td>
-      <td class="perf-table__kpi">${w.kpi}</td>
-      <td class="perf-table__result">${w.result}</td>
+      <!-- <td class="perf-table__kpi">${w.kpi}</td> -->
       <td class="perf-table__prize">${w.prize}</td>
+      <td class="perf-table__result">${w.result}</td>
     </tr>`).join('');
 }
 
@@ -587,12 +618,12 @@ function renderContemplatedCard(winner) {
   return `
     <article class="contemplated-card reveal" role="listitem">
       <div class="contemplated-card__main">
-        <span class="contemplated-card__code">${escapeHtml(winner.code)}</span>
+        <!-- <span class="contemplated-card__code">${escapeHtml(winner.code)}</span> -->
         <strong class="contemplated-card__name">${escapeHtml(winner.name)}</strong>
         <span class="contemplated-card__location">${escapeHtml(winner.location)}</span>
       </div>
       <div class="contemplated-card__meta">
-        <span>${escapeHtml(winner.combo)}</span>
+        <!-- <span>${escapeHtml(winner.combo)}</span> -->
         <strong>${escapeHtml(winner.prize)}</strong>
         <span>${escapeHtml(winner.date)}</span>
       </div>
@@ -640,6 +671,7 @@ function renderLuckyList(winners) {
 function renderAll() {
   if (Auth.getRankingView) state.rankingView = Auth.getRankingView();
   const data = getPeriodData();
+  updatePerformanceSwitchCopy();
   renderPodium(data.performanceWinners);
   renderPerfTable(data.performanceWinners);
   renderLuckyList(data.luckyNumberWinners);
@@ -685,7 +717,7 @@ function initTabs() {
    ============================================ */
 
 function initFilters() {
-  const yearSel  = document.getElementById('filterYear');
+  const yearSel = document.getElementById('filterYear');
   const monthSel = document.getElementById('filterMonth');
   const filtersSection = document.querySelector('.winners-filters');
 
@@ -717,7 +749,7 @@ const MODAL_CRITERIA = {
 };
 
 function openModal(type) {
-  const modal    = document.getElementById('detailsModal');
+  const modal = document.getElementById('detailsModal');
   const criteria = document.getElementById('modalCriteria');
   if (!modal) return;
 
@@ -796,12 +828,12 @@ function renderAllWinnerRow(winner) {
   return `
     <article class="all-winner-row" role="listitem">
       <div>
-        <span class="all-winner-row__code">${escapeHtml(winner.code)}</span>
+        <!-- <span class="all-winner-row__code">${escapeHtml(winner.code)}</span> -->
         <strong class="all-winner-row__name">${escapeHtml(winner.name)}</strong>
         <span class="all-winner-row__location">${escapeHtml(winner.location)}</span>
       </div>
       <div>
-        <span>${escapeHtml(winner.campaign)}</span>
+        <!-- <span>${escapeHtml(winner.campaign)}</span> -->
         <strong>${escapeHtml(winner.prize)}</strong>
         <span>${escapeHtml(winner.date)}</span>
       </div>
@@ -891,7 +923,7 @@ function initHeader() {
 
 function initMobileNav() {
   const toggle = document.querySelector('.header__menu-toggle');
-  const nav    = document.querySelector('.mobile-nav');
+  const nav = document.querySelector('.mobile-nav');
   if (!toggle || !nav) return;
 
   toggle.addEventListener('click', () => {

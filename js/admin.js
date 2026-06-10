@@ -260,6 +260,8 @@ function mergeImportedUsersIntoAdminMock() {
       existingByDoc.telefone = normalizeTelefone(imported.telefone || existingByDoc.telefone);
       existingByDoc.cidade = imported.cidade || existingByDoc.cidade || '';
       existingByDoc.estado = imported.estado || existingByDoc.estado || '';
+      existingByDoc.notificarWhatsapp = Boolean(imported.notificarWhatsapp);
+      existingByDoc.notificarEmail = Boolean(imported.notificarEmail);
       existingByDoc.origem = 'csv';
       existingByDoc.origemDetalhada = imported.origemDetalhada || existingByDoc.origemDetalhada;
       existingByDoc.dataCriacao = imported.dataCriacao || existingByDoc.dataCriacao;
@@ -279,6 +281,8 @@ function mergeImportedUsersIntoAdminMock() {
       telefone: normalizeTelefone(imported.telefone || ''),
       cidade: imported.cidade || '',
       estado: imported.estado || '',
+      notificarWhatsapp: Boolean(imported.notificarWhatsapp),
+      notificarEmail: Boolean(imported.notificarEmail),
       origem: 'csv',
       dataCriacao: imported.dataCriacao || nowISO(),
       dataUltimaAtualizacao: imported.dataUltimaAtualizacao || nowISO(),
@@ -701,6 +705,8 @@ function upsertImportedUserStorage(users, user) {
     telefone: normalizeTelefone(user.telefone),
     cidade: user.cidade || '',
     estado: user.estado || '',
+    notificarWhatsapp: Boolean(user.notificarWhatsapp),
+    notificarEmail: Boolean(user.notificarEmail),
     origem: 'csv',
     dataCriacao: user.dataCriacao,
     dataUltimaAtualizacao: user.dataUltimaAtualizacao,
@@ -1724,6 +1730,8 @@ var uploadCSVState = {
   fileName: '',
   parsedRows: [],
   errorMsg: '',
+  notificarWhatsapp: true,
+  notificarEmail: true,
   importedCount: 0,
   updatedCount: 0,
   importedUsers: []
@@ -1734,6 +1742,8 @@ function openUploadCSVModal() {
   uploadCSVState.fileName = '';
   uploadCSVState.parsedRows = [];
   uploadCSVState.errorMsg = '';
+  uploadCSVState.notificarWhatsapp = true;
+  uploadCSVState.notificarEmail = true;
   uploadCSVState.importedCount = 0;
   uploadCSVState.updatedCount = 0;
   uploadCSVState.importedUsers = [];
@@ -1751,6 +1761,10 @@ function buildUploadMainBody() {
   var phase = uploadCSVState.phase;
   var canImport = phase === 'ready';
   var hasFile = uploadCSVState.fileName !== '';
+  var whatsappYes = uploadCSVState.notificarWhatsapp ? ' checked' : '';
+  var whatsappNo = uploadCSVState.notificarWhatsapp ? '' : ' checked';
+  var emailYes = uploadCSVState.notificarEmail ? ' checked' : '';
+  var emailNo = uploadCSVState.notificarEmail ? '' : ' checked';
 
   var dropzoneClass = 'upload-csv__dropzone' +
     (phase === 'ready' ? ' upload-csv__dropzone--ready' : '') +
@@ -1782,6 +1796,23 @@ function buildUploadMainBody() {
     dropContent +
     '<input type="file" id="input-csv-file" accept=".csv" class="upload-csv__input" aria-label="Selecionar arquivo CSV">' +
     '</label>' +
+    '<fieldset class="upload-csv__notify-group">' +
+    '<legend class="upload-csv__notify-title">Notificar clientes importados</legend>' +
+    '<div class="upload-csv__notify-row">' +
+    '<span class="upload-csv__notify-label">Por WhatsApp</span>' +
+    '<span class="upload-csv__segmented" role="group" aria-label="Notificar por WhatsApp">' +
+    '<label class="upload-csv__segment"><input type="radio" name="upload-notificar-whatsapp" value="sim" data-upload-notify="whatsapp"' + whatsappYes + '><span>Sim</span></label>' +
+    '<label class="upload-csv__segment"><input type="radio" name="upload-notificar-whatsapp" value="nao" data-upload-notify="whatsapp"' + whatsappNo + '><span>Não</span></label>' +
+    '</span>' +
+    '</div>' +
+    '<div class="upload-csv__notify-row">' +
+    '<span class="upload-csv__notify-label">Por e-mail</span>' +
+    '<span class="upload-csv__segmented" role="group" aria-label="Notificar por e-mail">' +
+    '<label class="upload-csv__segment"><input type="radio" name="upload-notificar-email" value="sim" data-upload-notify="email"' + emailYes + '><span>Sim</span></label>' +
+    '<label class="upload-csv__segment"><input type="radio" name="upload-notificar-email" value="nao" data-upload-notify="email"' + emailNo + '><span>Não</span></label>' +
+    '</span>' +
+    '</div>' +
+    '</fieldset>' +
     errorHtml +
     '<div class="modal__foot">' +
     '<button class="modal-btn modal-btn--cancel" id="btn-cancel-upload-csv" type="button">Cancelar</button>' +
@@ -1885,6 +1916,10 @@ function doImportCSV() {
   var updatedCount = 0;
   var importedUsers = [];
   var persistedImportedUsers = getImportedUsersStorage();
+  var notificationFlags = {
+    notificarWhatsapp: Boolean(uploadCSVState.notificarWhatsapp),
+    notificarEmail: Boolean(uploadCSVState.notificarEmail)
+  };
   uploadCSVState.parsedRows.forEach(function (row) {
     var rowDocumentoDigits = onlyDigits(row.documento);
     var existing = ADMIN_MOCK.find(function (u) { return onlyDigits(u.documento) === rowDocumentoDigits; });
@@ -1893,6 +1928,8 @@ function doImportCSV() {
       existing.documento = normalizeDocumento(row.documento);
       existing.email = row.email;
       existing.telefone = normalizeTelefone(row.telefone);
+      existing.notificarWhatsapp = notificationFlags.notificarWhatsapp;
+      existing.notificarEmail = notificationFlags.notificarEmail;
       existing.origem = 'csv';
       existing.origemDetalhada = 'Importação CSV - ' + nowFmt;
       existing.dataUltimaAtualizacao = now;
@@ -1907,6 +1944,8 @@ function doImportCSV() {
         telefone: normalizeTelefone(row.telefone),
         cidade: '',
         estado: '',
+        notificarWhatsapp: notificationFlags.notificarWhatsapp,
+        notificarEmail: notificationFlags.notificarEmail,
         origem: 'csv',
         dataCriacao: now,
         dataUltimaAtualizacao: now,
@@ -2054,6 +2093,11 @@ document.getElementById('modal-upload-csv-body').addEventListener('click', funct
 document.getElementById('modal-upload-csv-body').addEventListener('change', function (e) {
   var fi = e.target.closest('#input-csv-file');
   if (fi && fi.files[0]) handleCSVFileSelected(fi.files[0]);
+  var notifyInput = e.target.closest('[data-upload-notify]');
+  if (!notifyInput) return;
+  var enabled = notifyInput.value === 'sim';
+  if (notifyInput.getAttribute('data-upload-notify') === 'whatsapp') uploadCSVState.notificarWhatsapp = enabled;
+  if (notifyInput.getAttribute('data-upload-notify') === 'email') uploadCSVState.notificarEmail = enabled;
 });
 
 /* Edit user modal body — delegation */

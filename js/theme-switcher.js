@@ -30,6 +30,10 @@ const ThemeSwitcher = (() => {
     root.style.setProperty('--color-text', brand.text);
     root.style.setProperty('--color-text-light', brand.textLight);
     root.style.setProperty('--color-border', brand.border);
+    root.style.setProperty('--logo-light', `url('${brand.logoLight}')`);
+    root.style.setProperty('--logo-dark', `url('${brand.logoDark || brand.logoLight}')`);
+    root.style.setProperty('--footer-logo-light', `url('${brand.footerLogoLight || brand.logoLight}')`);
+    root.style.setProperty('--footer-logo-dark', `url('${brand.footerLogoDark || brand.logoDark || brand.logoLight}')`);
   }
 
 
@@ -39,8 +43,30 @@ const ThemeSwitcher = (() => {
 
   function updateLogoAlt(brand) {
     document.querySelectorAll('[data-logo]').forEach(el => {
+      const variant = el.dataset.logo === 'dark' ? 'logoDark' : 'logoLight';
+      el.src = brand[variant] || brand.logoLight;
       el.alt = brand.name;
     });
+    document.querySelectorAll('[data-footer-logo]').forEach(el => {
+      const variant = el.dataset.footerLogo === 'dark' ? 'footerLogoDark' : 'footerLogoLight';
+      const fallback = el.dataset.footerLogo === 'dark' ? brand.logoDark : brand.logoLight;
+      el.src = brand[variant] || fallback || brand.logoLight;
+      el.alt = brand.footerLogoName || brand.name;
+    });
+  }
+
+  function createGroupLabel(label) {
+    const group = document.createElement('div');
+    group.className = 'brand-dropdown__group';
+    group.textContent = label;
+    return group;
+  }
+
+  function createDivider() {
+    const divider = document.createElement('div');
+    divider.className = 'brand-dropdown__divider';
+    divider.setAttribute('aria-hidden', 'true');
+    return divider;
   }
 
   function updateDropdownState(activeKey) {
@@ -91,28 +117,50 @@ const ThemeSwitcher = (() => {
 
     const savedKey = localStorage.getItem(STORAGE_KEY) || 'zoetis';
 
-    Object.entries(brands).forEach(([key, brand]) => {
-      const btn = document.createElement('button');
-      btn.className = 'brand-dropdown__item';
-      btn.dataset.brand = key;
-      if (key === savedKey) btn.classList.add('active');
+    const entries = Object.entries(brands);
+    const primaryEntry = entries.find(([key]) => key === 'zoetis');
+    const resellerEntries = entries.filter(([, brand]) => brand.group === 'Revendas');
+    const remainingBrandEntries = entries.filter(([key, brand]) => (
+      key !== 'zoetis' && (brand.group || 'Marcas') === 'Marcas'
+    ));
+    const sections = [
+      primaryEntry ? { label: null, entries: [primaryEntry] } : null,
+      resellerEntries.length ? { label: 'Revendas', entries: resellerEntries } : null,
+      remainingBrandEntries.length ? { label: 'Marcas', entries: remainingBrandEntries, dividerBefore: true } : null,
+    ].filter(Boolean);
 
-      const dot = document.createElement('span');
-      dot.className = 'brand-dropdown__dot';
-      dot.style.background = brand.primary;
+    sections.forEach((section) => {
+      if (section.dividerBefore) dropdown.appendChild(createDivider());
+      if (section.label) dropdown.appendChild(createGroupLabel(section.label));
 
-      const name = document.createElement('span');
-      name.textContent = brand.name;
+      section.entries.forEach(([key, brand]) => {
+        const group = brand.group || 'Marcas';
 
-      btn.appendChild(dot);
-      btn.appendChild(name);
+        const btn = document.createElement('button');
+        btn.className = 'brand-dropdown__item';
+        btn.dataset.brand = key;
+        btn.dataset.group = group;
+        if (group !== 'Marcas') btn.classList.add('brand-dropdown__item--reseller');
+        if (key === savedKey) btn.classList.add('active');
 
-      btn.addEventListener('click', () => {
-        switchTo(key);
-        closeDropdown(container);
+        const name = document.createElement('span');
+        name.textContent = brand.name;
+
+        if (group === 'Marcas') {
+          const dot = document.createElement('span');
+          dot.className = 'brand-dropdown__dot';
+          dot.style.background = brand.primary;
+          btn.appendChild(dot);
+        }
+        btn.appendChild(name);
+
+        btn.addEventListener('click', () => {
+          switchTo(key);
+          closeDropdown(container);
+        });
+
+        dropdown.appendChild(btn);
       });
-
-      dropdown.appendChild(btn);
     });
   }
 

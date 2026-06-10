@@ -282,15 +282,9 @@ button {
 .header__logo-btn img,
 .header__logo-btn svg {
   height: 32px;
-  max-width: 84px;
-}
-
-img[data-logo="light"] {
-  content: var(--logo-light);
-}
-
-img[data-logo="dark"] {
-  content: var(--logo-dark);
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
 }
 
 .header__logo-chevron {
@@ -336,6 +330,30 @@ img[data-logo="dark"] {
   color: var(--neutral-400);
   padding: var(--sp-1) 12px;
   margin-bottom: 4px;
+  text-align: center;
+}
+
+.brand-dropdown__group {
+  margin: 8px 10px 4px;
+  padding: 10px 2px 4px;
+  color: var(--neutral-400);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.brand-dropdown__divider {
+  height: 1px;
+  margin: 8px 10px 4px;
+  background: var(--neutral-100);
+}
+
+.brand-dropdown__divider + .brand-dropdown__group {
+  margin-top: 0;
+  border-top: 0;
 }
 
 .brand-dropdown__item {

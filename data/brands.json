@@ -14,6 +14,25 @@
     "logoLight": "assets/logos/zoetis-light.svg",
     "logoDark": "assets/logos/zoetis-dark.svg"
   },
+  "agro-amazonia": {
+    "name": "Agro Amazônia",
+    "group": "Revendas",
+    "primary": "#F65C00",
+    "secondary": "#CE5208",
+    "surface": "#FFF7F2",
+    "surfaceAlt": "#FFF1E8",
+    "text": "#1F1F1F",
+    "textLight": "#FFFFFF",
+    "border": "#F2E2D8",
+    "gradient-soft-1": "#F65C0029",
+    "gradient-soft-2": "#CE520833",
+    "gradient-soft-3": "#F65C004D",
+    "logoLight": "assets/logos/agro_amazonia.png",
+    "logoDark": "assets/logos/agro_amazonia.png",
+    "footerLogoName": "Zoetis",
+    "footerLogoLight": "assets/logos/zoetis-light.svg",
+    "footerLogoDark": "assets/logos/zoetis-dark.svg"
+  },
   "basf": {
     "name": "BASF",
     "primary": "#65AC1E",

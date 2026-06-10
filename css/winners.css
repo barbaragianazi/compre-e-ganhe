@@ -307,6 +307,10 @@
   margin-bottom: var(--sp-6);
 }
 
+.podium[hidden] {
+  display: none;
+}
+
 /* Primeiro lugar ocupa coluna central */
 .podium__card--first {
   grid-column: 2;

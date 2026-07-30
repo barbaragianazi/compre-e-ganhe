@@ -199,44 +199,246 @@
 
 
             </div>/.performance-card -->
-            
-            <!-- Card: Meu histórico de compras -->
-            <div class="history-card reveal" id="history-card" aria-label="Meu histórico de compras">
-              <div class="history-card__head">
-                <div class="history-card__title-wrap">
-                  <h3 class="history-card__title">Meu histórico de compras</h3>
-                  <span class="history-card__count" id="history-count" aria-live="polite">0 notas</span>
+
+            <!-- Mix Turbinado — painel destacado (KPIs + distribuição por cluster) -->
+            <div class="ranking-mix-panel reveal" data-combo-visible="mix-turbinado" hidden>
+
+              <!-- KPIs do vendedor -->
+              <div class="ranking-mix-kpis">
+                <div class="ranking-mix-kpis__note">
+                  <span>Dados simulados para demonstrar a experiência do vendedor.</span>
+                  <span>Atualizado em 30/06/2026, 18:00</span>
                 </div>
-                <div class="history-card__metric">
-                  <span class="performance-card__kpi-name" id="kpi-name">—</span>
-                  <span class="performance-card__bar-pct" id="kpi-pct" aria-hidden="true"></span>
-                  <div class="performance-card__bar-text" id="kpi-text"></div>
-                </div>
-                <div class="history-card__gauge">
-                  <div class="gauge" id="kpi-gauge" data-value="0" data-size="large" data-show-value="true"
-                    role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                    aria-label="Progresso do KPI">
+                <div class="ranking-mix-kpis__grid">
+                  <div class="kpi-card">
+                    <div class="kpi-card__label">NFs com produtos Zoetis</div>
+                    <div class="kpi-card__value">112</div>
+                    <div class="kpi-card__trend kpi-card__trend--positive">↑ 18% vs. mês anterior</div>
+                  </div>
+                  <div class="kpi-card">
+                    <div class="kpi-card__label">Mix médio por NF</div>
+                    <div class="kpi-card__value">4,1</div>
+                    <div class="kpi-card__trend kpi-card__trend--positive">↑ 0,6 SKU por NF</div>
+                  </div>
+                  <div class="kpi-card">
+                    <div class="kpi-card__label">Melhor posição atual</div>
+                    <div class="kpi-card__value">2º</div>
+                    <div class="kpi-card__trend kpi-card__trend--accent">Cluster Prata</div>
+                  </div>
+                  <div class="kpi-card">
+                    <div class="kpi-card__label">Potencial desta campanha</div>
+                    <div class="kpi-card__value">R$ 11,5 mil</div>
+                    <div class="kpi-card__trend kpi-card__trend--neutral">Bronze + Prata + Ouro</div>
                   </div>
                 </div>
-              </div>
+              </div><!-- /.ranking-mix-kpis -->
 
-              <!-- KPI Summary por produto -->
-              <div class="history-kpi-summary" id="history-kpi-summary">
-                <!-- Rendered by ranking.js -->
-              </div>
+              <!-- Distribuição por cluster + rota sugerida -->
+              <div class="ranking-mix-clusters">
 
-              <!-- Lista resumida (3 notas) -->
-              <div class="history-notes-preview" id="history-notes-preview">
-                <!-- Rendered by ranking.js -->
-              </div>
+                <!-- LEFT: Distribuição das NFs por cluster -->
+                <div class="ranking-mix-clusters__card">
+                  <h3 class="ranking-mix-clusters__title">Distribuição das suas NFs por cluster</h3>
+                  <p class="ranking-mix-clusters__subtitle">Conta o número de SKUs diferentes, não a quantidade de itens.</p>
 
-              <div class="history-card__footer">
-                <button class="history-card__btn-all" id="history-btn-all" type="button">
-                  Ver todas as notas
-                  <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-                </button>
-              </div>
-            </div><!-- /.history-card -->
+                  <div class="cluster-row">
+                    <div class="cluster-row__badge cluster-row__badge--bronze" aria-hidden="true">B</div>
+                    <div class="cluster-row__info">
+                      <div class="cluster-row__name">Bronze</div>
+                      <div class="cluster-row__desc">3 SKUs por NF*</div>
+                      <div class="performance-card__bar-track">
+                        <div class="performance-card__bar-fill cluster-row__fill--bronze" style="width: 68%;"></div>
+                      </div>
+                    </div>
+                    <div class="cluster-row__stat">
+                      <div class="cluster-row__value">50</div>
+                      <div class="cluster-row__label">NFs válidas</div>
+                    </div>
+                  </div>
+
+                  <div class="cluster-row">
+                    <div class="cluster-row__badge cluster-row__badge--prata" aria-hidden="true">P</div>
+                    <div class="cluster-row__info">
+                      <div class="cluster-row__name">Prata</div>
+                      <div class="cluster-row__desc">4 SKUs por NF*</div>
+                      <div class="performance-card__bar-track">
+                        <div class="performance-card__bar-fill cluster-row__fill--prata" style="width: 48%;"></div>
+                      </div>
+                    </div>
+                    <div class="cluster-row__stat">
+                      <div class="cluster-row__value">37</div>
+                      <div class="cluster-row__label">NFs válidas</div>
+                    </div>
+                  </div>
+
+                  <div class="cluster-row">
+                    <div class="cluster-row__badge cluster-row__badge--ouro" aria-hidden="true">O</div>
+                    <div class="cluster-row__info">
+                      <div class="cluster-row__name">Ouro</div>
+                      <div class="cluster-row__desc">5 ou mais SKUs por NF*</div>
+                      <div class="performance-card__bar-track">
+                        <div class="performance-card__bar-fill cluster-row__fill--ouro" style="width: 32%;"></div>
+                      </div>
+                    </div>
+                    <div class="cluster-row__stat">
+                      <div class="cluster-row__value">25</div>
+                      <div class="cluster-row__label">NFs válidas</div>
+                    </div>
+                  </div>
+
+                  <p class="ranking-mix-clusters__note">*Faixas demonstrativas no protótipo. Os limites finais podem ser parametrizados no regulamento.</p>
+                </div><!-- /.ranking-mix-clusters__card -->
+
+                <!-- RIGHT: Ritmo + rota sugerida + meta de sell out -->
+                <div class="ranking-mix-clusters__side">
+
+                  <div class="ranking-mix-clusters__card ranking-mix-stat">
+                    <div class="ranking-mix-stat__figure">
+                      <div class="ranking-mix-stat__value">76%</div>
+                      <div class="ranking-mix-stat__label">Ritmo Ouro</div>
+                    </div>
+                    <div class="ranking-mix-stat__text">
+                      <div class="ranking-mix-stat__title">Suba 8 NFs para Ouro</div>
+                      <p class="ranking-mix-stat__desc">Você está a 8 NFs de alcançar a atual líder do cluster Ouro.</p>
+                    </div>
+                  </div>
+
+                  <div class="ranking-mix-route">
+                    <div class="ranking-mix-route__title">Rota sugerida</div>
+                    <p class="ranking-mix-route__desc">Nas próximas oportunidades, combine ao menos 5 SKUs Zoetis diferentes na mesma NF. O volume por SKU não altera a classificação.</p>
+                  </div>
+
+                  <div class="ranking-mix-goal">
+                    <div class="ranking-mix-goal__head">
+                      <div class="ranking-mix-goal__title">Meta de sell out</div>
+                      <span class="ranking-mix-goal__badge">93% atingida</span>
+                    </div>
+                    <div class="performance-card__bar-track ranking-mix-goal__track">
+                      <div class="performance-card__bar-fill ranking-mix-goal__fill" style="width: 93%;"></div>
+                    </div>
+                    <p class="ranking-mix-goal__desc">A premiação do período será validada após o atingimento integral da meta do trimestre.</p>
+                  </div>
+
+                </div><!-- /.ranking-mix-clusters__side -->
+
+              </div><!-- /.ranking-mix-clusters -->
+
+            </div><!-- /.ranking-mix-panel -->
+
+            <!-- Histórico de compras (+ ranking mensal por vendedor, no Mix Turbinado) -->
+            <div class="ranking-mix-history-row">
+
+              <!-- Card: Meu histórico de compras -->
+              <div class="history-card reveal" id="history-card" aria-label="Meu histórico de compras">
+                <div class="history-card__head">
+                  <div class="history-card__title-wrap">
+                    <h3 class="history-card__title">Meu histórico de compras</h3>
+                    <span class="history-card__count" id="history-count" aria-live="polite">0 notas</span>
+                  </div>
+                  <div class="history-card__metric">
+                    <span class="performance-card__kpi-name" id="kpi-name">—</span>
+                    <span class="performance-card__bar-pct" id="kpi-pct" aria-hidden="true"></span>
+                    <div class="performance-card__bar-text" id="kpi-text"></div>
+                  </div>
+                  <div class="history-card__gauge">
+                    <div class="gauge" id="kpi-gauge" data-value="0" data-size="large" data-show-value="true"
+                      role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                      aria-label="Progresso do KPI">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- KPI Summary por produto -->
+                <div class="history-kpi-summary" id="history-kpi-summary">
+                  <!-- Rendered by ranking.js -->
+                </div>
+
+                <!-- Lista resumida (3 notas) -->
+                <div class="history-notes-preview" id="history-notes-preview">
+                  <!-- Rendered by ranking.js -->
+                </div>
+
+                <div class="history-card__footer">
+                  <button class="history-card__btn-all" id="history-btn-all" type="button">
+                    Ver todas as notas
+                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div><!-- /.history-card -->
+
+              <!-- Mix Turbinado — ranking mensal por vendedor -->
+              <div class="vendor-table reveal" data-combo-visible="mix-turbinado" hidden>
+                <div class="vendor-table__head">
+                  <div>
+                    <h3 class="vendor-table__title">Ranking mensal por vendedor</h3>
+                    <p class="vendor-table__subtitle">Acompanhe sua evolução e ajuste a rota durante a campanha.</p>
+                  </div>
+                  <!-- <div class="vendor-table__filters">
+                    <button class="vendor-table__filter-btn" type="button">Todos os clusters</button>
+                    <button class="vendor-table__filter-btn" type="button">Junho/2026</button>
+                  </div> -->
+                </div>
+
+                <div class="vendor-table__scroll">
+                  <div class="vendor-table__row vendor-table__row--head" role="row">
+                    <span>Posição</span>
+                    <span>Vendedor</span>
+                    <span>Qtde de SKU's</span>
+                    <span>NFs no cluster</span>
+                    <span>Faturamento total</span>
+                  </div>
+
+                  <div class="vendor-table__row" role="row">
+                    <span class="vendor-table__pos vendor-table__pos--top">1º</span>
+                    <span class="vendor-table__vendor"><strong>Renato Alves</strong><small>Regional Centro</small></span>
+                    <span class="vendor-table__cell">9</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">33</span>
+                    <span class="vendor-table__cell">R$ 318.450,00</span>
+                  </div>
+
+                  <div class="vendor-table__row vendor-table__row--me" role="row">
+                    <span class="vendor-table__pos vendor-table__pos--top">2º</span>
+                    <span class="vendor-table__vendor"><strong>Marina Costa (você)</strong><small>Regional Sul</small></span>
+                    <span class="vendor-table__cell">4</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">37</span>
+                    <span class="vendor-table__cell">R$ 286.740,00</span>
+                  </div>
+
+                  <div class="vendor-table__row" role="row">
+                    <span class="vendor-table__pos vendor-table__pos--top">2º</span>
+                    <span class="vendor-table__vendor"><strong>Paulo Nunes</strong><small>Regional Norte</small></span>
+                    <span class="vendor-table__cell">3</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">49</span>
+                    <span class="vendor-table__cell">R$ 274.100,00</span>
+                  </div>
+
+                  <div class="vendor-table__row" role="row">
+                    <span class="vendor-table__pos vendor-table__pos--top">3º</span>
+                    <span class="vendor-table__vendor"><strong>Camila Rocha</strong><small>Regional Sudeste</small></span>
+                    <span class="vendor-table__cell">3</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">25</span>
+                    <span class="vendor-table__cell">R$ 265.320,00</span>
+                  </div>
+
+                  <div class="vendor-table__row" role="row">
+                    <span class="vendor-table__pos">4º</span>
+                    <span class="vendor-table__vendor"><strong>André Lima</strong><small>Regional Sul</small></span>
+                    <span class="vendor-table__cell">2</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">34</span>
+                    <span class="vendor-table__cell">R$ 251.880,00</span>
+                  </div>
+
+                  <div class="vendor-table__row" role="row">
+                    <span class="vendor-table__pos">5º</span>
+                    <span class="vendor-table__vendor"><strong>Juliana Reis</strong><small>Regional Centro</small></span>
+                    <span class="vendor-table__cell">1</span>
+                    <span class="vendor-table__cell vendor-table__cell--strong">43</span>
+                    <span class="vendor-table__cell">R$ 238.540,00</span>
+                  </div>
+                </div><!-- /.vendor-table__scroll -->
+              </div><!-- /.vendor-table -->
+
+            </div><!-- /.ranking-mix-history-row -->
 
           </div><!-- /.ranking-user-col -->
 
@@ -507,6 +709,7 @@
   <script src="js/campaign-shared.js"></script>
   <script src="js/gauge.js"></script>
   <script src="js/ranking.js"></script>
+  <script src="js/promo-content.js"></script>
 
 </body>
 

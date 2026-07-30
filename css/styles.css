@@ -1771,6 +1771,70 @@ button {
 }
 
 /* ============================================
+   CAMPAIGN POTENTIAL BANNER — Mix Turbinado
+   ============================================ */
+
+.campaign-potential {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6);
+  color: #FFFFFF;
+}
+
+.campaign-potential__header {
+  max-width: 480px;
+  margin-bottom: var(--sp-4);
+}
+
+.campaign-potential__title {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.campaign-potential__desc {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+}
+
+.campaign-potential__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.campaign-potential__stat-card {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  text-align: center;
+  transition: transform var(--duration-base) var(--ease-out),
+    background var(--duration-base) var(--ease-out);
+}
+
+.campaign-potential__stat-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.campaign-potential__stat-value {
+  font-size: var(--text-2xl);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.campaign-potential__stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 6px;
+}
+
+/* ============================================
    ITEM DETAILS MODAL
    ============================================ */
 
@@ -2237,6 +2301,10 @@ button {
 
   .gift-card--featured {
     grid-column: span 1;
+  }
+
+  .campaign-potential__stats {
+    grid-template-columns: 1fr;
   }
 
   .item-modal {

@@ -11,6 +11,7 @@ const Auth = (() => {
   const STORAGE_KEY_RANKING_VIEW = 'lp_ranking_view';
 
   const RANKING_VIEWS = [
+    { id: 'mix-turbinado', label: 'Mix Turbinado', icon: 'fa-bolt' },
     { id: 'pontos-acumulados', label: 'Pontos acumulados', icon: 'fa-chart-line' },
     { id: 'meta-compras', label: 'Meta de compras', icon: 'fa-bullseye' },
     { id: 'quantidade-compras', label: 'Quantidade de compras', icon: 'fa-cart-shopping' },
@@ -148,7 +149,8 @@ const Auth = (() => {
   }
 
   function getStatusPageLabel() {
-    return getRankingView() === 'pontos-acumulados' ? 'Ranking' : 'Status';
+    const rankingLabelViews = ['pontos-acumulados', 'mix-turbinado'];
+    return rankingLabelViews.includes(getRankingView()) ? 'Ranking' : 'Status';
   }
 
   function updateStatusPageLabels() {

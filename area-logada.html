@@ -98,22 +98,22 @@
 
           <!-- Left: copy -->
           <div class="hero__content">
-            <div class="promo-hero__eyebrow">
+            <div class="promo-hero__eyebrow" data-promo="eyebrow">
               Campanha ativa &bull; 2º semestre 2026
             </div>
 
             <h1 class="hero__title" id="hero-title">
-              <span class="blur-fade blur-fade--d0">Cadastre.</span>
-              <span class="blur-fade blur-fade--d1"><em>Pontue.</em></span>
+              <span class="blur-fade blur-fade--d0" data-promo="title-1">Cadastre.</span>
+              <span class="blur-fade blur-fade--d1"><em data-promo="title-2">Pontue.</em></span>
               <span class="blur-fade blur-fade--d2 hero__title-underlined">
-                Conquiste.
+                <span data-promo="title-3">Conquiste.</span>
                 <svg class="hero__title-underline" width="300" height="20" viewBox="0 0 300 20" aria-hidden="true">
                   <path d="M 0,10 Q 75,0 150,10 Q 225,20 300,10" />
                 </svg>
               </span>
             </h1>
 
-            <p class="hero__subtitle">
+            <p class="hero__subtitle" data-promo="subtitle">
               Adquira produtos participantes, cadastre seus cupons
               e concorra a brindes exclusivos que fazem diferença na sua
               rotina profissional.
@@ -131,12 +131,12 @@
 
             <div class="hero__meta">
               <div class="hero__meta-item">
-                <span class="hero__meta-value">+1.200</span>
+                <span class="hero__meta-value" data-promo="meta-participants">+1.200</span>
                 <span class="hero__meta-label">Participantes</span>
               </div>
               <div class="hero__meta-divider" aria-hidden="true"></div>
               <div class="hero__meta-item">
-                <span class="hero__meta-value">48</span>
+                <span class="hero__meta-value" data-promo="meta-gifts">48</span>
                 <span class="hero__meta-label">Brindes entregues</span>
               </div>
               <div class="hero__meta-divider" aria-hidden="true"></div>
@@ -167,7 +167,7 @@
             </div>
 
             <!-- Floating card: gift highlight -->
-            <div class="hero__card hero__card--gift" aria-hidden="true" data-auth-only hidden>
+            <!-- <div class="hero__card hero__card--gift" aria-hidden="true" data-auth-only hidden>
               <div class="hero__card-inner">
                 <div>
                   <div class="hero__card-label">Brinde destaque</div>
@@ -176,14 +176,14 @@
                 </div>
                 <div style="font-size:28px;">🎁</div>
               </div>
-            </div>
+            </div> -->
 
             <!-- Floating card: ranking -->
-            <div class="hero__card hero__card--rank" aria-hidden="true" data-auth-only hidden>
+            <!-- <div class="hero__card hero__card--rank" aria-hidden="true" data-auth-only hidden>
               <div class="hero__card-label">Sua posição</div>
               <div class="hero__card-value">#12</div>
               <div class="hero__card-sub">de 1.200 participantes</div>
-            </div>
+            </div> -->
 
             <!-- Floating seal -->
             <!-- <div class="hero__card hero__card--seal" aria-hidden="true">
@@ -206,13 +206,13 @@
         <header class="section__header reveal">
           <div class="section__eyebrow">
             <span class="section__eyebrow-line" aria-hidden="true"></span>
-            Por que participar
+            <span data-promo="benefits-eyebrow">Por que participar</span>
             <span class="section__eyebrow-line" aria-hidden="true"></span>
           </div>
-          <h2 class="section__title" id="benefits-title">Vantagens que<br />valem cada compra</h2>
+          <h2 class="section__title" id="benefits-title" data-promo-html="benefits-title">Vantagens que<br />valem cada compra</h2>
         </header>
 
-        <div class="benefits__grid">
+        <div class="benefits__grid" data-combo-visible="default">
 
           <!-- Featured card -->
           <div class="benefit-card benefit-card--featured reveal reveal-delay-1" aria-label="Brindes exclusivos">
@@ -263,6 +263,44 @@
             <div class="benefit-card__icon" aria-hidden="true">🛡️</div>
             <h3 class="benefit-card__title">Transparência total</h3>
             <p class="benefit-card__desc">Regulamento claro, ganhadores publicados e resultados verificáveis a qualquer momento.</p>
+            <span class="benefit-card__number" aria-hidden="true">04</span>
+          </div>
+
+        </div>
+
+        <!-- Mix Turbinado — regras do combo (mesmas classes .benefit-card, layout bento) -->
+        <div class="benefits__grid" data-combo-visible="mix-turbinado" hidden>
+
+          <!-- Featured card — regra em destaque -->
+          <div class="benefit-card benefit-card--featured reveal reveal-delay-1" aria-label="Conta o mix, não o volume">
+            <div class="benefit-card__icon" aria-hidden="true">🧩</div>
+            <div class="benefit-card__tag">Regra principal</div>
+            <h3 class="benefit-card__title">Conta o mix, não o volume</h3>
+            <p class="benefit-card__desc">A classificação considera a quantidade de SKUs Zoetis diferentes por NF.</p>
+            <span class="benefit-card__number" aria-hidden="true">01</span>
+          </div>
+
+          <!-- Medium card -->
+          <div class="benefit-card benefit-card--md reveal reveal-delay-2">
+            <div class="benefit-card__icon" aria-hidden="true">🏅</div>
+            <h3 class="benefit-card__title">Apuração por cluster</h3>
+            <p class="benefit-card__desc">As NFs são somadas em Bronze, Prata e Ouro, com 1º, 2º e 3º lugares em cada faixa.</p>
+            <span class="benefit-card__number" aria-hidden="true">02</span>
+          </div>
+
+          <!-- Small card -->
+          <div class="benefit-card benefit-card--sm reveal reveal-delay-3">
+            <div class="benefit-card__icon" aria-hidden="true">⚖️</div>
+            <h3 class="benefit-card__title">Desempate por faturamento</h3>
+            <p class="benefit-card__desc">Em caso de empate, vence o maior faturamento somado de todas as NFs do período.</p>
+            <span class="benefit-card__number" aria-hidden="true">03</span>
+          </div>
+
+          <!-- Accent card, full width — condição de validade -->
+          <div class="benefit-card benefit-card--accent reveal reveal-delay-1" style="grid-column: span 12;">
+            <div class="benefit-card__icon" aria-hidden="true">⏳</div>
+            <h3 class="benefit-card__title">Validade condicionada</h3>
+            <p class="benefit-card__desc">A campanha só é válida se a revenda atingir a meta de sell out do trimestre.</p>
             <span class="benefit-card__number" aria-hidden="true">04</span>
           </div>
 
@@ -409,14 +447,14 @@
         <header class="section__header section__header--center reveal">
           <div class="section__eyebrow">
             <span class="section__eyebrow-line" aria-hidden="true"></span>
-            Brindes exclusivos
+            <span data-promo="gifts-eyebrow">Brindes exclusivos</span>
             <span class="section__eyebrow-line" aria-hidden="true"></span>
           </div>
-          <h2 class="section__title" id="gifts-title">Recompensas que<br />você vai querer</h2>
-          <p class="section__desc">Os melhores colocados no ranking ao final de cada período garantem prêmios selecionados para profissionais</p>
+          <h2 class="section__title" id="gifts-title" data-promo-html="gifts-title">Recompensas que<br />você vai querer</h2>
+          <p class="section__desc" data-promo="gifts-subtitle">Os melhores colocados no ranking ao final de cada período garantem prêmios selecionados para profissionais</p>
         </header>
 
-        <div class="gifts__grid">
+        <div class="gifts__grid" data-combo-visible="default">
 
           <!-- Featured gift -->
           <article class="gift-card gift-card--featured reveal reveal-delay-1" role="button" tabindex="0" aria-label="Ver detalhes do brinde iPhone 17 Pro Max">
@@ -475,9 +513,31 @@
         </div>
 
         <!-- Bottom note -->
-        <p style="text-align:center; margin-top:var(--sp-6); font-size:var(--text-sm); color:var(--neutral-400);" class="reveal">
+        <p style="text-align:center; margin-top:var(--sp-6); font-size:var(--text-sm); color:var(--neutral-400);" class="reveal" data-combo-visible="default">
           Premiações adicionais para 4º ao 10º lugar. <a href="#regulamento" style="color:var(--color-primary); font-weight:700;">Ver regulamento completo →</a>
         </p>
+
+        <!-- Mix Turbinado — potencial anual da campanha -->
+        <div class="campaign-potential reveal" data-combo-visible="mix-turbinado" hidden>
+          <div class="campaign-potential__header">
+            <div class="campaign-potential__title">Potencial anual da campanha</div>
+            <p class="campaign-potential__desc">Três campanhas ao longo de 2026, com premiação acumulável por vendedor.</p>
+          </div>
+          <div class="campaign-potential__stats">
+            <div class="campaign-potential__stat-card">
+              <div class="campaign-potential__stat-value">R$ 11.500</div>
+              <div class="campaign-potential__stat-label">Máximo por campanha</div>
+            </div>
+            <div class="campaign-potential__stat-card">
+              <div class="campaign-potential__stat-value">R$ 34.500</div>
+              <div class="campaign-potential__stat-label">Máximo por vendedor/ano</div>
+            </div>
+            <div class="campaign-potential__stat-card">
+              <div class="campaign-potential__stat-value">R$ 171.000</div>
+              <div class="campaign-potential__stat-label">Total de prêmios/ano</div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </section>
@@ -659,6 +719,7 @@
   <script src="js/theme-switcher.js"></script>
   <script src="js/login-modal.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/promo-content.js"></script>
 
 </body>
 </html>

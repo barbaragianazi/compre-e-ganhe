@@ -317,11 +317,17 @@ const PLACE_CLASSES = ['first', 'second', 'third'];
 const NON_PODIUM_VIEWS = ['meta-compras', 'quantidade-compras'];
 const ALL_WINNERS_PAGE_SIZE = 12;
 const RANKING_VIEW_LABELS = {
+  'mix-turbinado': 'Mix Turbinado',
   'pontos-acumulados': 'Pontos acumulados',
   'meta-compras': 'Meta de compras',
   'quantidade-compras': 'Quantidade de compras',
 };
 const PERFORMANCE_SWITCH_COPY = {
+  'mix-turbinado': {
+    icon: '⚡',
+    title: 'Mix Turbinado',
+    desc: 'Top 3 da campanha baseado nos KPIs oficiais.',
+  },
   'pontos-acumulados': {
     icon: '🏆',
     title: 'Performance premiada',

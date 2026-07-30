@@ -21,6 +21,14 @@ const RANKING_DATA = [
 
 const KPIS = [
   {
+    id: 'mix-turbinado',
+    label: 'Mix Turbinado',
+    scoreLabel: 'pontos',
+    goal: 62594,
+    showRank: true,
+    formatText: c => `<span class="performance-card__rank-label">Minha classificação #${USER_RANK_POSITION}</span><b>${c.toLocaleString('pt-BR')} pontos</b>`,
+  },
+  {
     id: 'pontos-acumulados',
     label: 'Pontos acumulados',
     scoreLabel: 'pontos',
@@ -628,6 +636,7 @@ function applyLayoutForKPI(kpiId) {
 
   if (layout) {
     layout.classList.remove(
+      'ranking-layout--kpi-mix-turbinado',
       'ranking-layout--kpi-pontos-acumulados',
       'ranking-layout--kpi-meta-compras',
       'ranking-layout--kpi-quantidade-compras'
@@ -955,7 +964,7 @@ function getComboProgressKPI(kpiId, totals) {
 
 function getDynamicKPI(kpi) {
   const totals = computeHistoryKPIs();
-  if (kpi.id === 'pontos-acumulados') {
+  if (kpi.id === 'pontos-acumulados' || kpi.id === 'mix-turbinado') {
     const current = sumProductTotals(totals, 'valor');
     return { ...kpi, current, goal: kpi.goal };
   }
